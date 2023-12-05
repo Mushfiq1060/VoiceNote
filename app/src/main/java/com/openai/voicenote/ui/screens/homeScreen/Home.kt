@@ -44,12 +44,18 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.openai.voicenote.R
+import com.openai.voicenote.ui.navigation.NavigationItem
 import com.openai.voicenote.ui.theme.VoiceNoteTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Home(homeViewModel: HomeViewModel = viewModel()) {
+fun Home(
+    navHostController: NavHostController,
+    homeViewModel: HomeViewModel = viewModel()
+) {
 
     val homeUiState by homeViewModel.uiState.collectAsState()
 
@@ -66,7 +72,6 @@ fun Home(homeViewModel: HomeViewModel = viewModel()) {
                        .height(48.dp),
                    colors = TopAppBarDefaults.mediumTopAppBarColors(
                        containerColor = MaterialTheme.colorScheme.primaryContainer,
-                       titleContentColor = MaterialTheme.colorScheme.primary,
                    ),
                    title = {
                        Box(
@@ -111,7 +116,9 @@ fun Home(homeViewModel: HomeViewModel = viewModel()) {
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { /* open voice recording screen*/ },
+                onClick = {
+                    navHostController.navigate(NavigationItem.VoiceRecord.route)
+                },
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
                 elevation = FloatingActionButtonDefaults.elevation()
             ) {
@@ -142,7 +149,7 @@ fun checkGridStatus(gridEnable: Boolean) : Int {
 @Composable
 fun HomeScreenPreview() {
     VoiceNoteTheme {
-        Home()
+        Home(navHostController = rememberNavController())
     }
 }
 
