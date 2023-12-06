@@ -13,7 +13,9 @@ import androidx.navigation.compose.rememberNavController
 import com.openai.voicenote.ui.navigation.AppNavHost
 import com.openai.voicenote.ui.screens.homeScreen.Home
 import com.openai.voicenote.ui.theme.VoiceNoteTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

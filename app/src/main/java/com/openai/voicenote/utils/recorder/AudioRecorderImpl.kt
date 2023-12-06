@@ -2,25 +2,20 @@ package com.openai.voicenote.utils.recorder
 
 import android.content.Context
 import android.media.MediaRecorder
-import android.os.Build
+import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.File
 import java.io.FileOutputStream
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class AudioRecorderImpl(private val context: Context) : AudioRecorder {
-
-    private var mediaRecorder: MediaRecorder? = null
-
-    private fun createMediaRecorder() : MediaRecorder {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            MediaRecorder(context)
-        } else {
-            MediaRecorder()
-        }
-    }
+@Singleton
+class AudioRecorderImpl @Inject constructor(
+    @ApplicationContext private val context: Context,
+    private val mediaRecorder: MediaRecorder
+) : AudioRecorder {
 
     override fun startRecording(outputFile: File) {
-        createMediaRecorder().apply {
-            mediaRecorder = this
+        mediaRecorder.apply {
             setAudioSource(MediaRecorder.AudioSource.MIC)
             setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
             setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
@@ -31,8 +26,7 @@ class AudioRecorderImpl(private val context: Context) : AudioRecorder {
     }
 
     override fun stopRecording() {
-        mediaRecorder?.stop()
-        mediaRecorder?.reset()
-        mediaRecorder = null
+        mediaRecorder.stop()
+        mediaRecorder.reset()
     }
 }

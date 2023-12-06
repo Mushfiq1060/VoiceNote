@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.zIndex
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
@@ -54,7 +55,7 @@ import com.openai.voicenote.ui.theme.VoiceNoteTheme
 @Composable
 fun Home(
     navHostController: NavHostController,
-    homeViewModel: HomeViewModel = viewModel()
+    homeViewModel: HomeViewModel = hiltViewModel()
 ) {
 
     val homeUiState by homeViewModel.uiState.collectAsState()

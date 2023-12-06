@@ -9,6 +9,7 @@ import com.openai.voicenote.utils.player.AudioPlayer
 import com.openai.voicenote.utils.player.AudioPlayerImpl
 import com.openai.voicenote.utils.recorder.AudioRecorder
 import com.openai.voicenote.utils.recorder.AudioRecorderImpl
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,15 +20,18 @@ import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import java.io.File
+import javax.inject.Inject
 
-class VoiceRecordViewModel : ViewModel() {
+@HiltViewModel
+class VoiceRecordViewModel @Inject constructor() : ViewModel() {
+
+    @Inject lateinit var apiRepository : ApiRepository
+    @Inject lateinit var audioRecorderImpl : AudioRecorder
+    @Inject lateinit var audioPlayerImpl : AudioPlayer
 
     private val _uiState = MutableStateFlow(VoiceRecordUiState())
     val uiState : StateFlow<VoiceRecordUiState> = _uiState.asStateFlow()
 
-    private var apiRepository : ApiRepository = ApiRepository()
-    lateinit var audioRecorderImpl : AudioRecorder
-    lateinit var audioPlayerImpl : AudioPlayer
     private lateinit var file : File
 
     fun startRecording(context: Context) {
@@ -43,7 +47,6 @@ class VoiceRecordViewModel : ViewModel() {
                 isPlayPaused = true
             )
         }
-        audioRecorderImpl  = AudioRecorderImpl(context)
         file = File(context.cacheDir, "audio.mp3")
         audioRecorderImpl.startRecording(file)
     }
@@ -61,6 +64,7 @@ class VoiceRecordViewModel : ViewModel() {
 //            val fileReqBody = MultipartBody.Part.createFormData("file", file.name, requestedFile)
 //            val modelReqBody = RequestBody.create(MediaType.parse("multipart/form-data"), "whisper-1")
 //            val response = apiRepository.transcribeAudio(fileReqBody, modelReqBody, "Bearer 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")
+////            val response = apiRepository.transcribeAudio(fileReqBody, modelReqBody, "Bearer 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") // previous api-key
 //            if (response.isSuccessful) {
 //                val x = response.body()?.text
 //                if (x != null) {
@@ -80,9 +84,6 @@ class VoiceRecordViewModel : ViewModel() {
         if (!_uiState.value.isPlayPaused) {
             pausePlaying()
             return
-        }
-        if (!this::audioPlayerImpl.isInitialized) {
-            audioPlayerImpl = AudioPlayerImpl(context)
         }
         audioPlayerImpl.startPlayer(file) {
             _uiState.update { currentState ->

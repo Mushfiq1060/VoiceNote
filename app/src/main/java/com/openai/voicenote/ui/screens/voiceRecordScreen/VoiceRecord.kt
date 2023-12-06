@@ -25,6 +25,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
@@ -34,7 +35,7 @@ import com.openai.voicenote.R
 @Composable
 fun VoiceRecord(
     navHostController: NavHostController,
-    voiceRecordViewModel: VoiceRecordViewModel = viewModel()
+    voiceRecordViewModel: VoiceRecordViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
     val voiceRecordUiState by voiceRecordViewModel.uiState.collectAsState()
