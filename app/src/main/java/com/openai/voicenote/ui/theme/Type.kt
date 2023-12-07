@@ -24,8 +24,8 @@ val fontFamily = FontFamily(Font(googleFont = fontName, fontProvider = provider)
 val typography = Typography(
     bodyLarge = TextStyle(
         fontFamily = fontFamily,
-        fontWeight = FontWeight.Normal,
-        fontSize = 16.sp,
+        fontWeight = FontWeight.W900,
+        fontSize = 48.sp,
         lineHeight = 24.sp,
         letterSpacing = 0.5.sp
     ),

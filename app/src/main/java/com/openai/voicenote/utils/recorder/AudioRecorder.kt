@@ -4,7 +4,7 @@ import java.io.File
 
 interface AudioRecorder {
 
-    fun startRecording(outputFile : File)
+    fun startRecording(outputFile : File, recordingStartCallback : () -> Unit)
 
     fun stopRecording()
 

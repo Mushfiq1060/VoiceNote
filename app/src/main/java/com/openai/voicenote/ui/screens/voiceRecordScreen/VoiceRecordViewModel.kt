@@ -1,26 +1,25 @@
 package com.openai.voicenote.ui.screens.voiceRecordScreen
 
 import android.content.Context
+import android.os.CountDownTimer
+import android.text.format.DateFormat.getTimeFormat
 import android.util.Log
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.openai.voicenote.data.remote.ApiRepository
 import com.openai.voicenote.utils.player.AudioPlayer
-import com.openai.voicenote.utils.player.AudioPlayerImpl
 import com.openai.voicenote.utils.recorder.AudioRecorder
-import com.openai.voicenote.utils.recorder.AudioRecorderImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
-import okhttp3.MediaType
-import okhttp3.MultipartBody
-import okhttp3.RequestBody
 import java.io.File
+import java.util.Timer
 import javax.inject.Inject
+import kotlin.concurrent.fixedRateTimer
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 @HiltViewModel
 class VoiceRecordViewModel @Inject constructor() : ViewModel() {
@@ -34,10 +33,39 @@ class VoiceRecordViewModel @Inject constructor() : ViewModel() {
 
     private lateinit var file : File
 
+    private lateinit var timer : Timer
+    private var time: Duration = Duration.ZERO
+
+    private fun startTimer() {
+        timer = fixedRateTimer(initialDelay = 0L, daemon = true, period = 65L) {
+            time = time.plus(65.milliseconds)
+            updateTimeStates()
+        }
+    }
+
+    private fun updateTimeStates() {
+        time.toComponents { _, minutes, seconds, nanoseconds ->
+            _uiState.update { currentState ->
+                currentState.copy(
+                    timerMinutes = getTimeFormat(minutes),
+                    timerSeconds = getTimeFormat(seconds),
+                    timerMilliseconds = getTimeFormat(nanoseconds / 10000000)
+                )
+            }
+        }
+    }
+
+    private fun getTimeFormat(timerTime: Int) : String {
+        if (timerTime < 10) {
+            return "0$timerTime"
+        }
+        return timerTime.toString()
+    }
+
     fun startRecording(context: Context) {
         if (_uiState.value.isRecordStarted) {
             if (!_uiState.value.isRecordStopped) {
-                stopRecording(context = context)
+                stopRecording()
             }
             return
         }
@@ -48,10 +76,13 @@ class VoiceRecordViewModel @Inject constructor() : ViewModel() {
             )
         }
         file = File(context.cacheDir, "audio.mp3")
-        audioRecorderImpl.startRecording(file)
+        audioRecorderImpl.startRecording(file) {
+            startTimer()
+        }
     }
 
-    private fun stopRecording(context: Context) {
+    private fun stopRecording() {
+        timer.cancel()
         _uiState.update { currentState ->
             currentState.copy(
                 isRecordStopped = true,
@@ -85,9 +116,15 @@ class VoiceRecordViewModel @Inject constructor() : ViewModel() {
             pausePlaying()
             return
         }
+        startTimer()
+        if(!_uiState.value.isPlayStarted) {
+            time = Duration.ZERO
+        }
         audioPlayerImpl.startPlayer(file) {
+            // This lambda triggers while media player on complete listener occurs
             _uiState.update { currentState ->
                 currentState.copy(
+                    isPlayStarted = false,
                     isPlayPaused = true
                 )
             }
@@ -95,12 +132,14 @@ class VoiceRecordViewModel @Inject constructor() : ViewModel() {
         }
         _uiState.update { currentState ->
             currentState.copy(
+                isPlayStarted = true,
                 isPlayPaused = false
             )
         }
     }
 
     private fun pausePlaying() {
+        timer.cancel()
         _uiState.update { currentState ->
             currentState.copy(
                 isPlayPaused = true
@@ -110,6 +149,7 @@ class VoiceRecordViewModel @Inject constructor() : ViewModel() {
     }
 
     private fun stopPlaying() {
+        timer.cancel()
         audioPlayerImpl.stopPlayer()
     }
 

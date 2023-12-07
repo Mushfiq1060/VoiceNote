@@ -1,5 +1,7 @@
 package com.openai.voicenote.ui.screens.voiceRecordScreen
 
+import android.app.Activity
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -16,6 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -29,6 +32,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.openai.voicenote.R
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -48,11 +56,20 @@ fun VoiceRecord(
                 .padding(padding)
                 .fillMaxWidth()
         ) {
-            Box(
+            Column(
                 modifier = Modifier
                     .weight(0.83f)
+                    .fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
-
+                if (voiceRecordUiState.isRecordStarted) {
+                    Text(
+                        text = "${voiceRecordUiState.timerMinutes}:${voiceRecordUiState.timerSeconds}.${voiceRecordUiState.timerMilliseconds}",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                    VoiceRecordAnimation(voiceRecordUiState.isRecordStopped, voiceRecordUiState.isPlayPaused)
+                }
             }
             Box(
                 modifier = Modifier
@@ -112,6 +129,17 @@ fun VoiceRecord(
 
         }
     }
+}
+
+@Composable
+fun VoiceRecordAnimation(recordStopped : Boolean, playPaused : Boolean) {
+    val rawComposition by rememberLottieComposition(spec = LottieCompositionSpec.RawRes(R.raw.voice_record_anim))
+    val progress by animateLottieCompositionAsState(composition = rawComposition, isPlaying = (!recordStopped || !playPaused), iterations = LottieConstants.IterateForever)
+
+    LottieAnimation(
+        composition = rawComposition,
+        progress = { progress }
+    )
 }
 
 fun checkRecordStatus(recordStarted: Boolean, recordStopped: Boolean): Int {
