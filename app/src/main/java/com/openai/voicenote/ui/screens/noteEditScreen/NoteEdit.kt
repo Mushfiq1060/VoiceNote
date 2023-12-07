@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.openai.voicenote.R
+import com.openai.voicenote.ui.navigation.BackPressHandler
 import com.openai.voicenote.ui.navigation.NavigationItem
 import com.openai.voicenote.ui.navigation.Screen
 
@@ -42,6 +43,14 @@ fun NoteEdit(
 ) {
 
     val noteEditUiState by noteEditViewModel.uiState.collectAsState()
+
+    BackPressHandler {
+        navHostController.navigate(NavigationItem.Home.route) {
+            popUpTo(Screen.HOME.name) {
+                inclusive = true
+            }
+        }
+    }
 
     Scaffold(
         topBar = {
