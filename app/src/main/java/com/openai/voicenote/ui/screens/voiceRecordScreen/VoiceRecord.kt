@@ -38,6 +38,7 @@ import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.openai.voicenote.R
+import com.openai.voicenote.ui.navigation.NavigationItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -122,7 +123,15 @@ fun VoiceRecord(
                             id = R.drawable.speech_to_text
                         ),
                         contentDescription = "speech to text",
-                        modifier = Modifier.size(48.dp)
+                        modifier = Modifier
+                            .size(48.dp)
+                            .clickable(
+                                interactionSource = MutableInteractionSource(),
+                                indication = null,
+                                onClick = {
+                                    navHostController.navigate(NavigationItem.NoteEdit.route)
+                                }
+                            )
                     )
                 }
             }

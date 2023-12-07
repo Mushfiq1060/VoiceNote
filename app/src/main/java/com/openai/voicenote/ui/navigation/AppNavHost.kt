@@ -5,6 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.openai.voicenote.ui.screens.homeScreen.Home
+import com.openai.voicenote.ui.screens.noteEditScreen.NoteEdit
 import com.openai.voicenote.ui.screens.voiceRecordScreen.VoiceRecord
 
 @Composable
@@ -21,6 +22,9 @@ fun AppNavHost(
         }
         composable(NavigationItem.VoiceRecord.route) {
             VoiceRecord(navHostController = navHostController)
+        }
+        composable(NavigationItem.NoteEdit.route) {
+            NoteEdit(navHostController = navHostController)
         }
     }
 }
