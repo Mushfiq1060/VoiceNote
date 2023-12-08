@@ -5,14 +5,21 @@ import android.os.CountDownTimer
 import android.text.format.DateFormat.getTimeFormat
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.openai.voicenote.data.remote.ApiRepository
 import com.openai.voicenote.utils.player.AudioPlayer
 import com.openai.voicenote.utils.recorder.AudioRecorder
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import okhttp3.MediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import java.io.File
 import java.util.Timer
 import javax.inject.Inject
@@ -90,25 +97,6 @@ class VoiceRecordViewModel @Inject constructor() : ViewModel() {
             )
         }
         audioRecorderImpl.stopRecording()
-//        viewModelScope.launch(Dispatchers.IO) {
-//            val requestedFile = RequestBody.create(MediaType.parse("multipart/form-data"), file)
-//            val fileReqBody = MultipartBody.Part.createFormData("file", file.name, requestedFile)
-//            val modelReqBody = RequestBody.create(MediaType.parse("multipart/form-data"), "whisper-1")
-//            val response = apiRepository.transcribeAudio(fileReqBody, modelReqBody, "Bearer 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")
-////            val response = apiRepository.transcribeAudio(fileReqBody, modelReqBody, "Bearer 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") // previous api-key
-//            if (response.isSuccessful) {
-//                val x = response.body()?.text
-//                if (x != null) {
-//                    Log.i("TAGG", x)
-//                }
-//                else {
-//                    Log.i("TAGG", "NOOOOO.......")
-//                }
-//            }
-//            else {
-//                Log.i("TAGG", "Unsuccessful + ${response.raw()}")
-//            }
-//        }
     }
 
     fun startPlaying(context: Context) {
@@ -151,6 +139,45 @@ class VoiceRecordViewModel @Inject constructor() : ViewModel() {
     private fun stopPlaying() {
         timer.cancel()
         audioPlayerImpl.stopPlayer()
+    }
+
+    fun convertSpeechToText(resultCallBack : (text : String, success : Boolean) -> Unit) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                isSpeechToTextConvertStart = true
+            )
+        }
+        viewModelScope.launch(Dispatchers.IO) {
+            val requestedFile = RequestBody.create(MediaType.parse("multipart/form-data"), file)
+            val fileReqBody = MultipartBody.Part.createFormData("file", file.name, requestedFile)
+            val modelReqBody = RequestBody.create(MediaType.parse("multipart/form-data"), "whisper-1")
+            val response = apiRepository.transcribeAudio(fileReqBody, modelReqBody, "Bearer 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")
+            if (response.isSuccessful) {
+                val x = response.body()?.text
+                if (x != null) {
+                    withContext(Dispatchers.Main) {
+                        resultCallBack(x, true)
+                    }
+                }
+                else {
+                    withContext(Dispatchers.Main) {
+                        resultCallBack("Open AI can not process your audio!!!", false)
+                    }
+                }
+            }
+            else {
+                withContext(Dispatchers.Main) {
+                    resultCallBack("You reached maximum limit!!!", false)
+                }
+            }
+            withContext(Dispatchers.Main) {
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        isSpeechToTextConvertStart = false
+                    )
+                }
+            }
+        }
     }
 
 }

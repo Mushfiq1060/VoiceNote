@@ -7,5 +7,6 @@ data class VoiceRecordUiState(
     val isRecordStarted : Boolean = false,
     val isRecordStopped : Boolean = false,
     val isPlayStarted : Boolean = false,
-    val isPlayPaused : Boolean = true
+    val isPlayPaused : Boolean = true,
+    val isSpeechToTextConvertStart : Boolean = false
 )

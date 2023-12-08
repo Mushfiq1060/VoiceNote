@@ -1,12 +1,17 @@
 package com.openai.voicenote.ui.navigation
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
+import com.openai.voicenote.model.Note
 import com.openai.voicenote.ui.screens.homeScreen.Home
 import com.openai.voicenote.ui.screens.noteEditScreen.NoteEdit
 import com.openai.voicenote.ui.screens.voiceRecordScreen.VoiceRecord
+import com.openai.voicenote.utils.Utils.fromJson
 
 @Composable
 fun AppNavHost(
@@ -23,8 +28,25 @@ fun AppNavHost(
         composable(NavigationItem.VoiceRecord.route) {
             VoiceRecord(navHostController = navHostController)
         }
-        composable(NavigationItem.NoteEdit.route) {
-            NoteEdit(navHostController = navHostController)
+        composable(
+            NavigationItem.NoteEdit.route + "/{noteString}/{speechToText}/{fromWhichPage}",
+            arguments = listOf(
+                navArgument("noteString") {type = NavType.StringType},
+                navArgument("speechToText") {type = NavType.StringType},
+                navArgument("fromWhichPage") {type = NavType.IntType}
+            )
+        ) { navBackStack ->
+            val fromWhichPage = navBackStack.arguments?.getInt("fromWhichPage")
+            if (fromWhichPage == 1) { // by click on note
+                val noteString = navBackStack.arguments?.getString("noteString")
+                val note = noteString?.fromJson(Note::class.java)
+                NoteEdit(navHostController = navHostController, note = note, speechToText = null)
+            }
+            else if (fromWhichPage == 2) { // from voice record screen
+                val speechToText = navBackStack.arguments?.getString("speechToText")
+                NoteEdit(navHostController = navHostController, note = null, speechToText = speechToText)
+            }
+
         }
     }
 }

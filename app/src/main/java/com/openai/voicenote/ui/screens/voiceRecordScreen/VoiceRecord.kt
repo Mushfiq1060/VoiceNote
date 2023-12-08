@@ -2,6 +2,7 @@ package com.openai.voicenote.ui.screens.voiceRecordScreen
 
 import android.app.Activity
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -118,21 +119,38 @@ fun VoiceRecord(
                                 }
                             )
                     )
-                    Image(
-                        painter = painterResource(
-                            id = R.drawable.speech_to_text
-                        ),
-                        contentDescription = "speech to text",
-                        modifier = Modifier
-                            .size(48.dp)
-                            .clickable(
-                                interactionSource = MutableInteractionSource(),
-                                indication = null,
-                                onClick = {
-                                    navHostController.navigate(NavigationItem.NoteEdit.route)
-                                }
+                    if (voiceRecordUiState.isRecordStopped) {
+                        if (!voiceRecordUiState.isSpeechToTextConvertStart) {
+                            Image(
+                                painter = painterResource(
+                                    id = R.drawable.speech_to_text
+                                ),
+                                contentDescription = "speech to text",
+                                modifier = Modifier
+                                    .size(48.dp)
+                                    .clickable(
+                                        interactionSource = MutableInteractionSource(),
+                                        indication = null,
+                                        onClick = {
+                                            voiceRecordViewModel.convertSpeechToText { text, success ->
+                                                if (!success) {
+                                                    Toast
+                                                        .makeText(context, text, Toast.LENGTH_LONG)
+                                                        .show()
+                                                } else {
+                                                    navHostController.navigate(NavigationItem.NoteEdit.route + "/noNote" + "/$text" + "/2")
+                                                }
+                                            }
+                                        }
+                                    )
                             )
-                    )
+                        }
+                        else {
+                            ShowLoaderAnimation()
+                        }
+                    } else {
+                        Spacer(modifier = Modifier.size(48.dp))
+                    }
                 }
             }
 
@@ -148,6 +166,18 @@ fun VoiceRecordAnimation(recordStopped : Boolean, playPaused : Boolean) {
     LottieAnimation(
         composition = rawComposition,
         progress = { progress }
+    )
+}
+
+@Composable
+fun ShowLoaderAnimation() {
+    val rawComposition by rememberLottieComposition(spec = LottieCompositionSpec.RawRes(R.raw.loader))
+    val progress by animateLottieCompositionAsState(composition = rawComposition, iterations = LottieConstants.IterateForever)
+
+    LottieAnimation(
+        modifier = Modifier.size(108.dp),
+        composition = rawComposition,
+        progress = { progress },
     )
 }
 

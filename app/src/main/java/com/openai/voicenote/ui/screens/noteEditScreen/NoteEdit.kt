@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.openai.voicenote.R
+import com.openai.voicenote.model.Note
 import com.openai.voicenote.ui.navigation.BackPressHandler
 import com.openai.voicenote.ui.navigation.NavigationItem
 import com.openai.voicenote.ui.navigation.Screen
@@ -39,12 +40,24 @@ import com.openai.voicenote.ui.navigation.Screen
 @Composable
 fun NoteEdit(
     navHostController: NavHostController,
+    note : Note?,
+    speechToText : String?,
     noteEditViewModel: NoteEditViewModel = hiltViewModel()
 ) {
 
     val noteEditUiState by noteEditViewModel.uiState.collectAsState()
 
+    if (speechToText != null) {
+        noteEditViewModel.updateNoteText(speechToText)
+    }
+    else if (note != null) {
+        noteEditViewModel.setPreviousNote(note)
+        noteEditViewModel.updateTitleText(note.title)
+        noteEditViewModel.updateNoteText(note.description)
+    }
+
     BackPressHandler {
+        noteEditViewModel.saveNote()
         navHostController.navigate(NavigationItem.Home.route) {
             popUpTo(Screen.HOME.name) {
                 inclusive = true
@@ -81,11 +94,12 @@ fun NoteEdit(
                     IconButton(
                         onClick = {
                             //Pin note
+                            noteEditViewModel.togglePinOfNote()
                         }
                     ) {
                         Image(
                             painter = painterResource(
-                                id = R.drawable.outline_push_pin_24
+                                id = checkPinStatus(noteEditUiState.isCurrentNotePin)
                             ),
                             contentDescription = "pin note",
                             modifier = Modifier.size(28.dp)
@@ -94,6 +108,7 @@ fun NoteEdit(
                     IconButton(
                         onClick = {
                             //Archive note
+                            noteEditViewModel.saveNote()
                         }
                     ) {
                         Image(
@@ -161,4 +176,11 @@ fun NoteEdit(
             )
         }
     }
+}
+
+fun checkPinStatus(currentNotePin: Boolean): Int {
+    if (currentNotePin) {
+        return R.drawable.filled_push_pin_24
+    }
+    return R.drawable.outline_push_pin_24
 }

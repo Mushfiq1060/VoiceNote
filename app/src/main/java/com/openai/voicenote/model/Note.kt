@@ -1,10 +1,10 @@
 package com.openai.voicenote.model
 
 
-import android.graphics.Color
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.io.Serializable
 
 @Entity(tableName = "note_table")
 data class Note(
@@ -16,6 +16,5 @@ data class Note(
     @ColumnInfo(name = "EditTime") var editTime : Long,
     @ColumnInfo(name = "Pin") var pin : Boolean,
     @ColumnInfo(name = "Archive") var archive : Boolean,
-    @ColumnInfo(name = "BackgroundColor") var backgroundColor : Color,
     @ColumnInfo(name = "BackgroundImage") var backgroundImage : Int
-)
+) : Serializable

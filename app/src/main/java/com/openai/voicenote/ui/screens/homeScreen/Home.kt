@@ -1,7 +1,9 @@
 package com.openai.voicenote.ui.screens.homeScreen
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -49,6 +51,7 @@ import com.openai.voicenote.R
 import com.openai.voicenote.model.Note
 import com.openai.voicenote.ui.navigation.NavigationItem
 import com.openai.voicenote.ui.theme.VoiceNoteTheme
+import com.openai.voicenote.utils.Utils.toJson
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -148,7 +151,10 @@ fun Home(
                 )
             }
             items(homeUiState.allPinNotes) {
-                RenderGridItem(note = it)
+                RenderGridItem(note = it) {
+                    val noteString = it.toJson()
+                    navHostController.navigate(NavigationItem.NoteEdit.route + "/$noteString" + "/clickNote" + "/1")
+                }
             }
             header {
                 Text(
@@ -161,7 +167,10 @@ fun Home(
                 )
             }
             items(homeUiState.allOtherNotes) {
-                RenderGridItem(note = it)
+                RenderGridItem(note = it) {
+                    val noteString = it.toJson()
+                    navHostController.navigate(NavigationItem.NoteEdit.route + "/$noteString" + "/clickNote" + "/1")
+                }
             }
         }
     }
@@ -177,13 +186,16 @@ fun LazyStaggeredGridScope.header(
 }
 
 @Composable
-fun RenderGridItem(note : Note) {
+fun RenderGridItem(note : Note, onClick : () -> Unit) {
     OutlinedCard(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface,
         ),
         border = BorderStroke(2.dp, MaterialTheme.colorScheme.outlineVariant),
-        shape = MaterialTheme.shapes.large
+        shape = MaterialTheme.shapes.large,
+        modifier = Modifier.clickable {
+            onClick()
+        }
     ) {
         Text(
             text = note.title,
