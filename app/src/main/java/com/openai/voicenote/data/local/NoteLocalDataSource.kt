@@ -16,10 +16,21 @@ class NoteLocalDataSource @Inject constructor(private val noteRepository: NoteRe
 
     private val coroutineScope = CoroutineScope(Dispatchers.Default)
 
-    override fun insertNote(notes: List<Note>) {
+    override fun insertSingleNote(note: Note, getInsertNoteId : (Long) -> Unit) {
+        coroutineScope.launch {
+            val noteId = withContext(Dispatchers.IO) {
+                noteRepository.insertSingleNote(note)
+            }
+            withContext(Dispatchers.Main) {
+                getInsertNoteId(noteId)
+            }
+        }
+    }
+
+    override fun insertMultipleNote(notes: List<Note>) {
         coroutineScope.launch {
             withContext(Dispatchers.IO) {
-                noteRepository.insertNote(notes)
+                noteRepository.insertMultipleNote(notes)
             }
         }
     }

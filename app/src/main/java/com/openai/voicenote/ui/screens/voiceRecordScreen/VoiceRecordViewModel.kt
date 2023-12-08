@@ -151,7 +151,7 @@ class VoiceRecordViewModel @Inject constructor() : ViewModel() {
             val requestedFile = RequestBody.create(MediaType.parse("multipart/form-data"), file)
             val fileReqBody = MultipartBody.Part.createFormData("file", file.name, requestedFile)
             val modelReqBody = RequestBody.create(MediaType.parse("multipart/form-data"), "whisper-1")
-            val response = apiRepository.transcribeAudio(fileReqBody, modelReqBody, "Bearer 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")
+            val response = apiRepository.transcribeAudio(fileReqBody, modelReqBody, "Bearer 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")
             if (response.isSuccessful) {
                 val x = response.body()?.text
                 if (x != null) {

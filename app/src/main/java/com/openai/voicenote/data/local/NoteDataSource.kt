@@ -4,7 +4,9 @@ import com.openai.voicenote.model.Note
 
 interface NoteDataSource {
 
-    fun insertNote(notes : List<Note>)
+    fun insertSingleNote(note : Note, getInsertNoteId : (Long) -> Unit)
+
+    fun insertMultipleNote(notes : List<Note>)
 
     fun updateNote(note : Note)
 

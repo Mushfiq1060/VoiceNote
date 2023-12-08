@@ -11,7 +11,10 @@ import com.openai.voicenote.model.Note
 interface NoteDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertNote(notes : List<Note>)
+    suspend fun insertSingleNote(note : Note) : Long
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertMultipleNote(notes : List<Note>)
 
     @Update
     suspend fun updateNote(note : Note)

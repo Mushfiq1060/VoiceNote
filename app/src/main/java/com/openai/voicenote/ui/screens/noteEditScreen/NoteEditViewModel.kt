@@ -56,7 +56,7 @@ class NoteEditViewModel @Inject constructor(private val noteDataSource: NoteData
             pin = false,
             archive = false
         ))
-        noteDataSource.insertNote(notes)
+        noteDataSource.insertMultipleNote(notes)
     }
 
     fun togglePinOfNote() {
