@@ -1,15 +1,9 @@
 package com.openai.voicenote.ui.screens.homeScreen
 
 import android.util.Log
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableLongStateOf
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
 import com.openai.voicenote.data.local.NoteDataSource
-import com.openai.voicenote.model.Note
+import com.openai.voicenote.utils.NoteType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -53,6 +47,50 @@ class HomeViewModel @Inject constructor(private val noteDataSource: NoteDataSour
             currentState.copy(
                 isGridEnable = !currentState.isGridEnable
             )
+        }
+    }
+
+    fun addSelectedNotes(type : NoteType, index : Int) {
+        if (type == NoteType.PIN) {
+            _uiState.update { currentState ->
+                currentState.copy(
+                    selectedPinNotes = currentState.selectedPinNotes.toMutableSet().apply { add(index) },
+                )
+            }
+        }
+        else if (type == NoteType.Other) {
+            _uiState.update { currentState ->
+                currentState.copy(
+                    selectedOtherNotes = currentState.selectedOtherNotes.toMutableSet().apply { add(index) },
+                )
+            }
+        }
+    }
+
+    fun checkNoteIsSelected(type : NoteType, index : Int) : Boolean {
+        if (type == NoteType.PIN) {
+            return _uiState.value.selectedPinNotes.contains(index)
+        }
+        else if (type == NoteType.Other) {
+            return _uiState.value.selectedOtherNotes.contains(index)
+        }
+        return false
+    }
+
+    fun removeSelectedNotes(type : NoteType, index : Int) {
+        if (type == NoteType.PIN) {
+            _uiState.update { currentState ->
+                currentState.copy(
+                    selectedPinNotes = currentState.selectedPinNotes.toMutableSet().apply { remove(index) }
+                )
+            }
+        }
+        else if (type == NoteType.Other) {
+            _uiState.update { currentState ->
+                currentState.copy(
+                    selectedOtherNotes = currentState.selectedOtherNotes.toMutableSet().apply { remove(index) }
+                )
+            }
         }
     }
 

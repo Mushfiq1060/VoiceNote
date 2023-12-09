@@ -2,8 +2,10 @@ package com.openai.voicenote.ui.screens.homeScreen
 
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,8 +20,10 @@ import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.foundation.lazy.staggeredgrid.itemsIndexed
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CardElevation
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
@@ -37,11 +41,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -51,6 +57,8 @@ import com.openai.voicenote.R
 import com.openai.voicenote.model.Note
 import com.openai.voicenote.ui.navigation.NavigationItem
 import com.openai.voicenote.ui.theme.VoiceNoteTheme
+import com.openai.voicenote.utils.ClickType
+import com.openai.voicenote.utils.NoteType
 import com.openai.voicenote.utils.Utils.toJson
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -134,7 +142,9 @@ fun Home(
         }
     ) {padding ->
         LazyVerticalStaggeredGrid(
-            modifier = Modifier.padding(padding).padding(start = 8.dp, end = 8.dp, bottom = 16.dp),
+            modifier = Modifier
+                .padding(padding)
+                .padding(start = 8.dp, end = 8.dp, bottom = 16.dp),
             columns = StaggeredGridCells.Fixed(countColumn(homeUiState.isGridEnable)),
             verticalItemSpacing = 8.dp,
             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -150,10 +160,30 @@ fun Home(
                     fontWeight = FontWeight.Bold
                 )
             }
-            items(homeUiState.allPinNotes) {
-                RenderGridItem(note = it) {
-                    val noteString = it.toJson()
-                    navHostController.navigate(NavigationItem.NoteEdit.route + "/$noteString" + "/clickNote" + "/1")
+            itemsIndexed(homeUiState.allPinNotes) { index, item ->
+                RenderGridItem(
+                    note = item,
+                    isSelected = homeViewModel.checkNoteIsSelected(NoteType.PIN, index)
+                ) { clickType ->
+                    if (clickType == ClickType.CLICK) {
+                        if (homeUiState.selectedPinNotes.isNotEmpty()
+                            || homeUiState.selectedOtherNotes.isNotEmpty()
+                        ) {
+                            if (homeViewModel.checkNoteIsSelected(NoteType.PIN, index)) {
+                                homeViewModel.removeSelectedNotes(NoteType.PIN, index)
+                            }
+                            else {
+                                homeViewModel.addSelectedNotes(NoteType.PIN, index)
+                            }
+                        }
+                        else {
+                            val noteString = item.toJson()
+                            navHostController.navigate(NavigationItem.NoteEdit.route + "/$noteString" + "/clickNote" + "/1")
+                        }
+                    }
+                    else if (clickType == ClickType.LONG_CLICK){
+                        homeViewModel.addSelectedNotes(NoteType.PIN, index)
+                    }
                 }
             }
             header {
@@ -166,10 +196,30 @@ fun Home(
                     fontWeight = FontWeight.Bold
                 )
             }
-            items(homeUiState.allOtherNotes) {
-                RenderGridItem(note = it) {
-                    val noteString = it.toJson()
-                    navHostController.navigate(NavigationItem.NoteEdit.route + "/$noteString" + "/clickNote" + "/1")
+            itemsIndexed(homeUiState.allOtherNotes) { index, item ->
+                RenderGridItem(
+                    note = item,
+                    isSelected = homeViewModel.checkNoteIsSelected(NoteType.Other, index)
+                ) { clickType ->
+                    if (clickType == ClickType.CLICK) {
+                        if (homeUiState.selectedPinNotes.isNotEmpty()
+                            || homeUiState.selectedOtherNotes.isNotEmpty()
+                        ) {
+                            if (homeViewModel.checkNoteIsSelected(NoteType.Other, index)) {
+                                homeViewModel.removeSelectedNotes(NoteType.Other, index)
+                            }
+                            else {
+                                homeViewModel.addSelectedNotes(NoteType.Other, index)
+                            }
+                        }
+                        else {
+                            val noteString = item.toJson()
+                            navHostController.navigate(NavigationItem.NoteEdit.route + "/$noteString" + "/clickNote" + "/1")
+                        }
+                    }
+                    else if (clickType == ClickType.LONG_CLICK){
+                        homeViewModel.addSelectedNotes(NoteType.Other, index)
+                    }
                 }
             }
         }
@@ -185,17 +235,30 @@ fun LazyStaggeredGridScope.header(
     )
 }
 
+
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun RenderGridItem(note : Note, onClick : () -> Unit) {
+fun RenderGridItem(note : Note, isSelected : Boolean, onClick : (ClickType) -> Unit) {
     OutlinedCard(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface,
         ),
-        border = BorderStroke(2.dp, MaterialTheme.colorScheme.outlineVariant),
+        border = BorderStroke(getBorderWidth(isSelected), getBorderColor(isSelected)),
         shape = MaterialTheme.shapes.large,
-        modifier = Modifier.clickable {
-            onClick()
-        }
+        modifier = Modifier
+            .clip(shape = MaterialTheme.shapes.large)
+            .shadow(
+                elevation = getCardElevation(selected = isSelected),
+                spotColor = MaterialTheme.colorScheme.onBackground,
+            )
+            .combinedClickable(
+                onClick = {
+                    onClick(ClickType.CLICK)
+                },
+                onLongClick = {
+                    onClick(ClickType.LONG_CLICK)
+                }
+            )
     ) {
         Text(
             text = note.title,
@@ -213,6 +276,28 @@ fun RenderGridItem(note : Note, onClick : () -> Unit) {
             overflow = TextOverflow.Ellipsis
         )
     }
+}
+
+fun getCardElevation(selected: Boolean) : Dp {
+    if (selected) {
+        return 20.dp
+    }
+    return 0.dp
+}
+
+fun getBorderWidth(selected: Boolean) : Dp {
+    if (!selected) {
+        return 2.dp
+    }
+    return 4.dp
+}
+
+@Composable
+fun getBorderColor(selected: Boolean): Color {
+    if (!selected) {
+        return MaterialTheme.colorScheme.outlineVariant
+    }
+    return MaterialTheme.colorScheme.onPrimaryContainer
 }
 
 fun countColumn(gridEnable: Boolean) : Int {
