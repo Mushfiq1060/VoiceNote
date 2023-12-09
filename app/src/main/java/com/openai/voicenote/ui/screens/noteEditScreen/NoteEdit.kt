@@ -1,5 +1,6 @@
 package com.openai.voicenote.ui.screens.noteEditScreen
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.scrollable
@@ -47,17 +48,16 @@ fun NoteEdit(
 
     val noteEditUiState by noteEditViewModel.uiState.collectAsState()
 
-    if (speechToText != null) {
+    if (speechToText != null && !noteEditViewModel.getCompose()) {
+        noteEditViewModel.setCompose()
         noteEditViewModel.updateNoteText(speechToText)
     }
-    else if (note != null) {
-        noteEditViewModel.setPreviousNote(note)
-        noteEditViewModel.updateTitleText(note.title)
-        noteEditViewModel.updateNoteText(note.description)
+    else if (note != null && !noteEditViewModel.getCompose()) {
+        noteEditViewModel.setCompose()
+        noteEditViewModel.setCurrentNote(note)
     }
 
     BackPressHandler {
-        noteEditViewModel.saveNote()
         navHostController.navigate(NavigationItem.Home.route) {
             popUpTo(Screen.HOME.name) {
                 inclusive = true
@@ -93,13 +93,12 @@ fun NoteEdit(
                 actions = {
                     IconButton(
                         onClick = {
-                            //Pin note
                             noteEditViewModel.togglePinOfNote()
                         }
                     ) {
                         Image(
                             painter = painterResource(
-                                id = checkPinStatus(noteEditUiState.isCurrentNotePin)
+                                id = checkPinStatus(noteEditUiState.currentNotePinStatus)
                             ),
                             contentDescription = "pin note",
                             modifier = Modifier.size(28.dp)
@@ -108,12 +107,11 @@ fun NoteEdit(
                     IconButton(
                         onClick = {
                             //Archive note
-                            noteEditViewModel.saveNote()
                         }
                     ) {
                         Image(
                             painter = painterResource(
-                                id = R.drawable.outline_unarchive_24
+                                id = checkArchiveStatus(noteEditUiState.currentNoteArchiveStatus)
                             ),
                             contentDescription = "pin note",
                             modifier = Modifier.size(28.dp)
@@ -183,4 +181,11 @@ fun checkPinStatus(currentNotePin: Boolean): Int {
         return R.drawable.filled_push_pin_24
     }
     return R.drawable.outline_push_pin_24
+}
+
+fun checkArchiveStatus(currentNoteArchive : Boolean) : Int {
+    if (currentNoteArchive) {
+        return R.drawable.outline_unarchive_24
+    }
+    return R.drawable.outline_archive_24
 }

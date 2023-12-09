@@ -1,7 +1,5 @@
 package com.openai.voicenote.data.local
 
-import android.util.Log
-import com.openai.voicenote.data.local.dao.NoteDao
 import com.openai.voicenote.data.local.repository.NoteRepository
 import com.openai.voicenote.model.Note
 import kotlinx.coroutines.CoroutineScope
@@ -63,7 +61,7 @@ class NoteLocalDataSource @Inject constructor(private val noteRepository: NoteRe
         }
     }
 
-    override fun togglePinStatus(noteId: Int, pin: Boolean) {
+    override fun togglePinStatus(noteId: Long, pin: Boolean) {
         coroutineScope.launch {
             withContext(Dispatchers.IO) {
                 noteRepository.togglePinStatus(noteId, pin)

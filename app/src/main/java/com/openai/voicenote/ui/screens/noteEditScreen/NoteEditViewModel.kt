@@ -1,12 +1,12 @@
 package com.openai.voicenote.ui.screens.noteEditScreen
 
-import android.graphics.Color
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.openai.voicenote.data.local.NoteDataSource
 import com.openai.voicenote.model.Note
+import com.openai.voicenote.utils.QueryDeBouncer
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,55 +20,106 @@ class NoteEditViewModel @Inject constructor(private val noteDataSource: NoteData
     private val _uiState = MutableStateFlow(NoteEditUiState())
     val uiState : StateFlow<NoteEditUiState> = _uiState.asStateFlow()
 
+    private val noteAutoSaveOrUpdateHandler = QueryDeBouncer<Note>(
+        durationInMilliseconds = 500,
+        onValue = {
+            noteAutoSaveOrUpdate(it)
+        }
+    )
+
+    private lateinit var currentNote : Note
+    private var compose : Boolean = false
+
     var titleText by mutableStateOf("")
         private set
 
     var noteText by mutableStateOf("")
         private set
 
-    var prevNote : Note? =  null
+    fun getCompose() : Boolean {
+        return compose
+    }
+
+    fun setCompose() {
+        compose = true
+    }
 
     fun updateTitleText(title : String) {
-        this.titleText = title
+        titleText = title
+        noteAutoSaveOrUpdateHandler.typeTValue = prepareNote()
     }
 
     fun updateNoteText(note : String) {
-        this.noteText = note
+        noteText = note
+        noteAutoSaveOrUpdateHandler.typeTValue = prepareNote()
     }
 
-    fun setPreviousNote(note : Note) {
-        prevNote = note
-        _uiState.update { currentState ->
-            currentState.copy(
-                isCurrentNotePin = note.pin
-            )
+    private fun prepareNote() : Note {
+        if (::currentNote.isInitialized) {
+            currentNote.apply {
+                title = titleText
+                description = noteText
+                editTime = System.currentTimeMillis()
+            }
+            return currentNote
         }
-    }
-
-    fun saveNote() {
-        val notes = mutableListOf<Note>()
-        notes.add(Note(
+        currentNote = Note(
             noteId = null,
             title = titleText,
             description = noteText,
             editTime = System.currentTimeMillis(),
-            backgroundImage = -1,
             pin = false,
-            archive = false
-        ))
-        noteDataSource.insertMultipleNote(notes)
+            archive = false,
+            backgroundImage = -1
+        )
+        return currentNote
+    }
+
+    private fun noteAutoSaveOrUpdate(note : Note) {
+        if (::currentNote.isInitialized) {
+            if (currentNote.noteId == null) {
+                saveNote()
+            }
+            else {
+                updateNote()
+            }
+        }
+    }
+
+    fun setCurrentNote(note : Note) {
+        titleText = note.title
+        noteText = note.description
+        currentNote = note
+        noteAutoSaveOrUpdateHandler.typeTValue = currentNote
+        _uiState.update { currentState ->
+            currentState.copy(
+                currentNotePinStatus = note.pin,
+                currentNoteArchiveStatus = note.archive
+            )
+        }
+    }
+
+    private fun saveNote() {
+        noteDataSource.insertSingleNote(currentNote) {
+            currentNote.noteId = it
+        }
+    }
+
+    private fun updateNote() {
+        noteDataSource.updateNote(currentNote)
     }
 
     fun togglePinOfNote() {
-        if(prevNote == null) {
-            return
-        }
-        prevNote?.noteId?.let { noteDataSource.togglePinStatus(it, !prevNote?.pin!!) }
-        prevNote!!.pin = !prevNote!!.pin
-        _uiState.update { currentState ->
-            currentState.copy(
-                isCurrentNotePin = prevNote!!.pin
-            )
+        if (::currentNote.isInitialized) {
+            if (currentNote.noteId != null) {
+                currentNote.pin = !currentNote.pin
+                noteDataSource.togglePinStatus(currentNote.noteId!!, currentNote.pin)
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        currentNotePinStatus = currentNote.pin
+                    )
+                }
+            }
         }
     }
 
