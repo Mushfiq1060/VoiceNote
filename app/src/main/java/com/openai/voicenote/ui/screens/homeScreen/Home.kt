@@ -110,7 +110,7 @@ fun Home(
                 elevation = FloatingActionButtonDefaults.elevation()
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.mic),
+                    painter = painterResource(id = R.drawable.mic_24),
                     contentDescription = "voice recording",
                     modifier = Modifier.size(48.dp)
                 )
@@ -237,10 +237,10 @@ fun HomeTopAppBar(isGridEnable : Boolean, onClick : (type : HomeAppBar) -> Unit)
                 ) {
                     Image(
                         painter = painterResource(
-                            id = R.drawable.menu
+                            id = R.drawable.menu_24
                         ),
                         contentDescription = "menu icon",
-                        modifier = Modifier.size(20.dp)
+                        modifier = Modifier.size(24.dp)
                     )
                 }
             },
@@ -255,7 +255,7 @@ fun HomeTopAppBar(isGridEnable : Boolean, onClick : (type : HomeAppBar) -> Unit)
                             id = checkGridStatus(isGridEnable)
                         ),
                         contentDescription = "view",
-                        modifier = Modifier.size(28.dp)
+                        modifier = Modifier.size(24.dp)
                     )
                 }
             },
@@ -286,10 +286,64 @@ fun SelectedTopAppBar(selectedCount : Int, onClick : (type : HomeAppBar) -> Unit
             ) {
                 Image(
                     painter = painterResource(
-                        id = R.drawable.close
+                        id = R.drawable.close_24
                     ),
                     contentDescription = "close",
-                    modifier = Modifier.size(16.dp)
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+        },
+        actions = {
+            IconButton(
+                onClick = {
+//                    onClick(HomeAppBar.CANCEL)
+                }
+            ) {
+                Image(
+                    painter = painterResource(
+                        id = R.drawable.pin_24
+                    ),
+                    contentDescription = "close",
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+            IconButton(
+                onClick = {
+//                    onClick(HomeAppBar.CANCEL)
+                }
+            ) {
+                Image(
+                    painter = painterResource(
+                        id = R.drawable.color_palette_24
+                    ),
+                    contentDescription = "close",
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+            IconButton(
+                onClick = {
+//                    onClick(HomeAppBar.CANCEL)
+                }
+            ) {
+                Image(
+                    painter = painterResource(
+                        id = R.drawable.label_24
+                    ),
+                    contentDescription = "close",
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+            IconButton(
+                onClick = {
+//                    onClick(HomeAppBar.CANCEL)
+                }
+            ) {
+                Image(
+                    painter = painterResource(
+                        id = R.drawable.more_vert_24
+                    ),
+                    contentDescription = "close",
+                    modifier = Modifier.size(24.dp)
                 )
             }
         }
@@ -379,9 +433,9 @@ fun countColumn(gridEnable: Boolean) : Int {
 
 fun checkGridStatus(gridEnable: Boolean) : Int {
     if(gridEnable) {
-        return R.drawable.list
+        return R.drawable.list_view_24
     }
-    return R.drawable.grid
+    return R.drawable.grid_view_24
 }
 
 @Preview(showBackground = true)

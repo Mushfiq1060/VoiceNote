@@ -41,7 +41,6 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.openai.voicenote.R
 import com.openai.voicenote.ui.navigation.NavigationItem
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VoiceRecord(
     navHostController: NavHostController,
@@ -123,7 +122,7 @@ fun VoiceRecord(
                         if (!voiceRecordUiState.isSpeechToTextConvertStart) {
                             Image(
                                 painter = painterResource(
-                                    id = R.drawable.speech_to_text
+                                    id = R.drawable.speech_to_text_24
                                 ),
                                 contentDescription = "speech to text",
                                 modifier = Modifier
@@ -183,16 +182,16 @@ fun ShowLoaderAnimation() {
 
 fun checkRecordStatus(recordStarted: Boolean, recordStopped: Boolean): Int {
     if (!recordStarted || recordStopped) {
-        return R.drawable.record
+        return R.drawable.record_24
     }
-    return R.drawable.pause
+    return R.drawable.pause_24
 }
 
 fun checkPlayStatus(playPaused: Boolean): Int {
     if (playPaused) {
-        return R.drawable.play
+        return R.drawable.play_24
     }
-    return R.drawable.pause
+    return R.drawable.pause_24
 }
 
 @Preview(showBackground = true)

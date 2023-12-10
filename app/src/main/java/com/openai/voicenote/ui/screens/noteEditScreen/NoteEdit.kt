@@ -178,14 +178,14 @@ fun NoteEdit(
 
 fun checkPinStatus(currentNotePin: Boolean): Int {
     if (currentNotePin) {
-        return R.drawable.filled_push_pin_24
+        return R.drawable.filled_pin_24
     }
-    return R.drawable.outline_push_pin_24
+    return R.drawable.pin_24
 }
 
 fun checkArchiveStatus(currentNoteArchive : Boolean) : Int {
     if (currentNoteArchive) {
-        return R.drawable.outline_unarchive_24
+        return R.drawable.unarchive_24
     }
-    return R.drawable.outline_archive_24
+    return R.drawable.archive_24
 }
