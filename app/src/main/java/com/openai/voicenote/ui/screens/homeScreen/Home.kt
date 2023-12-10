@@ -61,7 +61,12 @@ import com.openai.voicenote.utils.ClickType
 import com.openai.voicenote.utils.NoteType
 import com.openai.voicenote.utils.Utils.toJson
 
-@OptIn(ExperimentalMaterial3Api::class)
+enum class HomeAppBar {
+    DRAWER_ICON,
+    TOGGLE_GRID,
+    CANCEL
+}
+
 @Composable
 fun Home(
     navHostController: NavHostController,
@@ -72,58 +77,29 @@ fun Home(
 
     Scaffold(
         topBar = {
-           Box(
-               modifier = Modifier.padding(16.dp)
-           ) {
-               TopAppBar(
-                   modifier = Modifier
-                       .clip(MaterialTheme.shapes.extraLarge)
-                       .shadow(elevation = 24.dp)
-                       .zIndex(10f)
-                       .height(48.dp),
-                   colors = TopAppBarDefaults.mediumTopAppBarColors(
-                       containerColor = MaterialTheme.colorScheme.primaryContainer,
-                   ),
-                   title = {
-                       Box(
-                           modifier = Modifier.fillMaxHeight(),
-                           contentAlignment = Alignment.Center
-                       ) {
-                           Text(
-                               text = stringResource(id = R.string.search_your_notes),
-                               color = MaterialTheme.colorScheme.onBackground,
-                               style = MaterialTheme.typography.titleMedium
-                           )
-                       }
-                   },
-                   navigationIcon = {
-                       IconButton(onClick = { /* open navigation drawer */ }) {
-                           Image(
-                               painter = painterResource(
-                                   id = R.drawable.menu
-                               ),
-                               contentDescription = "menu icon",
-                               modifier = Modifier.size(20.dp)
-                           )
-                       }
-                   },
-                   actions = {
-                       IconButton(
-                           onClick = {
-                               homeViewModel.toggleGridView()
-                           }
-                       ) {
-                           Image(
-                               painter = painterResource(
-                                   id = checkGridStatus(homeUiState.isGridEnable)
-                               ),
-                               contentDescription = "view",
-                               modifier = Modifier.size(28.dp)
-                           )
-                       }
-                   },
-               )
-           }
+            if (homeUiState.selectedPinNotes.size + homeUiState.selectedOtherNotes.size == 0) {
+                HomeTopAppBar(
+                    isGridEnable = homeUiState.isGridEnable,
+                    onClick = { clickType ->
+                        if (clickType == HomeAppBar.DRAWER_ICON) {
+                            // open navigation drawer
+                        }
+                        else if (clickType == HomeAppBar.TOGGLE_GRID) {
+                            homeViewModel.toggleGridView()
+                        }
+                    }
+                )
+            }
+            else {
+                SelectedTopAppBar(
+                    selectedCount = homeUiState.selectedPinNotes.size + homeUiState.selectedOtherNotes.size,
+                    onClick = { clickType ->
+                        if (clickType == HomeAppBar.CANCEL) {
+                            homeViewModel.removeSelectedNotes()
+                        }
+                    }
+                )
+            }
         },
         floatingActionButton = {
             FloatingActionButton(
@@ -153,7 +129,7 @@ fun Home(
             header {
                 Text(
                     text = stringResource(id = R.string.pinned),
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier
                         .paddingFromBaseline(bottom = 8.dp)
                         .padding(top = 16.dp, start = 16.dp),
@@ -189,7 +165,7 @@ fun Home(
             header {
                 Text(
                     text = stringResource(id = R.string.others),
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier
                         .paddingFromBaseline(bottom = 8.dp)
                         .padding(top = 16.dp, start = 16.dp),
@@ -224,6 +200,100 @@ fun Home(
             }
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun HomeTopAppBar(isGridEnable : Boolean, onClick : (type : HomeAppBar) -> Unit) {
+    Box(
+        modifier = Modifier.padding(16.dp)
+    ) {
+        TopAppBar(
+            modifier = Modifier
+                .clip(MaterialTheme.shapes.extraLarge)
+                .shadow(elevation = 24.dp)
+                .zIndex(10f)
+                .height(48.dp),
+            colors = TopAppBarDefaults.mediumTopAppBarColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+            ),
+            title = {
+                Box(
+                    modifier = Modifier.fillMaxHeight(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.search_your_notes),
+                        color = MaterialTheme.colorScheme.onBackground,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+            },
+            navigationIcon = {
+                IconButton(
+                    onClick = {
+                        onClick(HomeAppBar.DRAWER_ICON)
+                    }
+                ) {
+                    Image(
+                        painter = painterResource(
+                            id = R.drawable.menu
+                        ),
+                        contentDescription = "menu icon",
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+            },
+            actions = {
+                IconButton(
+                    onClick = {
+                        onClick(HomeAppBar.TOGGLE_GRID)
+                    }
+                ) {
+                    Image(
+                        painter = painterResource(
+                            id = checkGridStatus(isGridEnable)
+                        ),
+                        contentDescription = "view",
+                        modifier = Modifier.size(28.dp)
+                    )
+                }
+            },
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SelectedTopAppBar(selectedCount : Int, onClick : (type : HomeAppBar) -> Unit) {
+    TopAppBar(
+        colors = TopAppBarDefaults.mediumTopAppBarColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+        ),
+        title = {
+            Text(
+                text = "$selectedCount",
+                color = MaterialTheme.colorScheme.onBackground,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
+            )
+        },
+        navigationIcon = {
+            IconButton(
+                onClick = {
+                    onClick(HomeAppBar.CANCEL)
+                }
+            ) {
+                Image(
+                    painter = painterResource(
+                        id = R.drawable.close
+                    ),
+                    contentDescription = "close",
+                    modifier = Modifier.size(16.dp)
+                )
+            }
+        }
+    )
 }
 
 fun LazyStaggeredGridScope.header(

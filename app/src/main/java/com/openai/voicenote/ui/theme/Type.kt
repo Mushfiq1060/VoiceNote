@@ -48,7 +48,7 @@ val typography = Typography(
     titleMedium = TextStyle(
         fontFamily = fontFamily,
         fontWeight = FontWeight.Normal,
-        fontSize = 18.sp,
+        fontSize = 24.sp,
         letterSpacing = 0.sp
     ),
     labelSmall = TextStyle(

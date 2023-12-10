@@ -162,7 +162,7 @@ fun NoteEdit(
                 onValueChange = { noteText ->
                     noteEditViewModel.updateNoteText(noteText)
                 },
-                textStyle = MaterialTheme.typography.titleMedium,
+                textStyle = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.fillMaxWidth(),
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = MaterialTheme.colorScheme.background,

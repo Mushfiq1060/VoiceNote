@@ -67,6 +67,15 @@ class HomeViewModel @Inject constructor(private val noteDataSource: NoteDataSour
         }
     }
 
+    fun removeSelectedNotes() {
+        _uiState.update { currentState ->
+            currentState.copy(
+                selectedPinNotes = currentState.selectedPinNotes.toMutableSet().apply { clear() },
+                selectedOtherNotes = currentState.selectedOtherNotes.toMutableSet().apply { clear() }
+            )
+        }
+    }
+
     fun checkNoteIsSelected(type : NoteType, index : Int) : Boolean {
         if (type == NoteType.PIN) {
             return _uiState.value.selectedPinNotes.contains(index)
