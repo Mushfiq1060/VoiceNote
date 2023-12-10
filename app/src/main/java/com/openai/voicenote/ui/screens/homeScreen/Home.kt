@@ -24,6 +24,8 @@ import androidx.compose.foundation.lazy.staggeredgrid.itemsIndexed
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CardElevation
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
@@ -64,7 +66,8 @@ import com.openai.voicenote.utils.Utils.toJson
 enum class HomeAppBar {
     DRAWER_ICON,
     TOGGLE_GRID,
-    CANCEL
+    CANCEL,
+    CONTEXT_MENU
 }
 
 @Composable
@@ -93,9 +96,13 @@ fun Home(
             else {
                 SelectedTopAppBar(
                     selectedCount = homeUiState.selectedPinNotes.size + homeUiState.selectedOtherNotes.size,
+                    isContextMenuOpen = homeUiState.isContextMenuOpen,
                     onClick = { clickType ->
                         if (clickType == HomeAppBar.CANCEL) {
                             homeViewModel.removeSelectedNotes()
+                        }
+                        else if (clickType == HomeAppBar.CONTEXT_MENU) {
+                            homeViewModel.toggleContextMenuState()
                         }
                     }
                 )
@@ -265,7 +272,7 @@ fun HomeTopAppBar(isGridEnable : Boolean, onClick : (type : HomeAppBar) -> Unit)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SelectedTopAppBar(selectedCount : Int, onClick : (type : HomeAppBar) -> Unit) {
+fun SelectedTopAppBar(selectedCount : Int, isContextMenuOpen : Boolean, onClick : (type : HomeAppBar) -> Unit) {
     TopAppBar(
         colors = TopAppBarDefaults.mediumTopAppBarColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant,
@@ -296,55 +303,98 @@ fun SelectedTopAppBar(selectedCount : Int, onClick : (type : HomeAppBar) -> Unit
         actions = {
             IconButton(
                 onClick = {
-//                    onClick(HomeAppBar.CANCEL)
+
                 }
             ) {
                 Image(
                     painter = painterResource(
                         id = R.drawable.pin_24
                     ),
-                    contentDescription = "close",
+                    contentDescription = "pin or unpin note",
                     modifier = Modifier.size(24.dp)
                 )
             }
             IconButton(
                 onClick = {
-//                    onClick(HomeAppBar.CANCEL)
+
                 }
             ) {
                 Image(
                     painter = painterResource(
                         id = R.drawable.color_palette_24
                     ),
-                    contentDescription = "close",
+                    contentDescription = "color palette",
                     modifier = Modifier.size(24.dp)
                 )
             }
             IconButton(
                 onClick = {
-//                    onClick(HomeAppBar.CANCEL)
+
                 }
             ) {
                 Image(
                     painter = painterResource(
                         id = R.drawable.label_24
                     ),
-                    contentDescription = "close",
+                    contentDescription = "label note",
                     modifier = Modifier.size(24.dp)
                 )
             }
             IconButton(
                 onClick = {
-//                    onClick(HomeAppBar.CANCEL)
+                    onClick(HomeAppBar.CONTEXT_MENU)
                 }
             ) {
                 Image(
                     painter = painterResource(
                         id = R.drawable.more_vert_24
                     ),
-                    contentDescription = "close",
+                    contentDescription = "context menu option",
                     modifier = Modifier.size(24.dp)
                 )
+                DropdownMenu(
+                    expanded = isContextMenuOpen,
+                    onDismissRequest = {
+                        onClick(HomeAppBar.CONTEXT_MENU)
+                    }
+                ) {
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = "Archive",
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        },
+                        onClick = {
+                            // Call for required action
+                            onClick(HomeAppBar.CONTEXT_MENU)
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = "Delete",
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        },
+                        onClick = {
+                            // Call for required action
+                            onClick(HomeAppBar.CONTEXT_MENU)
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = "Make a copy",
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        },
+                        onClick = {
+                            // Call for required action
+                            onClick(HomeAppBar.CONTEXT_MENU)
+                        }
+                    )
+                }
             }
         }
     )

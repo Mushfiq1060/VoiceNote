@@ -50,6 +50,14 @@ class HomeViewModel @Inject constructor(private val noteDataSource: NoteDataSour
         }
     }
 
+    fun toggleContextMenuState() {
+        _uiState.update { currentState ->
+            currentState.copy(
+                isContextMenuOpen = !currentState.isContextMenuOpen
+            )
+        }
+    }
+
     fun addSelectedNotes(type : NoteType, index : Int) {
         if (type == NoteType.PIN) {
             _uiState.update { currentState ->

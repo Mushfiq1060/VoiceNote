@@ -7,5 +7,6 @@ data class HomeUiState(
     var allPinNotes : List<Note> = listOf(),
     var allOtherNotes : List<Note> = listOf(),
     var selectedPinNotes : MutableSet<Int> = mutableSetOf(),
-    var selectedOtherNotes : MutableSet<Int> = mutableSetOf()
+    var selectedOtherNotes : MutableSet<Int> = mutableSetOf(),
+    var isContextMenuOpen : Boolean = false
 )
