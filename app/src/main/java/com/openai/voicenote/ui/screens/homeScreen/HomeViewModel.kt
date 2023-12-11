@@ -3,6 +3,7 @@ package com.openai.voicenote.ui.screens.homeScreen
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.openai.voicenote.data.local.NoteDataSource
+import com.openai.voicenote.model.Note
 import com.openai.voicenote.utils.NoteType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -94,7 +95,7 @@ class HomeViewModel @Inject constructor(private val noteDataSource: NoteDataSour
         return false
     }
 
-    fun removeSelectedNotes(type : NoteType, index : Int) {
+    fun removeSelectedNote(type : NoteType, index : Int) {
         if (type == NoteType.PIN) {
             _uiState.update { currentState ->
                 currentState.copy(
@@ -107,6 +108,29 @@ class HomeViewModel @Inject constructor(private val noteDataSource: NoteDataSour
                 currentState.copy(
                     selectedOtherNotes = currentState.selectedOtherNotes.toMutableSet().apply { remove(index) }
                 )
+            }
+        }
+    }
+
+    fun makeCopyOfNote() {
+        var note : Note? = null
+        if (_uiState.value.selectedPinNotes.isNotEmpty()) {
+            note = _uiState.value.allPinNotes[_uiState.value.selectedPinNotes.first()]
+        }
+        else if (_uiState.value.selectedOtherNotes.isNotEmpty()) {
+            note = _uiState.value.allOtherNotes[_uiState.value.selectedOtherNotes.first()]
+        }
+        if (note != null) {
+            note.noteId = null
+            note.editTime = System.currentTimeMillis()
+            noteDataSource.insertSingleNote(note) {
+                note.noteId = it
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        allOtherNotes = currentState.allOtherNotes.toMutableList().apply { add(note) }
+                    )
+                }
+                removeSelectedNotes()
             }
         }
     }

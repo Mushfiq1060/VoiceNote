@@ -1,6 +1,7 @@
 package com.openai.voicenote.ui.screens.homeScreen
 
 import android.util.Log
+import android.widget.Space
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -9,6 +10,7 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -67,7 +69,13 @@ enum class HomeAppBar {
     DRAWER_ICON,
     TOGGLE_GRID,
     CANCEL,
-    CONTEXT_MENU
+    CONTEXT_MENU,
+    MAKE_A_COPY,
+    DELETE,
+    ARCHIVE,
+    TOGGLE_PIN,
+    DRAW,
+    LABEL
 }
 
 @Composable
@@ -84,11 +92,16 @@ fun Home(
                 HomeTopAppBar(
                     isGridEnable = homeUiState.isGridEnable,
                     onClick = { clickType ->
-                        if (clickType == HomeAppBar.DRAWER_ICON) {
-                            // open navigation drawer
-                        }
-                        else if (clickType == HomeAppBar.TOGGLE_GRID) {
-                            homeViewModel.toggleGridView()
+                        when (clickType) {
+                            HomeAppBar.DRAWER_ICON -> {
+                                // open navigation drawer
+                            }
+                            HomeAppBar.TOGGLE_GRID -> {
+                                homeViewModel.toggleGridView()
+                            }
+                            else -> {
+                                // do nothing
+                            }
                         }
                     }
                 )
@@ -98,11 +111,35 @@ fun Home(
                     selectedCount = homeUiState.selectedPinNotes.size + homeUiState.selectedOtherNotes.size,
                     isContextMenuOpen = homeUiState.isContextMenuOpen,
                     onClick = { clickType ->
-                        if (clickType == HomeAppBar.CANCEL) {
-                            homeViewModel.removeSelectedNotes()
-                        }
-                        else if (clickType == HomeAppBar.CONTEXT_MENU) {
-                            homeViewModel.toggleContextMenuState()
+                        when (clickType) {
+                            HomeAppBar.CANCEL -> {
+                                homeViewModel.removeSelectedNotes()
+                            }
+                            HomeAppBar.CONTEXT_MENU -> {
+                                homeViewModel.toggleContextMenuState()
+                            }
+                            HomeAppBar.ARCHIVE -> {
+                                homeViewModel.toggleContextMenuState()
+                            }
+                            HomeAppBar.DELETE -> {
+                                homeViewModel.toggleContextMenuState()
+                            }
+                            HomeAppBar.MAKE_A_COPY -> {
+                                homeViewModel.toggleContextMenuState()
+                                homeViewModel.makeCopyOfNote()
+                            }
+                            HomeAppBar.TOGGLE_PIN -> {
+
+                            }
+                            HomeAppBar.LABEL -> {
+
+                            }
+                            HomeAppBar.DRAW -> {
+
+                            }
+                            else -> {
+                                // do nothing
+                            }
                         }
                     }
                 )
@@ -127,7 +164,7 @@ fun Home(
         LazyVerticalStaggeredGrid(
             modifier = Modifier
                 .padding(padding)
-                .padding(start = 8.dp, end = 8.dp, bottom = 16.dp),
+                .padding(start = 8.dp, end = 8.dp),
             columns = StaggeredGridCells.Fixed(countColumn(homeUiState.isGridEnable)),
             verticalItemSpacing = 8.dp,
             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -153,7 +190,7 @@ fun Home(
                             || homeUiState.selectedOtherNotes.isNotEmpty()
                         ) {
                             if (homeViewModel.checkNoteIsSelected(NoteType.PIN, index)) {
-                                homeViewModel.removeSelectedNotes(NoteType.PIN, index)
+                                homeViewModel.removeSelectedNote(NoteType.PIN, index)
                             }
                             else {
                                 homeViewModel.addSelectedNotes(NoteType.PIN, index)
@@ -189,7 +226,7 @@ fun Home(
                             || homeUiState.selectedOtherNotes.isNotEmpty()
                         ) {
                             if (homeViewModel.checkNoteIsSelected(NoteType.Other, index)) {
-                                homeViewModel.removeSelectedNotes(NoteType.Other, index)
+                                homeViewModel.removeSelectedNote(NoteType.Other, index)
                             }
                             else {
                                 homeViewModel.addSelectedNotes(NoteType.Other, index)
@@ -204,6 +241,9 @@ fun Home(
                         homeViewModel.addSelectedNotes(NoteType.Other, index)
                     }
                 }
+            }
+            header {
+                Spacer(modifier = Modifier.height(16.dp))
             }
         }
     }
@@ -296,14 +336,14 @@ fun SelectedTopAppBar(selectedCount : Int, isContextMenuOpen : Boolean, onClick 
                         id = R.drawable.close_24
                     ),
                     contentDescription = "close",
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(28.dp)
                 )
             }
         },
         actions = {
             IconButton(
                 onClick = {
-
+                    onClick(HomeAppBar.TOGGLE_PIN)
                 }
             ) {
                 Image(
@@ -311,12 +351,12 @@ fun SelectedTopAppBar(selectedCount : Int, isContextMenuOpen : Boolean, onClick 
                         id = R.drawable.pin_24
                     ),
                     contentDescription = "pin or unpin note",
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(28.dp)
                 )
             }
             IconButton(
                 onClick = {
-
+                    onClick(HomeAppBar.DRAW)
                 }
             ) {
                 Image(
@@ -324,12 +364,12 @@ fun SelectedTopAppBar(selectedCount : Int, isContextMenuOpen : Boolean, onClick 
                         id = R.drawable.color_palette_24
                     ),
                     contentDescription = "color palette",
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(28.dp)
                 )
             }
             IconButton(
                 onClick = {
-
+                    onClick(HomeAppBar.LABEL)
                 }
             ) {
                 Image(
@@ -337,7 +377,7 @@ fun SelectedTopAppBar(selectedCount : Int, isContextMenuOpen : Boolean, onClick 
                         id = R.drawable.label_24
                     ),
                     contentDescription = "label note",
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(28.dp)
                 )
             }
             IconButton(
@@ -350,11 +390,12 @@ fun SelectedTopAppBar(selectedCount : Int, isContextMenuOpen : Boolean, onClick 
                         id = R.drawable.more_vert_24
                     ),
                     contentDescription = "context menu option",
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(28.dp)
                 )
                 DropdownMenu(
                     expanded = isContextMenuOpen,
                     onDismissRequest = {
+                        Log.i("TAGG", "On Dismiss req")
                         onClick(HomeAppBar.CONTEXT_MENU)
                     }
                 ) {
@@ -366,8 +407,7 @@ fun SelectedTopAppBar(selectedCount : Int, isContextMenuOpen : Boolean, onClick 
                             )
                         },
                         onClick = {
-                            // Call for required action
-                            onClick(HomeAppBar.CONTEXT_MENU)
+                            onClick(HomeAppBar.ARCHIVE)
                         }
                     )
                     DropdownMenuItem(
@@ -378,22 +418,22 @@ fun SelectedTopAppBar(selectedCount : Int, isContextMenuOpen : Boolean, onClick 
                             )
                         },
                         onClick = {
-                            // Call for required action
-                            onClick(HomeAppBar.CONTEXT_MENU)
+                            onClick(HomeAppBar.DELETE)
                         }
                     )
-                    DropdownMenuItem(
-                        text = {
-                            Text(
-                                text = "Make a copy",
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                        },
-                        onClick = {
-                            // Call for required action
-                            onClick(HomeAppBar.CONTEXT_MENU)
-                        }
-                    )
+                    if (selectedCount == 1) {
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    text = "Make a copy",
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                            },
+                            onClick = {
+                                onClick(HomeAppBar.MAKE_A_COPY)
+                            }
+                        )
+                    }
                 }
             }
         }
