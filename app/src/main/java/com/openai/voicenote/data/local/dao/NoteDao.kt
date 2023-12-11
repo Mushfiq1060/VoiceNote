@@ -28,6 +28,9 @@ interface NoteDao {
     @Query("UPDATE note_table SET Pin= :pin WHERE NoteId= :noteId")
     suspend fun togglePinStatus(noteId : Long, pin : Boolean)
 
+    @Query("UPDATE note_table SET Pin= :pin WHERE NoteId IN (:notesId)")
+    suspend fun updatePinStatus(notesId : List<Long>, pin : Boolean) : Int
+
     @Query("UPDATE note_table SET Archive= :archive WHERE NoteId= :noteId")
     suspend fun toggleArchiveStatus(noteId : Long, archive : Boolean)
 

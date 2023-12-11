@@ -109,6 +109,7 @@ fun Home(
             else {
                 SelectedTopAppBar(
                     selectedCount = homeUiState.selectedPinNotes.size + homeUiState.selectedOtherNotes.size,
+                    isSelectedOtherNote = homeUiState.selectedOtherNotes.isEmpty(),
                     isContextMenuOpen = homeUiState.isContextMenuOpen,
                     onClick = { clickType ->
                         when (clickType) {
@@ -130,7 +131,7 @@ fun Home(
                                 homeViewModel.makeCopyOfNote()
                             }
                             HomeAppBar.TOGGLE_PIN -> {
-
+                                homeViewModel.updateNotesPin()
                             }
                             HomeAppBar.LABEL -> {
 
@@ -313,7 +314,7 @@ fun HomeTopAppBar(isGridEnable : Boolean, onClick : (type : HomeAppBar) -> Unit)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SelectedTopAppBar(selectedCount : Int, isContextMenuOpen : Boolean, onClick : (type : HomeAppBar) -> Unit) {
+fun SelectedTopAppBar(selectedCount : Int, isSelectedOtherNote : Boolean, isContextMenuOpen : Boolean, onClick : (type : HomeAppBar) -> Unit) {
     TopAppBar(
         colors = TopAppBarDefaults.mediumTopAppBarColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant,
@@ -349,7 +350,7 @@ fun SelectedTopAppBar(selectedCount : Int, isContextMenuOpen : Boolean, onClick 
             ) {
                 Image(
                     painter = painterResource(
-                        id = R.drawable.pin_24
+                        id = checkPinStatus(isSelectedOtherNote)
                     ),
                     contentDescription = "pin or unpin note",
                     modifier = Modifier.size(28.dp)
@@ -491,6 +492,13 @@ fun RenderGridItem(note : Note, isSelected : Boolean, onClick : (ClickType) -> U
             overflow = TextOverflow.Ellipsis
         )
     }
+}
+
+fun checkPinStatus(pinState : Boolean): Int {
+    if (pinState) {
+        return R.drawable.filled_pin_24
+    }
+    return R.drawable.pin_24
 }
 
 fun getCardElevation(selected: Boolean) : Dp {

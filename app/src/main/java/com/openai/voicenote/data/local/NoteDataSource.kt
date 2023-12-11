@@ -14,7 +14,9 @@ interface NoteDataSource {
 
     fun getAllOtherNotes(allOtherNotes : (List<Note>) -> Unit)
 
-    fun togglePinStatus(noteId: Long, pin: Boolean)
+    fun togglePinStatus(noteId: Long, pin : Boolean)
+
+    fun updatePinStatus(notesId: List<Long>, pin : Boolean, resultCallback: (Int) -> Unit)
 
     fun toggleArchiveStatus(noteId : Long, archive : Boolean)
 

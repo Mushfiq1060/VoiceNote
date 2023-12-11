@@ -69,6 +69,17 @@ class NoteLocalDataSource @Inject constructor(private val noteRepository: NoteRe
         }
     }
 
+    override fun updatePinStatus(notesId: List<Long>, pin: Boolean, resultCallback: (Int) -> Unit) {
+        coroutineScope.launch {
+            val updatedRowCount = withContext(Dispatchers.IO) {
+                noteRepository.updatePinStatus(notesId, pin)
+            }
+            withContext(Dispatchers.Main) {
+                resultCallback(updatedRowCount)
+            }
+        }
+    }
+
     override fun toggleArchiveStatus(noteId: Long, archive: Boolean) {
         coroutineScope.launch {
             withContext(Dispatchers.IO) {

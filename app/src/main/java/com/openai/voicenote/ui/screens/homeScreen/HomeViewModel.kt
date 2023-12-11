@@ -145,9 +145,7 @@ class HomeViewModel @Inject constructor(private val noteDataSource: NoteDataSour
             _uiState.value.allPinNotes[it].noteId?.let { id -> deletedIdList.add(id) }
         }
         _uiState.value.selectedOtherNotes.forEach {
-            _uiState.value.allOtherNotes[it].noteId?.let { id ->
-                deletedIdList.add(id)
-            }
+            _uiState.value.allOtherNotes[it].noteId?.let { id -> deletedIdList.add(id) }
         }
         noteDataSource.deleteNotes(deletedIdList) {
             removeSelectedNotes()
@@ -156,4 +154,28 @@ class HomeViewModel @Inject constructor(private val noteDataSource: NoteDataSour
         }
     }
 
+    fun updateNotesPin() {
+        val updateIdList = mutableListOf<Long>()
+        var pin : Boolean = false
+        if (_uiState.value.selectedOtherNotes.isNotEmpty()) {
+            _uiState.value.selectedPinNotes.forEach {
+                _uiState.value.allPinNotes[it].noteId?.let { id -> updateIdList.add(id) }
+            }
+            _uiState.value.selectedOtherNotes.forEach {
+                _uiState.value.allOtherNotes[it].noteId?.let { id -> updateIdList.add(id) }
+            }
+            pin = true
+        }
+        else if (_uiState.value.selectedPinNotes.isNotEmpty()) {
+            _uiState.value.selectedPinNotes.forEach {
+                _uiState.value.allPinNotes[it].noteId?.let { id -> updateIdList.add(id) }
+            }
+            pin = false
+        }
+        noteDataSource.updatePinStatus(updateIdList, pin) {
+            removeSelectedNotes()
+            getAllOtherNotes()
+            getAllPinNotes()
+        }
+    }
 }
