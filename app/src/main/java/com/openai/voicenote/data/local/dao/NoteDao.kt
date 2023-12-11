@@ -29,9 +29,12 @@ interface NoteDao {
     suspend fun togglePinStatus(noteId : Long, pin : Boolean)
 
     @Query("UPDATE note_table SET Archive= :archive WHERE NoteId= :noteId")
-    suspend fun toggleArchiveStatus(noteId : Int, archive : Boolean)
+    suspend fun toggleArchiveStatus(noteId : Long, archive : Boolean)
 
     @Query("DELETE FROM note_table WHERE NoteId= :noteId")
-    suspend fun deleteNote(noteId : Int)
+    suspend fun deleteNote(noteId : Long) : Int
+
+    @Query("DELETE FROM note_table WHERE NoteId IN (:notesId)")
+    suspend fun deleteNotes(notesId : List<Long>) : Int
 
 }

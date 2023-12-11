@@ -123,6 +123,7 @@ fun Home(
                             }
                             HomeAppBar.DELETE -> {
                                 homeViewModel.toggleContextMenuState()
+                                homeViewModel.deleteNotes()
                             }
                             HomeAppBar.MAKE_A_COPY -> {
                                 homeViewModel.toggleContextMenuState()

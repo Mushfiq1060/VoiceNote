@@ -69,7 +69,7 @@ class NoteLocalDataSource @Inject constructor(private val noteRepository: NoteRe
         }
     }
 
-    override fun toggleArchiveStatus(noteId: Int, archive: Boolean) {
+    override fun toggleArchiveStatus(noteId: Long, archive: Boolean) {
         coroutineScope.launch {
             withContext(Dispatchers.IO) {
                 noteRepository.toggleArchiveStatus(noteId, archive)
@@ -77,10 +77,24 @@ class NoteLocalDataSource @Inject constructor(private val noteRepository: NoteRe
         }
     }
 
-    override fun deleteNote(noteId: Int) {
+    override fun deleteNote(noteId: Long, resultCallback: (Int) -> Unit) {
         coroutineScope.launch {
-            withContext(Dispatchers.IO) {
+            val deletedRowCount = withContext(Dispatchers.IO) {
                 noteRepository.deleteNote(noteId)
+            }
+            withContext(Dispatchers.Main) {
+                resultCallback(deletedRowCount)
+            }
+        }
+    }
+
+    override fun deleteNotes(notesId: List<Long>, resultCallback: (Int) -> Unit) {
+        coroutineScope.launch {
+            val deletedRowCount = withContext(Dispatchers.IO) {
+                noteRepository.deleteNotes(notesId)
+            }
+            withContext(Dispatchers.Main) {
+                resultCallback(deletedRowCount)
             }
         }
     }

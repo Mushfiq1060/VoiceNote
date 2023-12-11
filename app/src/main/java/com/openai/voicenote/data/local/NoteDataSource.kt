@@ -16,8 +16,10 @@ interface NoteDataSource {
 
     fun togglePinStatus(noteId: Long, pin: Boolean)
 
-    fun toggleArchiveStatus(noteId : Int, archive : Boolean)
+    fun toggleArchiveStatus(noteId : Long, archive : Boolean)
 
-    fun deleteNote(noteId : Int)
+    fun deleteNote(noteId : Long, resultCallback : (Int) -> Unit)
+
+    fun deleteNotes(notesId : List<Long>, resultCallback : (Int) -> Unit)
 
 }

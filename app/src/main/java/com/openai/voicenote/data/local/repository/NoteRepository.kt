@@ -20,8 +20,10 @@ class NoteRepository @Inject constructor(private val noteDao : NoteDao) {
 
     suspend fun togglePinStatus(noteId : Long, pin : Boolean) = noteDao.togglePinStatus(noteId, pin)
 
-    suspend fun toggleArchiveStatus(noteId: Int, archive : Boolean) = noteDao.toggleArchiveStatus(noteId, archive)
+    suspend fun toggleArchiveStatus(noteId: Long, archive : Boolean) = noteDao.toggleArchiveStatus(noteId, archive)
 
-    suspend fun deleteNote(noteId: Int) = noteDao.deleteNote(noteId)
+    suspend fun deleteNote(noteId: Long) = noteDao.deleteNote(noteId)
+
+    suspend fun deleteNotes(notesId : List<Long>) = noteDao.deleteNotes(notesId)
 
 }

@@ -115,23 +115,44 @@ class HomeViewModel @Inject constructor(private val noteDataSource: NoteDataSour
     fun makeCopyOfNote() {
         var note : Note? = null
         if (_uiState.value.selectedPinNotes.isNotEmpty()) {
-            note = _uiState.value.allPinNotes[_uiState.value.selectedPinNotes.first()]
+            note = _uiState.value.allPinNotes[_uiState.value.selectedPinNotes.first()].copy(
+                noteId = null,
+                editTime = System.currentTimeMillis()
+            )
         }
         else if (_uiState.value.selectedOtherNotes.isNotEmpty()) {
-            note = _uiState.value.allOtherNotes[_uiState.value.selectedOtherNotes.first()]
+            note = _uiState.value.allOtherNotes[_uiState.value.selectedOtherNotes.first()].copy(
+                noteId = null,
+                editTime = System.currentTimeMillis()
+            )
         }
         if (note != null) {
-            note.noteId = null
-            note.editTime = System.currentTimeMillis()
             noteDataSource.insertSingleNote(note) {
                 note.noteId = it
                 _uiState.update { currentState ->
                     currentState.copy(
-                        allOtherNotes = currentState.allOtherNotes.toMutableList().apply { add(note) }
+                        allOtherNotes = currentState.allOtherNotes.toMutableList().apply { add(0, note) }
                     )
                 }
                 removeSelectedNotes()
             }
+        }
+    }
+
+    fun deleteNotes() {
+        val deletedIdList = mutableListOf<Long>()
+        _uiState.value.selectedPinNotes.forEach {
+            _uiState.value.allPinNotes[it].noteId?.let { id -> deletedIdList.add(id) }
+        }
+        _uiState.value.selectedOtherNotes.forEach {
+            _uiState.value.allOtherNotes[it].noteId?.let { id ->
+                deletedIdList.add(id)
+            }
+        }
+        noteDataSource.deleteNotes(deletedIdList) {
+            removeSelectedNotes()
+            getAllOtherNotes()
+            getAllPinNotes()
         }
     }
 
