@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.openai.voicenote.data.local.NoteDataSource
 import com.openai.voicenote.model.Note
+import com.openai.voicenote.ui.component.MultiFabState
 import com.openai.voicenote.utils.NoteType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -40,6 +41,14 @@ class HomeViewModel @Inject constructor(private val noteDataSource: NoteDataSour
                     allOtherNotes = it
                 )
             }
+        }
+    }
+
+    fun toggleFabState(fabState: MultiFabState) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                fabState = fabState
+            )
         }
     }
 

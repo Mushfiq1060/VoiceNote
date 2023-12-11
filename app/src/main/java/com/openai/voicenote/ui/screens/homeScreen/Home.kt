@@ -1,5 +1,11 @@
 package com.openai.voicenote.ui.screens.homeScreen
 
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
+import android.graphics.drawable.VectorDrawable
 import android.util.Log
 import android.widget.Space
 import androidx.compose.foundation.BorderStroke
@@ -41,24 +47,39 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.openai.voicenote.R
+import com.openai.voicenote.model.FabItem
 import com.openai.voicenote.model.Note
+
+import com.openai.voicenote.ui.component.MultiFabState
+import com.openai.voicenote.ui.component.MultiFloatingActionButton
+import com.openai.voicenote.ui.component.SubFabType
 import com.openai.voicenote.ui.navigation.NavigationItem
 import com.openai.voicenote.ui.theme.VoiceNoteTheme
 import com.openai.voicenote.utils.ClickType
@@ -85,6 +106,22 @@ fun Home(
 ) {
 
     val homeUiState by homeViewModel.uiState.collectAsState()
+    var fabState by remember {
+        mutableStateOf(MultiFabState.COLLAPSED)
+    }
+
+    val list = listOf(
+        FabItem(
+            icon = painterResource(id = R.drawable.edit_note_24),
+            label = "Add Text Note",
+            type = SubFabType.TEXT
+        ),
+        FabItem(
+            icon = painterResource(id = R.drawable.mic_24),
+            label = "Add Voice Note",
+            type = SubFabType.VOICE
+        )
+    )
 
     Scaffold(
         topBar = {
@@ -148,18 +185,26 @@ fun Home(
             }
         },
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    navHostController.navigate(NavigationItem.VoiceRecord.route)
-                },
-                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                elevation = FloatingActionButtonDefaults.elevation()
+            MultiFloatingActionButton(
+                items = list,
+                currentState = homeUiState.fabState,
+                onFabClicked = {
+                    if (it == MultiFabState.COLLAPSED) {
+                        homeViewModel.toggleFabState(MultiFabState.EXPANDED)
+                    }
+                    else if (it == MultiFabState.EXPANDED) {
+                        homeViewModel.toggleFabState(MultiFabState.COLLAPSED)
+                    }
+                }
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.mic_24),
-                    contentDescription = "voice recording",
-                    modifier = Modifier.size(48.dp)
-                )
+                if (it == SubFabType.TEXT) {
+                    homeViewModel.toggleFabState(MultiFabState.COLLAPSED)
+                    navHostController.navigate(NavigationItem.NoteEdit.route + "/noNote/noText/3")
+                }
+                else if (it == SubFabType.VOICE) {
+                    homeViewModel.toggleFabState(MultiFabState.COLLAPSED)
+                    navHostController.navigate(NavigationItem.VoiceRecord.route)
+                }
             }
         }
     ) {padding ->

@@ -36,17 +36,20 @@ fun AppNavHost(
                 navArgument("fromWhichPage") {type = NavType.IntType}
             )
         ) { navBackStack ->
-            val fromWhichPage = navBackStack.arguments?.getInt("fromWhichPage")
-            if (fromWhichPage == 1) { // by click on note
-                val noteString = navBackStack.arguments?.getString("noteString")
-                val note = noteString?.fromJson(Note::class.java)
-                NoteEdit(navHostController = navHostController, note = note, speechToText = null)
+            when (navBackStack.arguments?.getInt("fromWhichPage")) {
+                1 -> { // by click on note in the home screen
+                    val noteString = navBackStack.arguments?.getString("noteString")
+                    val note = noteString?.fromJson(Note::class.java)
+                    NoteEdit(navHostController = navHostController, note = note, speechToText = null)
+                }
+                2 -> { // from voice record screen
+                    val speechToText = navBackStack.arguments?.getString("speechToText")
+                    NoteEdit(navHostController = navHostController, note = null, speechToText = speechToText)
+                }
+                3 -> { // by click on fab in the home screen
+                    NoteEdit(navHostController = navHostController, note = null, speechToText = null)
+                }
             }
-            else if (fromWhichPage == 2) { // from voice record screen
-                val speechToText = navBackStack.arguments?.getString("speechToText")
-                NoteEdit(navHostController = navHostController, note = null, speechToText = speechToText)
-            }
-
         }
     }
 }
