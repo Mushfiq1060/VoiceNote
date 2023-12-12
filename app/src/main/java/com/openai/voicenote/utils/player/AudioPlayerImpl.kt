@@ -16,7 +16,7 @@ class AudioPlayerImpl @Inject constructor(
 
     var mediaPlayer: MediaPlayer? = null
 
-    override fun startPlayer(file: File, completionCallback : () -> Unit) {
+    override fun startPlayer(file: File, completionCallback: () -> Unit) {
         if (mediaPlayer == null) {
             MediaPlayer.create(context, file.toUri()).apply {
                 mediaPlayer = this
@@ -25,8 +25,7 @@ class AudioPlayerImpl @Inject constructor(
                 }
                 start()
             }
-        }
-        else {
+        } else {
             mediaPlayer?.start()
         }
     }

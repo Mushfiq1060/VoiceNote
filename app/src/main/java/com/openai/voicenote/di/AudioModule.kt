@@ -18,7 +18,7 @@ import dagger.hilt.components.SingletonComponent
 object AudioModule {
 
     @Provides
-    fun getMediaRecorder(@ApplicationContext context : Context) : MediaRecorder {
+    fun getMediaRecorder(@ApplicationContext context: Context): MediaRecorder {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             MediaRecorder(context)
         } else {
@@ -27,12 +27,12 @@ object AudioModule {
     }
 
     @Provides
-    fun getAudioRecorder(audioRecorderImpl : AudioRecorderImpl) : AudioRecorder {
+    fun getAudioRecorder(audioRecorderImpl: AudioRecorderImpl): AudioRecorder {
         return audioRecorderImpl
     }
 
     @Provides
-    fun getAudioPlayer(audioPlayerImpl : AudioPlayerImpl) : AudioPlayer {
+    fun getAudioPlayer(audioPlayerImpl: AudioPlayerImpl): AudioPlayer {
         return audioPlayerImpl
     }
 

@@ -48,10 +48,10 @@ enum class SubFabType {
 
 @Composable
 fun MultiFloatingActionButton(
-    items : List<FabItem>,
-    currentState : MultiFabState,
-    onFabClicked : (MultiFabState) -> Unit,
-    onSubFabClicked : (SubFabType) -> Unit
+    items: List<FabItem>,
+    currentState: MultiFabState,
+    onFabClicked: (MultiFabState) -> Unit,
+    onSubFabClicked: (SubFabType) -> Unit
 ) {
     val transition = updateTransition(
         targetState = currentState,
@@ -96,9 +96,9 @@ fun MultiFloatingActionButton(
 
 @Composable
 fun SmallFloatingActionButtonRow(
-    item : FabItem,
-    transition : Transition<MultiFabState>,
-    onClick : (SubFabType) -> Unit
+    item: FabItem,
+    transition: Transition<MultiFabState>,
+    onClick: (SubFabType) -> Unit
 ) {
     val alpha by transition.animateFloat(
         transitionSpec = {

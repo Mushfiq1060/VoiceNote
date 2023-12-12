@@ -69,7 +69,10 @@ fun VoiceRecord(
                         text = "${voiceRecordUiState.timerMinutes}:${voiceRecordUiState.timerSeconds}.${voiceRecordUiState.timerMilliseconds}",
                         style = MaterialTheme.typography.bodyLarge
                     )
-                    VoiceRecordAnimation(voiceRecordUiState.isRecordStopped, voiceRecordUiState.isPlayPaused)
+                    VoiceRecordAnimation(
+                        voiceRecordUiState.isRecordStopped,
+                        voiceRecordUiState.isPlayPaused
+                    )
                 }
             }
             Box(
@@ -84,7 +87,8 @@ fun VoiceRecord(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     if (voiceRecordUiState.isRecordStarted &&
-                            voiceRecordUiState.isRecordStopped) {
+                        voiceRecordUiState.isRecordStopped
+                    ) {
                         Image(
                             painter = painterResource(
                                 id = checkPlayStatus(voiceRecordUiState.isPlayPaused)
@@ -105,7 +109,10 @@ fun VoiceRecord(
                     }
                     Image(
                         painter = painterResource(
-                            id = checkRecordStatus(voiceRecordUiState.isRecordStarted, voiceRecordUiState.isRecordStopped)
+                            id = checkRecordStatus(
+                                voiceRecordUiState.isRecordStarted,
+                                voiceRecordUiState.isRecordStopped
+                            )
                         ),
                         contentDescription = "record button",
                         modifier = Modifier
@@ -143,8 +150,7 @@ fun VoiceRecord(
                                         }
                                     )
                             )
-                        }
-                        else {
+                        } else {
                             ShowLoaderAnimation()
                         }
                     } else {
@@ -158,9 +164,13 @@ fun VoiceRecord(
 }
 
 @Composable
-fun VoiceRecordAnimation(recordStopped : Boolean, playPaused : Boolean) {
+fun VoiceRecordAnimation(recordStopped: Boolean, playPaused: Boolean) {
     val rawComposition by rememberLottieComposition(spec = LottieCompositionSpec.RawRes(R.raw.voice_record_anim))
-    val progress by animateLottieCompositionAsState(composition = rawComposition, isPlaying = (!recordStopped || !playPaused), iterations = LottieConstants.IterateForever)
+    val progress by animateLottieCompositionAsState(
+        composition = rawComposition,
+        isPlaying = (!recordStopped || !playPaused),
+        iterations = LottieConstants.IterateForever
+    )
 
     LottieAnimation(
         composition = rawComposition,
@@ -171,7 +181,10 @@ fun VoiceRecordAnimation(recordStopped : Boolean, playPaused : Boolean) {
 @Composable
 fun ShowLoaderAnimation() {
     val rawComposition by rememberLottieComposition(spec = LottieCompositionSpec.RawRes(R.raw.loader))
-    val progress by animateLottieCompositionAsState(composition = rawComposition, iterations = LottieConstants.IterateForever)
+    val progress by animateLottieCompositionAsState(
+        composition = rawComposition,
+        iterations = LottieConstants.IterateForever
+    )
 
     LottieAnimation(
         modifier = Modifier.size(108.dp),

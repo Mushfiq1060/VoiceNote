@@ -10,11 +10,12 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class NoteLocalDataSource @Inject constructor(private val noteRepository: NoteRepository) : NoteDataSource {
+class NoteLocalDataSource @Inject constructor(private val noteRepository: NoteRepository) :
+    NoteDataSource {
 
     private val coroutineScope = CoroutineScope(Dispatchers.Default)
 
-    override fun insertSingleNote(note: Note, getInsertNoteId : (Long) -> Unit) {
+    override fun insertSingleNote(note: Note, getInsertNoteId: (Long) -> Unit) {
         coroutineScope.launch {
             val noteId = withContext(Dispatchers.IO) {
                 noteRepository.insertSingleNote(note)
@@ -41,7 +42,7 @@ class NoteLocalDataSource @Inject constructor(private val noteRepository: NoteRe
         }
     }
 
-    override fun getAllPinNotes(allPinNotes : (List<Note>) -> Unit) {
+    override fun getAllPinNotes(allPinNotes: (List<Note>) -> Unit) {
         coroutineScope.launch {
             val noteList = withContext(Dispatchers.IO) {
                 noteRepository.getAllPinNotes()
@@ -50,7 +51,7 @@ class NoteLocalDataSource @Inject constructor(private val noteRepository: NoteRe
         }
     }
 
-    override fun getAllOtherNotes(allOtherNotes : (List<Note>) -> Unit) {
+    override fun getAllOtherNotes(allOtherNotes: (List<Note>) -> Unit) {
         coroutineScope.launch {
             val noteList = withContext(Dispatchers.IO) {
                 noteRepository.getAllOtherNotes()

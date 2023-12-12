@@ -31,16 +31,19 @@ import kotlin.time.Duration.Companion.seconds
 @HiltViewModel
 class VoiceRecordViewModel @Inject constructor() : ViewModel() {
 
-    @Inject lateinit var apiRepository : ApiRepository
-    @Inject lateinit var audioRecorderImpl : AudioRecorder
-    @Inject lateinit var audioPlayerImpl : AudioPlayer
+    @Inject
+    lateinit var apiRepository: ApiRepository
+    @Inject
+    lateinit var audioRecorderImpl: AudioRecorder
+    @Inject
+    lateinit var audioPlayerImpl: AudioPlayer
 
     private val _uiState = MutableStateFlow(VoiceRecordUiState())
-    val uiState : StateFlow<VoiceRecordUiState> = _uiState.asStateFlow()
+    val uiState: StateFlow<VoiceRecordUiState> = _uiState.asStateFlow()
 
-    private lateinit var file : File
+    private lateinit var file: File
 
-    private lateinit var timer : Timer
+    private lateinit var timer: Timer
     private var time: Duration = Duration.ZERO
 
     private fun startTimer() {
@@ -62,7 +65,7 @@ class VoiceRecordViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-    private fun getTimeFormat(timerTime: Int) : String {
+    private fun getTimeFormat(timerTime: Int): String {
         if (timerTime < 10) {
             return "0$timerTime"
         }
@@ -105,7 +108,7 @@ class VoiceRecordViewModel @Inject constructor() : ViewModel() {
             return
         }
         startTimer()
-        if(!_uiState.value.isPlayStarted) {
+        if (!_uiState.value.isPlayStarted) {
             time = Duration.ZERO
         }
         audioPlayerImpl.startPlayer(file) {
@@ -141,7 +144,7 @@ class VoiceRecordViewModel @Inject constructor() : ViewModel() {
         audioPlayerImpl.stopPlayer()
     }
 
-    fun convertSpeechToText(resultCallBack : (text : String, success : Boolean) -> Unit) {
+    fun convertSpeechToText(resultCallBack: (text: String, success: Boolean) -> Unit) {
         _uiState.update { currentState ->
             currentState.copy(
                 isSpeechToTextConvertStart = true
@@ -150,22 +153,25 @@ class VoiceRecordViewModel @Inject constructor() : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             val requestedFile = RequestBody.create(MediaType.parse("multipart/form-data"), file)
             val fileReqBody = MultipartBody.Part.createFormData("file", file.name, requestedFile)
-            val modelReqBody = RequestBody.create(MediaType.parse("multipart/form-data"), "whisper-1")
-            val response = apiRepository.transcribeAudio(fileReqBody, modelReqBody, "Bearer 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")
+            val modelReqBody =
+                RequestBody.create(MediaType.parse("multipart/form-data"), "whisper-1")
+            val response = apiRepository.transcribeAudio(
+                fileReqBody,
+                modelReqBody,
+                "Bearer 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"
+            )
             if (response.isSuccessful) {
                 val x = response.body()?.text
                 if (x != null) {
                     withContext(Dispatchers.Main) {
                         resultCallBack(x, true)
                     }
-                }
-                else {
+                } else {
                     withContext(Dispatchers.Main) {
                         resultCallBack("Open AI can not process your audio!!!", false)
                     }
                 }
-            }
-            else {
+            } else {
                 withContext(Dispatchers.Main) {
                     resultCallBack("You reached maximum limit!!!", false)
                 }

@@ -13,6 +13,10 @@ interface ApiEndPoint {
 
     @Multipart
     @POST("audio/transcriptions")
-    suspend fun getTextFromAudio(@Part file : MultipartBody.Part, @Part("model") model : RequestBody, @Header("Authorization") apiKey : String) : Response<ApiResponse>
+    suspend fun getTextFromAudio(
+        @Part file: MultipartBody.Part,
+        @Part("model") model: RequestBody,
+        @Header("Authorization") apiKey: String
+    ): Response<ApiResponse>
 
 }

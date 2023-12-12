@@ -8,9 +8,13 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class ApiRepository @Inject constructor(private val api : ApiEndPoint) {
+class ApiRepository @Inject constructor(private val api: ApiEndPoint) {
 
-    suspend fun transcribeAudio(file : MultipartBody.Part, model : RequestBody, key : String) : Response<ApiResponse> {
+    suspend fun transcribeAudio(
+        file: MultipartBody.Part,
+        model: RequestBody,
+        key: String
+    ): Response<ApiResponse> {
         return api.getTextFromAudio(file, model, key)
     }
 

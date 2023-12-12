@@ -7,12 +7,12 @@ import androidx.room.TypeConverter
 class ColorConverters {
 
     @TypeConverter
-    fun fromColor(color : Color) : Int {
+    fun fromColor(color: Color): Int {
         return color.toArgb()
     }
 
     @TypeConverter
-    fun toColor(color: Int) : Color {
+    fun toColor(color: Int): Color {
         return Color.valueOf(color)
     }
 

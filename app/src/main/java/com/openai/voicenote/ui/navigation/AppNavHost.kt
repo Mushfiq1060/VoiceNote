@@ -31,23 +31,37 @@ fun AppNavHost(
         composable(
             NavigationItem.NoteEdit.route + "/{noteString}/{speechToText}/{fromWhichPage}",
             arguments = listOf(
-                navArgument("noteString") {type = NavType.StringType},
-                navArgument("speechToText") {type = NavType.StringType},
-                navArgument("fromWhichPage") {type = NavType.IntType}
+                navArgument("noteString") { type = NavType.StringType },
+                navArgument("speechToText") { type = NavType.StringType },
+                navArgument("fromWhichPage") { type = NavType.IntType }
             )
         ) { navBackStack ->
             when (navBackStack.arguments?.getInt("fromWhichPage")) {
                 1 -> { // by click on note in the home screen
                     val noteString = navBackStack.arguments?.getString("noteString")
                     val note = noteString?.fromJson(Note::class.java)
-                    NoteEdit(navHostController = navHostController, note = note, speechToText = null)
+                    NoteEdit(
+                        navHostController = navHostController,
+                        note = note,
+                        speechToText = null
+                    )
                 }
+
                 2 -> { // from voice record screen
                     val speechToText = navBackStack.arguments?.getString("speechToText")
-                    NoteEdit(navHostController = navHostController, note = null, speechToText = speechToText)
+                    NoteEdit(
+                        navHostController = navHostController,
+                        note = null,
+                        speechToText = speechToText
+                    )
                 }
+
                 3 -> { // by click on fab in the home screen
-                    NoteEdit(navHostController = navHostController, note = null, speechToText = null)
+                    NoteEdit(
+                        navHostController = navHostController,
+                        note = null,
+                        speechToText = null
+                    )
                 }
             }
         }

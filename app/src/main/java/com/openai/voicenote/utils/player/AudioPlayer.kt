@@ -4,7 +4,7 @@ import java.io.File
 
 interface AudioPlayer {
 
-    fun startPlayer(file : File, completionCallback : () -> Unit)
+    fun startPlayer(file: File, completionCallback: () -> Unit)
 
     fun pausePlayer()
 

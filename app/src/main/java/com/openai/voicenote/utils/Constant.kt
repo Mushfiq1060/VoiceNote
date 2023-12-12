@@ -1,13 +1,11 @@
 package com.openai.voicenote.utils
 
 enum class ClickType {
-    CLICK,
-    LONG_CLICK
+    CLICK, LONG_CLICK
 }
 
 enum class NoteType {
-    PIN,
-    Other
+    PIN, Other
 }
 
 object Constant {

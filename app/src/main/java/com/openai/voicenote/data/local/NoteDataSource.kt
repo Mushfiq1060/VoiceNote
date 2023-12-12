@@ -4,24 +4,24 @@ import com.openai.voicenote.model.Note
 
 interface NoteDataSource {
 
-    fun insertSingleNote(note : Note, getInsertNoteId : (Long) -> Unit)
+    fun insertSingleNote(note: Note, getInsertNoteId: (Long) -> Unit)
 
-    fun insertMultipleNote(notes : List<Note>)
+    fun insertMultipleNote(notes: List<Note>)
 
-    fun updateNote(note : Note)
+    fun updateNote(note: Note)
 
-    fun getAllPinNotes(allPinNotes : (List<Note>) -> Unit)
+    fun getAllPinNotes(allPinNotes: (List<Note>) -> Unit)
 
-    fun getAllOtherNotes(allOtherNotes : (List<Note>) -> Unit)
+    fun getAllOtherNotes(allOtherNotes: (List<Note>) -> Unit)
 
-    fun togglePinStatus(noteId: Long, pin : Boolean)
+    fun togglePinStatus(noteId: Long, pin: Boolean)
 
-    fun updatePinStatus(notesId: List<Long>, pin : Boolean, resultCallback: (Int) -> Unit)
+    fun updatePinStatus(notesId: List<Long>, pin: Boolean, resultCallback: (Int) -> Unit)
 
-    fun toggleArchiveStatus(noteId : Long, archive : Boolean)
+    fun toggleArchiveStatus(noteId: Long, archive: Boolean)
 
-    fun deleteNote(noteId : Long, resultCallback : (Int) -> Unit)
+    fun deleteNote(noteId: Long, resultCallback: (Int) -> Unit)
 
-    fun deleteNotes(notesId : List<Long>, resultCallback : (Int) -> Unit)
+    fun deleteNotes(notesId: List<Long>, resultCallback: (Int) -> Unit)
 
 }

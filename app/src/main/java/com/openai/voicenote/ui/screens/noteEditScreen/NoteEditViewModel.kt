@@ -15,10 +15,11 @@ import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 @HiltViewModel
-class NoteEditViewModel @Inject constructor(private val noteDataSource: NoteDataSource) : ViewModel() {
+class NoteEditViewModel @Inject constructor(private val noteDataSource: NoteDataSource) :
+    ViewModel() {
 
     private val _uiState = MutableStateFlow(NoteEditUiState())
-    val uiState : StateFlow<NoteEditUiState> = _uiState.asStateFlow()
+    val uiState: StateFlow<NoteEditUiState> = _uiState.asStateFlow()
 
     private val noteAutoSaveOrUpdateHandler = QueryDeBouncer<Note>(
         durationInMilliseconds = 500,
@@ -27,8 +28,8 @@ class NoteEditViewModel @Inject constructor(private val noteDataSource: NoteData
         }
     )
 
-    private lateinit var currentNote : Note
-    private var compose : Boolean = false
+    private lateinit var currentNote: Note
+    private var compose: Boolean = false
 
     var titleText by mutableStateOf("")
         private set
@@ -36,7 +37,7 @@ class NoteEditViewModel @Inject constructor(private val noteDataSource: NoteData
     var noteText by mutableStateOf("")
         private set
 
-    fun getCompose() : Boolean {
+    fun getCompose(): Boolean {
         return compose
     }
 
@@ -44,17 +45,17 @@ class NoteEditViewModel @Inject constructor(private val noteDataSource: NoteData
         compose = true
     }
 
-    fun updateTitleText(title : String) {
+    fun updateTitleText(title: String) {
         titleText = title
         noteAutoSaveOrUpdateHandler.typeTValue = prepareNote()
     }
 
-    fun updateNoteText(note : String) {
+    fun updateNoteText(note: String) {
         noteText = note
         noteAutoSaveOrUpdateHandler.typeTValue = prepareNote()
     }
 
-    private fun prepareNote() : Note {
+    private fun prepareNote(): Note {
         if (::currentNote.isInitialized) {
             currentNote.apply {
                 title = titleText
@@ -75,18 +76,17 @@ class NoteEditViewModel @Inject constructor(private val noteDataSource: NoteData
         return currentNote
     }
 
-    private fun noteAutoSaveOrUpdate(note : Note) {
+    private fun noteAutoSaveOrUpdate(note: Note) {
         if (::currentNote.isInitialized) {
             if (currentNote.noteId == null) {
                 saveNote()
-            }
-            else {
+            } else {
                 updateNote()
             }
         }
     }
 
-    fun setCurrentNote(note : Note) {
+    fun setCurrentNote(note: Note) {
         titleText = note.title
         noteText = note.description
         currentNote = note

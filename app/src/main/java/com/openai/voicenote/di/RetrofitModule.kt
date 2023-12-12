@@ -15,15 +15,19 @@ import retrofit2.converter.gson.GsonConverterFactory
 object RetrofitModule {
 
     @Provides
-    fun getRetrofit() : Retrofit {
+    fun getRetrofit(): Retrofit {
         return Retrofit.Builder()
             .baseUrl(Constant.BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create(GsonBuilder().serializeNulls().create()))
+            .addConverterFactory(
+                GsonConverterFactory.create(
+                    GsonBuilder().serializeNulls().create()
+                )
+            )
             .build()
     }
 
     @Provides
-    fun getApiEndPoint(retrofit: Retrofit) : ApiEndPoint {
+    fun getApiEndPoint(retrofit: Retrofit): ApiEndPoint {
         return retrofit.create(ApiEndPoint::class.java)
     }
 

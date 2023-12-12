@@ -51,8 +51,8 @@ import com.openai.voicenote.ui.navigation.Screen
 @Composable
 fun NoteEdit(
     navHostController: NavHostController,
-    note : Note?,
-    speechToText : String?,
+    note: Note?,
+    speechToText: String?,
     noteEditViewModel: NoteEditViewModel = hiltViewModel()
 ) {
 
@@ -61,8 +61,7 @@ fun NoteEdit(
     if (speechToText != null && !noteEditViewModel.getCompose()) {
         noteEditViewModel.setCompose()
         noteEditViewModel.updateNoteText(speechToText)
-    }
-    else if (note != null && !noteEditViewModel.getCompose()) {
+    } else if (note != null && !noteEditViewModel.getCompose()) {
         noteEditViewModel.setCompose()
         noteEditViewModel.setCurrentNote(note)
     }
@@ -200,7 +199,7 @@ fun checkPinStatus(currentNotePin: Boolean): Int {
     return R.drawable.pin_24
 }
 
-fun checkArchiveStatus(currentNoteArchive : Boolean) : Int {
+fun checkArchiveStatus(currentNoteArchive: Boolean): Int {
     if (currentNoteArchive) {
         return R.drawable.unarchive_24
     }

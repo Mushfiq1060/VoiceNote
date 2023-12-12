@@ -17,12 +17,12 @@ import dagger.hilt.components.SingletonComponent
 object DatabaseModule {
 
     @Provides
-    fun providesNoteDao(noteDatabase: NoteDatabase) : NoteDao {
+    fun providesNoteDao(noteDatabase: NoteDatabase): NoteDao {
         return noteDatabase.noteDao()
     }
 
     @Provides
-    fun provideNoteDatabase(@ApplicationContext context : Context) : NoteDatabase {
+    fun provideNoteDatabase(@ApplicationContext context: Context): NoteDatabase {
         return Room.databaseBuilder(
             context = context,
             NoteDatabase::class.java,
@@ -31,7 +31,7 @@ object DatabaseModule {
     }
 
     @Provides
-    fun providesNoteDataSource(noteLocalDataSource: NoteLocalDataSource) : NoteDataSource {
+    fun providesNoteDataSource(noteLocalDataSource: NoteLocalDataSource): NoteDataSource {
         return noteLocalDataSource
     }
 

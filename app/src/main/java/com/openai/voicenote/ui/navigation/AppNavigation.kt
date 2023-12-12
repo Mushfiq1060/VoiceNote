@@ -1,9 +1,7 @@
 package com.openai.voicenote.ui.navigation
 
 enum class Screen {
-    HOME,
-    VOICE_RECORD,
-    NOTE_EDIT
+    HOME, VOICE_RECORD, NOTE_EDIT
 }
 
 sealed class NavigationItem(val route: String) {

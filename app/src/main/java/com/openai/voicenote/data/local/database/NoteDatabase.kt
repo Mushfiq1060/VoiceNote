@@ -16,6 +16,6 @@ import com.openai.voicenote.model.Note
 @TypeConverters(ColorConverters::class)
 abstract class NoteDatabase : RoomDatabase() {
 
-    abstract fun noteDao() : NoteDao
+    abstract fun noteDao(): NoteDao
 
 }

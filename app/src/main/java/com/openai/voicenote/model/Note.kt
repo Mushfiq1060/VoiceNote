@@ -10,11 +10,11 @@ import java.io.Serializable
 data class Note(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "NoteId")
-    var noteId : Long?,
-    @ColumnInfo(name = "Title") var title : String,
-    @ColumnInfo(name = "Description") var description : String,
-    @ColumnInfo(name = "EditTime") var editTime : Long,
-    @ColumnInfo(name = "Pin") var pin : Boolean,
-    @ColumnInfo(name = "Archive") var archive : Boolean,
-    @ColumnInfo(name = "BackgroundImage") var backgroundImage : Int
+    var noteId: Long?,
+    @ColumnInfo(name = "Title") var title: String,
+    @ColumnInfo(name = "Description") var description: String,
+    @ColumnInfo(name = "EditTime") var editTime: Long,
+    @ColumnInfo(name = "Pin") var pin: Boolean,
+    @ColumnInfo(name = "Archive") var archive: Boolean,
+    @ColumnInfo(name = "BackgroundImage") var backgroundImage: Int
 ) : Serializable

@@ -15,7 +15,7 @@ class AudioRecorderImpl @Inject constructor(
     private val mediaRecorder: MediaRecorder
 ) : AudioRecorder {
 
-    override fun startRecording(outputFile: File, recordingStartCallback : () -> Unit) {
+    override fun startRecording(outputFile: File, recordingStartCallback: () -> Unit) {
         mediaRecorder.apply {
             setAudioSource(MediaRecorder.AudioSource.MIC)
             setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)

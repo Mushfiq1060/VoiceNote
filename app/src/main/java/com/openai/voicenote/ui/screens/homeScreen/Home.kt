@@ -134,17 +134,18 @@ fun Home(
                             HomeAppBar.DRAWER_ICON -> {
                                 // open navigation drawer
                             }
+
                             HomeAppBar.TOGGLE_GRID -> {
                                 homeViewModel.toggleGridView()
                             }
+
                             else -> {
                                 // do nothing
                             }
                         }
                     }
                 )
-            }
-            else {
+            } else {
                 SelectedTopAppBar(
                     selectedCount = homeUiState.selectedPinNotes.size + homeUiState.selectedOtherNotes.size,
                     isSelectedOtherNote = homeUiState.selectedOtherNotes.isEmpty(),
@@ -154,29 +155,37 @@ fun Home(
                             HomeAppBar.CANCEL -> {
                                 homeViewModel.removeSelectedNotes()
                             }
+
                             HomeAppBar.CONTEXT_MENU -> {
                                 homeViewModel.toggleContextMenuState()
                             }
+
                             HomeAppBar.ARCHIVE -> {
                                 homeViewModel.toggleContextMenuState()
                             }
+
                             HomeAppBar.DELETE -> {
                                 homeViewModel.toggleContextMenuState()
                                 homeViewModel.deleteNotes()
                             }
+
                             HomeAppBar.MAKE_A_COPY -> {
                                 homeViewModel.toggleContextMenuState()
                                 homeViewModel.makeCopyOfNote()
                             }
+
                             HomeAppBar.TOGGLE_PIN -> {
                                 homeViewModel.updateNotesPin()
                             }
+
                             HomeAppBar.LABEL -> {
 
                             }
+
                             HomeAppBar.DRAW -> {
 
                             }
+
                             else -> {
                                 // do nothing
                             }
@@ -192,8 +201,7 @@ fun Home(
                 onFabClicked = {
                     if (it == MultiFabState.COLLAPSED) {
                         homeViewModel.toggleFabState(MultiFabState.EXPANDED)
-                    }
-                    else if (it == MultiFabState.EXPANDED) {
+                    } else if (it == MultiFabState.EXPANDED) {
                         homeViewModel.toggleFabState(MultiFabState.COLLAPSED)
                     }
                 }
@@ -201,14 +209,13 @@ fun Home(
                 if (it == SubFabType.TEXT) {
                     homeViewModel.toggleFabState(MultiFabState.COLLAPSED)
                     navHostController.navigate(NavigationItem.NoteEdit.route + "/noNote/noText/3")
-                }
-                else if (it == SubFabType.VOICE) {
+                } else if (it == SubFabType.VOICE) {
                     homeViewModel.toggleFabState(MultiFabState.COLLAPSED)
                     navHostController.navigate(NavigationItem.VoiceRecord.route)
                 }
             }
         }
-    ) {padding ->
+    ) { padding ->
         LazyVerticalStaggeredGrid(
             modifier = Modifier
                 .padding(padding)
@@ -239,17 +246,14 @@ fun Home(
                         ) {
                             if (homeViewModel.checkNoteIsSelected(NoteType.PIN, index)) {
                                 homeViewModel.removeSelectedNote(NoteType.PIN, index)
-                            }
-                            else {
+                            } else {
                                 homeViewModel.addSelectedNotes(NoteType.PIN, index)
                             }
-                        }
-                        else {
+                        } else {
                             val noteString = item.toJson()
                             navHostController.navigate(NavigationItem.NoteEdit.route + "/$noteString" + "/clickNote" + "/1")
                         }
-                    }
-                    else if (clickType == ClickType.LONG_CLICK){
+                    } else if (clickType == ClickType.LONG_CLICK) {
                         homeViewModel.addSelectedNotes(NoteType.PIN, index)
                     }
                 }
@@ -275,17 +279,14 @@ fun Home(
                         ) {
                             if (homeViewModel.checkNoteIsSelected(NoteType.Other, index)) {
                                 homeViewModel.removeSelectedNote(NoteType.Other, index)
-                            }
-                            else {
+                            } else {
                                 homeViewModel.addSelectedNotes(NoteType.Other, index)
                             }
-                        }
-                        else {
+                        } else {
                             val noteString = item.toJson()
                             navHostController.navigate(NavigationItem.NoteEdit.route + "/$noteString" + "/clickNote" + "/1")
                         }
-                    }
-                    else if (clickType == ClickType.LONG_CLICK){
+                    } else if (clickType == ClickType.LONG_CLICK) {
                         homeViewModel.addSelectedNotes(NoteType.Other, index)
                     }
                 }
@@ -299,7 +300,7 @@ fun Home(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeTopAppBar(isGridEnable : Boolean, onClick : (type : HomeAppBar) -> Unit) {
+fun HomeTopAppBar(isGridEnable: Boolean, onClick: (type: HomeAppBar) -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -364,7 +365,12 @@ fun HomeTopAppBar(isGridEnable : Boolean, onClick : (type : HomeAppBar) -> Unit)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SelectedTopAppBar(selectedCount : Int, isSelectedOtherNote : Boolean, isContextMenuOpen : Boolean, onClick : (type : HomeAppBar) -> Unit) {
+fun SelectedTopAppBar(
+    selectedCount: Int,
+    isSelectedOtherNote: Boolean,
+    isContextMenuOpen: Boolean,
+    onClick: (type: HomeAppBar) -> Unit
+) {
     TopAppBar(
         colors = TopAppBarDefaults.mediumTopAppBarColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant,
@@ -504,7 +510,7 @@ fun LazyStaggeredGridScope.header(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun RenderGridItem(note : Note, isSelected : Boolean, onClick : (ClickType) -> Unit) {
+fun RenderGridItem(note: Note, isSelected: Boolean, onClick: (ClickType) -> Unit) {
     OutlinedCard(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface,
@@ -544,21 +550,21 @@ fun RenderGridItem(note : Note, isSelected : Boolean, onClick : (ClickType) -> U
     }
 }
 
-fun checkPinStatus(pinState : Boolean): Int {
+fun checkPinStatus(pinState: Boolean): Int {
     if (pinState) {
         return R.drawable.filled_pin_24
     }
     return R.drawable.pin_24
 }
 
-fun getCardElevation(selected: Boolean) : Dp {
+fun getCardElevation(selected: Boolean): Dp {
     if (selected) {
         return 20.dp
     }
     return 0.dp
 }
 
-fun getBorderWidth(selected: Boolean) : Dp {
+fun getBorderWidth(selected: Boolean): Dp {
     if (!selected) {
         return 2.dp
     }
@@ -573,15 +579,15 @@ fun getBorderColor(selected: Boolean): Color {
     return MaterialTheme.colorScheme.onPrimaryContainer
 }
 
-fun countColumn(gridEnable: Boolean) : Int {
+fun countColumn(gridEnable: Boolean): Int {
     if (gridEnable) {
         return 2
     }
     return 1
 }
 
-fun checkGridStatus(gridEnable: Boolean) : Int {
-    if(gridEnable) {
+fun checkGridStatus(gridEnable: Boolean): Int {
+    if (gridEnable) {
         return R.drawable.list_view_24
     }
     return R.drawable.grid_view_24

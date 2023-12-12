@@ -17,7 +17,7 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(private val noteDataSource: NoteDataSource) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUiState())
-    val uiState : StateFlow<HomeUiState> = _uiState.asStateFlow()
+    val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
     init {
         getAllPinNotes()
@@ -68,18 +68,19 @@ class HomeViewModel @Inject constructor(private val noteDataSource: NoteDataSour
         }
     }
 
-    fun addSelectedNotes(type : NoteType, index : Int) {
+    fun addSelectedNotes(type: NoteType, index: Int) {
         if (type == NoteType.PIN) {
             _uiState.update { currentState ->
                 currentState.copy(
-                    selectedPinNotes = currentState.selectedPinNotes.toMutableSet().apply { add(index) },
+                    selectedPinNotes = currentState.selectedPinNotes.toMutableSet()
+                        .apply { add(index) },
                 )
             }
-        }
-        else if (type == NoteType.Other) {
+        } else if (type == NoteType.Other) {
             _uiState.update { currentState ->
                 currentState.copy(
-                    selectedOtherNotes = currentState.selectedOtherNotes.toMutableSet().apply { add(index) },
+                    selectedOtherNotes = currentState.selectedOtherNotes.toMutableSet()
+                        .apply { add(index) },
                 )
             }
         }
@@ -89,47 +90,47 @@ class HomeViewModel @Inject constructor(private val noteDataSource: NoteDataSour
         _uiState.update { currentState ->
             currentState.copy(
                 selectedPinNotes = currentState.selectedPinNotes.toMutableSet().apply { clear() },
-                selectedOtherNotes = currentState.selectedOtherNotes.toMutableSet().apply { clear() }
+                selectedOtherNotes = currentState.selectedOtherNotes.toMutableSet()
+                    .apply { clear() }
             )
         }
     }
 
-    fun checkNoteIsSelected(type : NoteType, index : Int) : Boolean {
+    fun checkNoteIsSelected(type: NoteType, index: Int): Boolean {
         if (type == NoteType.PIN) {
             return _uiState.value.selectedPinNotes.contains(index)
-        }
-        else if (type == NoteType.Other) {
+        } else if (type == NoteType.Other) {
             return _uiState.value.selectedOtherNotes.contains(index)
         }
         return false
     }
 
-    fun removeSelectedNote(type : NoteType, index : Int) {
+    fun removeSelectedNote(type: NoteType, index: Int) {
         if (type == NoteType.PIN) {
             _uiState.update { currentState ->
                 currentState.copy(
-                    selectedPinNotes = currentState.selectedPinNotes.toMutableSet().apply { remove(index) }
+                    selectedPinNotes = currentState.selectedPinNotes.toMutableSet()
+                        .apply { remove(index) }
                 )
             }
-        }
-        else if (type == NoteType.Other) {
+        } else if (type == NoteType.Other) {
             _uiState.update { currentState ->
                 currentState.copy(
-                    selectedOtherNotes = currentState.selectedOtherNotes.toMutableSet().apply { remove(index) }
+                    selectedOtherNotes = currentState.selectedOtherNotes.toMutableSet()
+                        .apply { remove(index) }
                 )
             }
         }
     }
 
     fun makeCopyOfNote() {
-        var note : Note? = null
+        var note: Note? = null
         if (_uiState.value.selectedPinNotes.isNotEmpty()) {
             note = _uiState.value.allPinNotes[_uiState.value.selectedPinNotes.first()].copy(
                 noteId = null,
                 editTime = System.currentTimeMillis()
             )
-        }
-        else if (_uiState.value.selectedOtherNotes.isNotEmpty()) {
+        } else if (_uiState.value.selectedOtherNotes.isNotEmpty()) {
             note = _uiState.value.allOtherNotes[_uiState.value.selectedOtherNotes.first()].copy(
                 noteId = null,
                 editTime = System.currentTimeMillis()
@@ -140,7 +141,8 @@ class HomeViewModel @Inject constructor(private val noteDataSource: NoteDataSour
                 note.noteId = it
                 _uiState.update { currentState ->
                     currentState.copy(
-                        allOtherNotes = currentState.allOtherNotes.toMutableList().apply { add(0, note) }
+                        allOtherNotes = currentState.allOtherNotes.toMutableList()
+                            .apply { add(0, note) }
                     )
                 }
                 removeSelectedNotes()
@@ -165,7 +167,7 @@ class HomeViewModel @Inject constructor(private val noteDataSource: NoteDataSour
 
     fun updateNotesPin() {
         val updateIdList = mutableListOf<Long>()
-        var pin : Boolean = false
+        var pin: Boolean = false
         if (_uiState.value.selectedOtherNotes.isNotEmpty()) {
             _uiState.value.selectedPinNotes.forEach {
                 _uiState.value.allPinNotes[it].noteId?.let { id -> updateIdList.add(id) }
@@ -174,8 +176,7 @@ class HomeViewModel @Inject constructor(private val noteDataSource: NoteDataSour
                 _uiState.value.allOtherNotes[it].noteId?.let { id -> updateIdList.add(id) }
             }
             pin = true
-        }
-        else if (_uiState.value.selectedPinNotes.isNotEmpty()) {
+        } else if (_uiState.value.selectedPinNotes.isNotEmpty()) {
             _uiState.value.selectedPinNotes.forEach {
                 _uiState.value.allPinNotes[it].noteId?.let { id -> updateIdList.add(id) }
             }
