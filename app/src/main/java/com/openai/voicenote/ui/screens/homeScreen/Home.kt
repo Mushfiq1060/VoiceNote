@@ -109,9 +109,6 @@ fun Home(
 ) {
 
     val homeUiState by homeViewModel.uiState.collectAsState()
-    var fabState by remember {
-        mutableStateOf(MultiFabState.COLLAPSED)
-    }
 
     val list = listOf(
         FabItem(
@@ -127,6 +124,7 @@ fun Home(
     )
 
     Scaffold(
+        containerColor = Color.Transparent,
         topBar = {
             if (homeUiState.selectedPinNotes.size + homeUiState.selectedOtherNotes.size == 0) {
                 HomeTopAppBar(
@@ -305,6 +303,7 @@ fun HomeTopAppBar(isGridEnable : Boolean, onClick : (type : HomeAppBar) -> Unit)
     Box(
         modifier = Modifier
             .fillMaxWidth()
+            .background(color = Color.Transparent)
             .statusBarsPadding()
             .padding(top = 8.dp, start = 16.dp, end = 16.dp, bottom = 8.dp)
     ) {
