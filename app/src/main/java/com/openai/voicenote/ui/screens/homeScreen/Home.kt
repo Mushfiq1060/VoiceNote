@@ -35,6 +35,8 @@ import androidx.compose.foundation.lazy.staggeredgrid.itemsIndexed
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CardElevation
+import androidx.compose.material3.DrawerState
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -47,11 +49,13 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -88,6 +92,7 @@ import com.openai.voicenote.ui.theme.VoiceNoteTheme
 import com.openai.voicenote.utils.ClickType
 import com.openai.voicenote.utils.NoteType
 import com.openai.voicenote.utils.Utils.toJson
+import kotlinx.coroutines.launch
 
 enum class HomeAppBar {
     DRAWER_ICON,
@@ -105,11 +110,12 @@ enum class HomeAppBar {
 @Composable
 fun Home(
     navHostController: NavHostController,
+    drawerState: DrawerState,
     homeViewModel: HomeViewModel = hiltViewModel()
 ) {
 
     val homeUiState by homeViewModel.uiState.collectAsState()
-
+    val scope = rememberCoroutineScope()
     val list = listOf(
         FabItem(
             icon = painterResource(id = R.drawable.edit_note_24),
@@ -132,7 +138,9 @@ fun Home(
                     onClick = { clickType ->
                         when (clickType) {
                             HomeAppBar.DRAWER_ICON -> {
-                                // open navigation drawer
+                                scope.launch {
+                                    drawerState.open()
+                                }
                             }
 
                             HomeAppBar.TOGGLE_GRID -> {
@@ -453,7 +461,6 @@ fun SelectedTopAppBar(
                 DropdownMenu(
                     expanded = isContextMenuOpen,
                     onDismissRequest = {
-                        Log.i("TAGG", "On Dismiss req")
                         onClick(HomeAppBar.CONTEXT_MENU)
                     }
                 ) {
@@ -597,7 +604,11 @@ fun checkGridStatus(gridEnable: Boolean): Int {
 @Composable
 fun HomeScreenPreview() {
     VoiceNoteTheme {
-        Home(navHostController = rememberNavController())
+        Home(
+            navHostController = rememberNavController(), drawerState = rememberDrawerState(
+                initialValue = DrawerValue.Closed
+            )
+        )
     }
 }
 

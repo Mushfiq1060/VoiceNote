@@ -29,14 +29,7 @@ class MainActivity : ComponentActivity() {
         )
 
         setContent {
-            VoiceNoteTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    AppNavHost(navHostController = rememberNavController())
-                }
-            }
+            App()
         }
     }
 }

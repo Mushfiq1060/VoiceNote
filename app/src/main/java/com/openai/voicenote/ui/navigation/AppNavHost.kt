@@ -1,6 +1,7 @@
 package com.openai.voicenote.ui.navigation
 
 import android.util.Log
+import androidx.compose.material3.DrawerState
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -16,6 +17,7 @@ import com.openai.voicenote.utils.Utils.fromJson
 @Composable
 fun AppNavHost(
     navHostController: NavHostController,
+    drawerState: DrawerState,
     startDestination: String = NavigationItem.Home.route
 ) {
     NavHost(
@@ -23,7 +25,7 @@ fun AppNavHost(
         startDestination = startDestination
     ) {
         composable(NavigationItem.Home.route) {
-            Home(navHostController = navHostController)
+            Home(navHostController = navHostController, drawerState = drawerState)
         }
         composable(NavigationItem.VoiceRecord.route) {
             VoiceRecord(navHostController = navHostController)
