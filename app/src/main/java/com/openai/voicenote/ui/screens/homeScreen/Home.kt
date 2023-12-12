@@ -11,6 +11,7 @@ import android.widget.Space
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.ScrollableDefaults
@@ -18,10 +19,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.paddingFromBaseline
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridItemScope
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridScope
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
@@ -220,7 +223,7 @@ fun Home(
             header {
                 Text(
                     text = stringResource(id = R.string.pinned),
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier
                         .paddingFromBaseline(bottom = 8.dp)
                         .padding(top = 16.dp, start = 16.dp),
@@ -256,7 +259,7 @@ fun Home(
             header {
                 Text(
                     text = stringResource(id = R.string.others),
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier
                         .paddingFromBaseline(bottom = 8.dp)
                         .padding(top = 16.dp, start = 16.dp),
@@ -300,7 +303,10 @@ fun Home(
 @Composable
 fun HomeTopAppBar(isGridEnable : Boolean, onClick : (type : HomeAppBar) -> Unit) {
     Box(
-        modifier = Modifier.padding(16.dp)
+        modifier = Modifier
+            .fillMaxWidth()
+            .statusBarsPadding()
+            .padding(top = 8.dp, start = 16.dp, end = 16.dp, bottom = 8.dp)
     ) {
         TopAppBar(
             modifier = Modifier

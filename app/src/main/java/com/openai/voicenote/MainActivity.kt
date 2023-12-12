@@ -9,6 +9,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.core.app.ActivityCompat
+import androidx.core.view.WindowCompat
 import androidx.navigation.compose.rememberNavController
 import com.openai.voicenote.ui.navigation.AppNavHost
 import com.openai.voicenote.ui.screens.homeScreen.Home
@@ -19,6 +20,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
 
         ActivityCompat.requestPermissions(
             this,

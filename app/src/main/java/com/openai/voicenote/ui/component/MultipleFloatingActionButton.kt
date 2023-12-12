@@ -60,12 +60,7 @@ fun MultiFloatingActionButton(
     val rotation by transition.animateFloat(
         label = "rotate"
     ) {
-        if (it == MultiFabState.EXPANDED) {
-            45f
-        }
-        else {
-            0f
-        }
+        if (it == MultiFabState.EXPANDED) 45f else 0f
     }
     Box() {
         Column(
