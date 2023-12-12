@@ -57,27 +57,32 @@ fun App(
                     ) {
                         when (it) {
                             DrawerMenuOption.HOME -> {
-                                selectedIndex = 0
+                                selectedIndex = DrawerMenuOption.HOME.ordinal
                                 navHostController.navigate(NavigationItem.Home.route)
                             }
+
                             DrawerMenuOption.CREATE_NEW_LABEL -> {
-                                selectedIndex = 1
+                                selectedIndex = DrawerMenuOption.CREATE_NEW_LABEL.ordinal
                                 // go to create a new label screen
                             }
+
                             DrawerMenuOption.ARCHIVE -> {
-                                selectedIndex = 2
+                                selectedIndex = DrawerMenuOption.ARCHIVE.ordinal
                                 // go to archive screen
                             }
+
                             DrawerMenuOption.TRASH -> {
-                                selectedIndex = 3
+                                selectedIndex = DrawerMenuOption.TRASH.ordinal
                                 // go to trash screen
                             }
+
                             DrawerMenuOption.SETTINGS -> {
-                                selectedIndex = 4
+                                selectedIndex = DrawerMenuOption.SETTINGS.ordinal
                                 // go to settings screen
                             }
+
                             DrawerMenuOption.HELP_AND_FEEDBACK -> {
-                                selectedIndex = 5
+                                selectedIndex = DrawerMenuOption.HELP_AND_FEEDBACK.ordinal
                                 // go to help & feedback screen
                             }
                         }

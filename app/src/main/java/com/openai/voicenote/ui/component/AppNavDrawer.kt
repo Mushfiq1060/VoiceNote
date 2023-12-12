@@ -48,16 +48,16 @@ fun AppNavDrawer(
             letterSpacing = 2.sp,
             modifier = Modifier.padding(start = 16.dp, bottom = 16.dp)
         )
-        items.forEachIndexed { index, drawerMenu ->
+        items.forEach { drawerMenu ->
             NavigationDrawerItem(
                 label = {
                     Text(
                         text = stringResource(id = drawerMenu.title),
                         style = MaterialTheme.typography.titleSmall,
-                        color = getColor(index == selectedIndex)
+                        color = getColor(drawerMenu.menuOption.ordinal == selectedIndex)
                     )
                 },
-                selected = selectedIndex == index,
+                selected = selectedIndex == drawerMenu.menuOption.ordinal,
                 onClick = {
                     onClick(drawerMenu.menuOption)
                     scope.launch {
@@ -68,7 +68,7 @@ fun AppNavDrawer(
                     Icon(
                         painter = painterResource(id = drawerMenu.icon),
                         contentDescription = stringResource(id = drawerMenu.title),
-                        tint = getColor(active = selectedIndex == index)
+                        tint = getColor(active = selectedIndex == drawerMenu.menuOption.ordinal)
                     )
                 },
                 modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
