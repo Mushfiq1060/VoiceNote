@@ -18,16 +18,19 @@ import com.openai.voicenote.utils.Utils.fromJson
 fun AppNavHost(
     navHostController: NavHostController,
     drawerState: DrawerState,
-    startDestination: String = NavigationItem.Home.route
+    startDestination: String = NavigationItem.Home.route,
+    drawerGestureCallback: (Boolean) -> Unit
 ) {
     NavHost(
         navController = navHostController,
         startDestination = startDestination
     ) {
         composable(NavigationItem.Home.route) {
+            drawerGestureCallback(true)
             Home(navHostController = navHostController, drawerState = drawerState)
         }
         composable(NavigationItem.VoiceRecord.route) {
+            drawerGestureCallback(false)
             VoiceRecord(navHostController = navHostController)
         }
         composable(
@@ -38,6 +41,7 @@ fun AppNavHost(
                 navArgument("fromWhichPage") { type = NavType.IntType }
             )
         ) { navBackStack ->
+            drawerGestureCallback(false)
             when (navBackStack.arguments?.getInt("fromWhichPage")) {
                 1 -> { // by click on note in the home screen
                     val noteString = navBackStack.arguments?.getString("noteString")

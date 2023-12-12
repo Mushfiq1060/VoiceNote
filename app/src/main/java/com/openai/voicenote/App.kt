@@ -11,6 +11,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
@@ -35,14 +36,19 @@ fun App(
     navHostController: NavHostController = rememberNavController()
 ) {
 
-    var selectedIndex by remember {
+    var selectedIndex by rememberSaveable {
         mutableIntStateOf(0)
+    }
+
+    var gestureEnabled by rememberSaveable {
+        mutableStateOf(true)
     }
 
     VoiceNoteTheme {
         Surface {
             ModalNavigationDrawer(
                 drawerState = drawerState,
+                gesturesEnabled = gestureEnabled,
                 drawerContent = {
                     AppNavDrawer(
                         items = drawerContent,
@@ -78,7 +84,12 @@ fun App(
                     }
                 }
             ) {
-                AppNavHost(navHostController = navHostController, drawerState = drawerState)
+                AppNavHost(
+                    navHostController = navHostController,
+                    drawerState = drawerState
+                ) {
+                    gestureEnabled = it
+                }
             }
         }
     }
