@@ -54,6 +54,7 @@ fun AppNavDrawer(
                     Text(
                         text = stringResource(id = drawerMenu.title),
                         style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.W900,
                         color = getColor(drawerMenu.menuOption.ordinal == selectedIndex)
                     )
                 },

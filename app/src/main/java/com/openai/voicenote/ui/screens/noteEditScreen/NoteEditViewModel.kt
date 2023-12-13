@@ -86,6 +86,13 @@ class NoteEditViewModel @Inject constructor(private val noteDataSource: NoteData
         }
     }
 
+    fun getCurrentNoteBackgroundImage(): Int {
+        if (::currentNote.isInitialized) {
+            return currentNote.backgroundImage
+        }
+        return -1
+    }
+
     fun setCurrentNote(note: Note) {
         titleText = note.title
         noteText = note.description

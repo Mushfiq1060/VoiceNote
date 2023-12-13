@@ -6,21 +6,29 @@ import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -34,10 +42,14 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -57,6 +69,7 @@ fun NoteEdit(
 ) {
 
     val noteEditUiState by noteEditViewModel.uiState.collectAsState()
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
     if (speechToText != null && !noteEditViewModel.getCompose()) {
         noteEditViewModel.setCompose()
@@ -75,14 +88,20 @@ fun NoteEdit(
     }
 
     Box {
-        Image(
-            modifier = Modifier
-                .fillMaxSize(),
-            painter = painterResource(id = R.drawable.origami),
-            contentDescription = "background_image",
-            contentScale = ContentScale.FillBounds
-        )
+        if (noteEditViewModel.getCurrentNoteBackgroundImage() != -1) {
+            Image(
+                modifier = Modifier
+                    .fillMaxSize(),
+                painter = painterResource(id = R.drawable.origami),
+                contentDescription = "background_image",
+                contentScale = ContentScale.FillBounds
+            )
+        }
         Scaffold(
+            modifier = Modifier
+                .nestedScroll(scrollBehavior.nestedScrollConnection)
+                .systemBarsPadding()
+                .imePadding(),
             containerColor = Color.Transparent,
             topBar = {
                 TopAppBar(
@@ -92,6 +111,7 @@ fun NoteEdit(
                     title = {
 
                     },
+                    scrollBehavior = scrollBehavior,
                     navigationIcon = {
                         IconButton(
                             onClick = {
@@ -137,6 +157,71 @@ fun NoteEdit(
                         }
                     }
                 )
+            },
+            bottomBar = {
+                BottomAppBar(
+                    modifier = Modifier
+                        .height(48.dp)
+                        .fillMaxWidth(),
+                    actions = {
+                        Row(
+                            modifier = Modifier.fillMaxSize(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Row(
+                                modifier = Modifier.weight(0.33f)
+                            ) {
+                                IconButton(onClick = { /*TODO*/ }) {
+                                    Icon(
+                                        modifier = Modifier.size(28.dp),
+                                        painter = painterResource(id = R.drawable.add_box_24),
+                                        contentDescription = "add box",
+                                        tint = Color.Black
+                                    )
+                                }
+                                IconButton(
+                                    onClick = {
+                                        // open bottom sheet for choose image & color
+                                    }
+                                ) {
+                                    Icon(
+                                        modifier = Modifier.size(28.dp),
+                                        painter = painterResource(id = R.drawable.color_palette_24),
+                                        contentDescription = "color palette",
+                                        tint = Color.Black
+                                    )
+                                }
+                            }
+                            Row(
+                                modifier = Modifier
+                                    .weight(0.33f)
+                                    .fillMaxHeight(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                Text(
+                                    text = "Edited Jun 1",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                            Row(
+                                modifier = Modifier.weight(0.33f),
+                                horizontalArrangement = Arrangement.End
+                            ) {
+                                IconButton(onClick = { /*TODO*/ }) {
+                                    Icon(
+                                        modifier = Modifier.size(28.dp),
+                                        painter = painterResource(id = R.drawable.more_vert_24),
+                                        contentDescription = "option",
+                                        tint = Color.Black
+                                    )
+                                }
+                            }
+                        }
+                    },
+                    containerColor = Color.Transparent
+                )
             }
         ) { paddingValues ->
             Column(
@@ -144,6 +229,7 @@ fun NoteEdit(
                     .background(color = Color.Transparent)
                     .padding(paddingValues)
                     .verticalScroll(rememberScrollState())
+                    .imePadding()
             ) {
                 TextField(
                     value = noteEditViewModel.titleText,
