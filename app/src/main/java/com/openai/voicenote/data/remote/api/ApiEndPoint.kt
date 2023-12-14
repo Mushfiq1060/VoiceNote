@@ -1,4 +1,4 @@
-package com.openai.voicenote.data.remote
+package com.openai.voicenote.data.remote.api
 
 import com.openai.voicenote.model.ApiResponse
 import okhttp3.MultipartBody

@@ -1,13 +1,13 @@
 package com.openai.voicenote.ui.screens.voiceRecordScreen
 
 import android.content.Context
-import android.os.CountDownTimer
-import android.text.format.DateFormat.getTimeFormat
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.openai.voicenote.data.remote.ApiRepository
+import com.openai.voicenote.data.remote.RemoteDataSource
+import com.openai.voicenote.data.remote.api.ApiRepository
+import com.openai.voicenote.model.ApiResponse
 import com.openai.voicenote.utils.player.AudioPlayer
+import com.openai.voicenote.utils.player.AudioPlayerImpl
 import com.openai.voicenote.utils.recorder.AudioRecorder
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -26,17 +26,13 @@ import javax.inject.Inject
 import kotlin.concurrent.fixedRateTimer
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
-import kotlin.time.Duration.Companion.seconds
 
 @HiltViewModel
-class VoiceRecordViewModel @Inject constructor() : ViewModel() {
-
-    @Inject
-    lateinit var apiRepository: ApiRepository
-    @Inject
-    lateinit var audioRecorderImpl: AudioRecorder
-    @Inject
-    lateinit var audioPlayerImpl: AudioPlayer
+class VoiceRecordViewModel @Inject constructor(
+    private val remoteDataSourceImpl: RemoteDataSource,
+    private val audioRecorderImpl: AudioRecorder,
+    private val audioPlayerImpl: AudioPlayerImpl
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(VoiceRecordUiState())
     val uiState: StateFlow<VoiceRecordUiState> = _uiState.asStateFlow()
@@ -144,44 +140,16 @@ class VoiceRecordViewModel @Inject constructor() : ViewModel() {
         audioPlayerImpl.stopPlayer()
     }
 
-    fun convertSpeechToText(resultCallBack: (text: String, success: Boolean) -> Unit) {
+    fun convertSpeechToText(resultCallBack: (response: ApiResponse) -> Unit) {
         _uiState.update { currentState ->
             currentState.copy(
                 isSpeechToTextConvertStart = true
             )
         }
-        viewModelScope.launch(Dispatchers.IO) {
-            val requestedFile = RequestBody.create(MediaType.parse("multipart/form-data"), file)
-            val fileReqBody = MultipartBody.Part.createFormData("file", file.name, requestedFile)
-            val modelReqBody =
-                RequestBody.create(MediaType.parse("multipart/form-data"), "whisper-1")
-            val response = apiRepository.transcribeAudio(
-                fileReqBody,
-                modelReqBody,
-                "Bearer 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"
-            )
-            if (response.isSuccessful) {
-                val x = response.body()?.text
-                if (x != null) {
-                    withContext(Dispatchers.Main) {
-                        resultCallBack(x, true)
-                    }
-                } else {
-                    withContext(Dispatchers.Main) {
-                        resultCallBack("Open AI can not process your audio!!!", false)
-                    }
-                }
-            } else {
-                withContext(Dispatchers.Main) {
-                    resultCallBack("You reached maximum limit!!!", false)
-                }
-            }
+        viewModelScope.launch {
+            val result = remoteDataSourceImpl.transcribeAudio(file)
             withContext(Dispatchers.Main) {
-                _uiState.update { currentState ->
-                    currentState.copy(
-                        isSpeechToTextConvertStart = false
-                    )
-                }
+                resultCallBack(result)
             }
         }
     }

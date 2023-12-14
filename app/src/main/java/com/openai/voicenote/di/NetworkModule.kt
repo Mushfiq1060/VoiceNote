@@ -1,7 +1,9 @@
 package com.openai.voicenote.di
 
 import com.google.gson.GsonBuilder
-import com.openai.voicenote.data.remote.ApiEndPoint
+import com.openai.voicenote.data.remote.RemoteDataSource
+import com.openai.voicenote.data.remote.RemoteDataSourceImpl
+import com.openai.voicenote.data.remote.api.ApiEndPoint
 import com.openai.voicenote.utils.Constant
 import dagger.Module
 import dagger.Provides
@@ -12,7 +14,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 @InstallIn(SingletonComponent::class)
 @Module
-object RetrofitModule {
+object NetworkModule {
 
     @Provides
     fun getRetrofit(): Retrofit {
@@ -24,6 +26,11 @@ object RetrofitModule {
                 )
             )
             .build()
+    }
+
+    @Provides
+    fun providesRemoteDataSource(remoteDataSourceImpl: RemoteDataSourceImpl): RemoteDataSource {
+        return remoteDataSourceImpl
     }
 
     @Provides

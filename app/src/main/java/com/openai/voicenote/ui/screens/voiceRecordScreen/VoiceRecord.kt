@@ -138,13 +138,17 @@ fun VoiceRecord(
                                         interactionSource = MutableInteractionSource(),
                                         indication = null,
                                         onClick = {
-                                            voiceRecordViewModel.convertSpeechToText { text, success ->
-                                                if (!success) {
-                                                    Toast
-                                                        .makeText(context, text, Toast.LENGTH_LONG)
-                                                        .show()
+                                            voiceRecordViewModel.convertSpeechToText { response ->
+                                                if (response.success == true) {
+                                                    navHostController.navigate(NavigationItem.NoteEdit.route + "/noNote" + "/${response.text}" + "/2")
                                                 } else {
-                                                    navHostController.navigate(NavigationItem.NoteEdit.route + "/noNote" + "/$text" + "/2")
+                                                    Toast
+                                                        .makeText(
+                                                            context,
+                                                            response.text,
+                                                            Toast.LENGTH_LONG
+                                                        )
+                                                        .show()
                                                 }
                                             }
                                         }
