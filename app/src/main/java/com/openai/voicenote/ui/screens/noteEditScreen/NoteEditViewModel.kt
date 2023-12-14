@@ -86,11 +86,37 @@ class NoteEditViewModel @Inject constructor(private val noteDataSource: NoteData
         }
     }
 
-    fun getCurrentNoteBackgroundImage(): Int {
-        if (::currentNote.isInitialized) {
-            return currentNote.backgroundImage
+    fun toggleBottomSheetState(state: Boolean) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                sheetOpenState = state
+            )
         }
-        return -1
+    }
+
+    fun changeBackgroundImage(id: Int) {
+        if (::currentNote.isInitialized) {
+            currentNote.backgroundImage = id
+            currentNote.editTime = System.currentTimeMillis()
+            noteAutoSaveOrUpdateHandler.typeTValue = currentNote
+        }
+        else if (id != -1) {
+            currentNote = Note(
+                noteId = null,
+                title = titleText,
+                description = noteText,
+                editTime = System.currentTimeMillis(),
+                pin = false,
+                archive = false,
+                backgroundImage = id
+            )
+            noteAutoSaveOrUpdateHandler.typeTValue = currentNote
+        }
+        _uiState.update { currentState ->
+            currentState.copy(
+                backgroundImageId = id
+            )
+        }
     }
 
     fun setCurrentNote(note: Note) {
@@ -101,7 +127,8 @@ class NoteEditViewModel @Inject constructor(private val noteDataSource: NoteData
         _uiState.update { currentState ->
             currentState.copy(
                 currentNotePinStatus = note.pin,
-                currentNoteArchiveStatus = note.archive
+                currentNoteArchiveStatus = note.archive,
+                backgroundImageId = note.backgroundImage
             )
         }
     }
