@@ -4,6 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.openai.voicenote.data.local.NoteDataSource
 import com.openai.voicenote.model.Note
 import com.openai.voicenote.utils.QueryDeBouncer
@@ -12,6 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -134,24 +136,28 @@ class NoteEditViewModel @Inject constructor(private val noteDataSource: NoteData
     }
 
     private fun saveNote() {
-        noteDataSource.insertSingleNote(currentNote) {
-            currentNote.noteId = it
+        viewModelScope.launch {
+            currentNote.noteId = noteDataSource.insertSingleNote(currentNote)
         }
     }
 
     private fun updateNote() {
-        noteDataSource.updateNote(currentNote)
+        viewModelScope.launch {
+            noteDataSource.updateNote(currentNote)
+        }
     }
 
     fun togglePinOfNote() {
         if (::currentNote.isInitialized) {
             if (currentNote.noteId != null) {
                 currentNote.pin = !currentNote.pin
-                noteDataSource.togglePinStatus(currentNote.noteId!!, currentNote.pin)
-                _uiState.update { currentState ->
-                    currentState.copy(
-                        currentNotePinStatus = currentNote.pin
-                    )
+                viewModelScope.launch {
+                    noteDataSource.togglePinStatus(currentNote.noteId!!, currentNote.pin)
+                    _uiState.update { currentState ->
+                        currentState.copy(
+                            currentNotePinStatus = currentNote.pin
+                        )
+                    }
                 }
             }
         }

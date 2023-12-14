@@ -15,99 +15,43 @@ class NoteLocalDataSource @Inject constructor(private val noteRepository: NoteRe
 
     private val coroutineScope = CoroutineScope(Dispatchers.Default)
 
-    override fun insertSingleNote(note: Note, getInsertNoteId: (Long) -> Unit) {
-        coroutineScope.launch {
-            val noteId = withContext(Dispatchers.IO) {
-                noteRepository.insertSingleNote(note)
-            }
-            withContext(Dispatchers.Main) {
-                getInsertNoteId(noteId)
-            }
-        }
+    override suspend fun insertSingleNote(note: Note): Long {
+        return noteRepository.insertSingleNote(note)
     }
 
-    override fun insertMultipleNote(notes: List<Note>) {
-        coroutineScope.launch {
-            withContext(Dispatchers.IO) {
-                noteRepository.insertMultipleNote(notes)
-            }
-        }
+    override suspend fun insertMultipleNote(notes: List<Note>) {
+        noteRepository.insertMultipleNote(notes)
     }
 
-    override fun updateNote(note: Note) {
-        coroutineScope.launch {
-            withContext(Dispatchers.IO) {
-                noteRepository.updateNote(note)
-            }
-        }
+    override suspend fun updateNote(note: Note) {
+        noteRepository.updateNote(note)
     }
 
-    override fun getAllPinNotes(allPinNotes: (List<Note>) -> Unit) {
-        coroutineScope.launch {
-            val noteList = withContext(Dispatchers.IO) {
-                noteRepository.getAllPinNotes()
-            }
-            allPinNotes(noteList)
-        }
+    override suspend fun getAllPinNotes(): List<Note> {
+        return noteRepository.getAllPinNotes()
     }
 
-    override fun getAllOtherNotes(allOtherNotes: (List<Note>) -> Unit) {
-        coroutineScope.launch {
-            val noteList = withContext(Dispatchers.IO) {
-                noteRepository.getAllOtherNotes()
-            }
-            withContext(Dispatchers.Main) {
-                allOtherNotes(noteList)
-            }
-        }
+    override suspend fun getAllOtherNotes(): List<Note> {
+        return noteRepository.getAllOtherNotes()
     }
 
-    override fun togglePinStatus(noteId: Long, pin: Boolean) {
-        coroutineScope.launch {
-            withContext(Dispatchers.IO) {
-                noteRepository.togglePinStatus(noteId, pin)
-            }
-        }
+    override suspend fun togglePinStatus(noteId: Long, pin: Boolean) {
+        noteRepository.togglePinStatus(noteId, pin)
     }
 
-    override fun updatePinStatus(notesId: List<Long>, pin: Boolean, resultCallback: (Int) -> Unit) {
-        coroutineScope.launch {
-            val updatedRowCount = withContext(Dispatchers.IO) {
-                noteRepository.updatePinStatus(notesId, pin)
-            }
-            withContext(Dispatchers.Main) {
-                resultCallback(updatedRowCount)
-            }
-        }
+    override suspend fun updatePinStatus(notesId: List<Long>, pin: Boolean): Int {
+        return noteRepository.updatePinStatus(notesId, pin)
     }
 
-    override fun toggleArchiveStatus(noteId: Long, archive: Boolean) {
-        coroutineScope.launch {
-            withContext(Dispatchers.IO) {
-                noteRepository.toggleArchiveStatus(noteId, archive)
-            }
-        }
+    override suspend fun toggleArchiveStatus(noteId: Long, archive: Boolean) {
+        noteRepository.toggleArchiveStatus(noteId, archive)
     }
 
-    override fun deleteNote(noteId: Long, resultCallback: (Int) -> Unit) {
-        coroutineScope.launch {
-            val deletedRowCount = withContext(Dispatchers.IO) {
-                noteRepository.deleteNote(noteId)
-            }
-            withContext(Dispatchers.Main) {
-                resultCallback(deletedRowCount)
-            }
-        }
+    override suspend fun deleteNote(noteId: Long): Int {
+        return noteRepository.deleteNote(noteId)
     }
 
-    override fun deleteNotes(notesId: List<Long>, resultCallback: (Int) -> Unit) {
-        coroutineScope.launch {
-            val deletedRowCount = withContext(Dispatchers.IO) {
-                noteRepository.deleteNotes(notesId)
-            }
-            withContext(Dispatchers.Main) {
-                resultCallback(deletedRowCount)
-            }
-        }
+    override suspend fun deleteNotes(notesId: List<Long>): Int {
+        return noteRepository.deleteNotes(notesId)
     }
 }

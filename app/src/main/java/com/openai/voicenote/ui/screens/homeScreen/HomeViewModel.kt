@@ -2,6 +2,7 @@ package com.openai.voicenote.ui.screens.homeScreen
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.openai.voicenote.data.local.NoteDataSource
 import com.openai.voicenote.model.Note
 import com.openai.voicenote.ui.component.MultiFabState
@@ -11,6 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -25,20 +27,22 @@ class HomeViewModel @Inject constructor(private val noteDataSource: NoteDataSour
     }
 
     private fun getAllPinNotes() {
-        noteDataSource.getAllPinNotes {
+        viewModelScope.launch {
+            val allPinNotes = noteDataSource.getAllPinNotes()
             _uiState.update { currentState ->
                 currentState.copy(
-                    allPinNotes = it
+                    allPinNotes = allPinNotes
                 )
             }
         }
     }
 
     private fun getAllOtherNotes() {
-        noteDataSource.getAllOtherNotes {
+        viewModelScope.launch {
+            val allOtherNotes = noteDataSource.getAllOtherNotes()
             _uiState.update { currentState ->
                 currentState.copy(
-                    allOtherNotes = it
+                    allOtherNotes = allOtherNotes
                 )
             }
         }
@@ -137,8 +141,8 @@ class HomeViewModel @Inject constructor(private val noteDataSource: NoteDataSour
             )
         }
         if (note != null) {
-            noteDataSource.insertSingleNote(note) {
-                note.noteId = it
+            viewModelScope.launch {
+                note.noteId = noteDataSource.insertSingleNote(note)
                 _uiState.update { currentState ->
                     currentState.copy(
                         allOtherNotes = currentState.allOtherNotes.toMutableList()
@@ -158,7 +162,8 @@ class HomeViewModel @Inject constructor(private val noteDataSource: NoteDataSour
         _uiState.value.selectedOtherNotes.forEach {
             _uiState.value.allOtherNotes[it].noteId?.let { id -> deletedIdList.add(id) }
         }
-        noteDataSource.deleteNotes(deletedIdList) {
+        viewModelScope.launch {
+            noteDataSource.deleteNotes(deletedIdList)
             removeSelectedNotes()
             getAllOtherNotes()
             getAllPinNotes()
@@ -182,7 +187,8 @@ class HomeViewModel @Inject constructor(private val noteDataSource: NoteDataSour
             }
             pin = false
         }
-        noteDataSource.updatePinStatus(updateIdList, pin) {
+        viewModelScope.launch {
+            noteDataSource.updatePinStatus(updateIdList, pin)
             removeSelectedNotes()
             getAllOtherNotes()
             getAllPinNotes()
