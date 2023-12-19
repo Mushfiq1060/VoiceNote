@@ -333,20 +333,15 @@ fun BottomSheetRow(onBackgroundImageSelect: (id: Int) -> Unit) {
 
 val backgroundImageData = listOf(
     R.drawable.no_image,
-    R.drawable.abstract_paint,
-    R.drawable.boat,
-    R.drawable.plant,
-    R.drawable.sunrise,
-    R.drawable.winter,
-    R.drawable.bohemian,
-    R.drawable.bubble,
-    R.drawable.circles,
-    R.drawable.desert,
-    R.drawable.dot_paint,
-    R.drawable.hardwood,
-    R.drawable.origami,
-    R.drawable.space,
-    R.drawable.tree
+    R.drawable.one,
+    R.drawable.two,
+    R.drawable.three,
+    R.drawable.four,
+    R.drawable.five,
+    R.drawable.six,
+    R.drawable.seven,
+    R.drawable.eight,
+    R.drawable.nine
 ).toMutableList()
 
 fun checkPinStatus(currentNotePin: Boolean): Int {

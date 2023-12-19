@@ -12,13 +12,17 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -65,6 +69,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
@@ -89,6 +95,7 @@ import com.openai.voicenote.ui.component.MultiFloatingActionButton
 import com.openai.voicenote.ui.component.SubFabType
 import com.openai.voicenote.ui.navigation.NavigationItem
 import com.openai.voicenote.ui.theme.VoiceNoteTheme
+import com.openai.voicenote.ui.theme.shapes
 import com.openai.voicenote.utils.ClickType
 import com.openai.voicenote.utils.NoteType
 import com.openai.voicenote.utils.Utils.toJson
@@ -518,17 +525,15 @@ fun LazyStaggeredGridScope.header(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun RenderGridItem(note: Note, isSelected: Boolean, onClick: (ClickType) -> Unit) {
-    OutlinedCard(
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface,
-        ),
-        border = BorderStroke(getBorderWidth(isSelected), getBorderColor(isSelected)),
-        shape = MaterialTheme.shapes.large,
+    Box(
         modifier = Modifier
-            .clip(shape = MaterialTheme.shapes.large)
-            .shadow(
-                elevation = getCardElevation(selected = isSelected),
-                spotColor = MaterialTheme.colorScheme.onBackground,
+            .background(Color.Transparent)
+            .height(IntrinsicSize.Min)
+            .fillMaxWidth()
+            .clip(MaterialTheme.shapes.large)
+            .border(
+                shape = MaterialTheme.shapes.large,
+                border = BorderStroke(getBorderWidth(isSelected), getBorderColor(isSelected)),
             )
             .combinedClickable(
                 onClick = {
@@ -539,21 +544,33 @@ fun RenderGridItem(note: Note, isSelected: Boolean, onClick: (ClickType) -> Unit
                 }
             )
     ) {
-        Text(
-            text = note.title,
-            style = MaterialTheme.typography.bodyMedium,
-            fontWeight = FontWeight.W900,
-            modifier = Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 4.dp),
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
-        Text(
-            text = note.description,
-            style = MaterialTheme.typography.bodySmall,
-            modifier = Modifier.padding(start = 16.dp, top = 4.dp, end = 16.dp, bottom = 16.dp),
-            maxLines = 5,
-            overflow = TextOverflow.Ellipsis
-        )
+        if (note.backgroundImage != -1) {
+            Image(
+                modifier = Modifier
+                    .matchParentSize()
+                    .clip(MaterialTheme.shapes.large),
+                painter = painterResource(id = note.backgroundImage),
+                contentDescription = null,
+                contentScale = ContentScale.Crop
+            )
+        }
+        Column {
+            Text(
+                text = note.title,
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.W900,
+                modifier = Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 4.dp),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            Text(
+                text = note.description,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(start = 16.dp, top = 4.dp, end = 16.dp, bottom = 16.dp),
+                maxLines = 5,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
     }
 }
 
