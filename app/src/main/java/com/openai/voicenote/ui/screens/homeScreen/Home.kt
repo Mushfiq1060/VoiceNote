@@ -555,21 +555,26 @@ fun RenderGridItem(note: Note, isSelected: Boolean, onClick: (ClickType) -> Unit
             )
         }
         Column {
-            Text(
-                text = note.title,
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.W900,
-                modifier = Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 4.dp),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
+            Spacer(modifier = Modifier.height(16.dp))
+            if (note.title.isNotEmpty()) {
+                Text(
+                    text = note.title,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.W900,
+                    modifier = Modifier.padding(start = 16.dp, end = 16.dp),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+            }
             Text(
                 text = note.description,
                 style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.padding(start = 16.dp, top = 4.dp, end = 16.dp, bottom = 16.dp),
+                modifier = Modifier.padding(start = 16.dp, end = 16.dp),
                 maxLines = 5,
                 overflow = TextOverflow.Ellipsis
             )
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }
