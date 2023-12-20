@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.openai.voicenote.data.local.NoteDataSource
 import com.openai.voicenote.model.Note
 import com.openai.voicenote.utils.QueryDeBouncer
+import com.openai.voicenote.utils.Utils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -130,7 +131,8 @@ class NoteEditViewModel @Inject constructor(private val noteDataSource: NoteData
             currentState.copy(
                 currentNotePinStatus = note.pin,
                 currentNoteArchiveStatus = note.archive,
-                backgroundImageId = note.backgroundImage
+                backgroundImageId = note.backgroundImage,
+                editedTime = Utils.getFormattedTime(note.editTime)
             )
         }
     }
@@ -138,12 +140,22 @@ class NoteEditViewModel @Inject constructor(private val noteDataSource: NoteData
     private fun saveNote() {
         viewModelScope.launch {
             currentNote.noteId = noteDataSource.insertSingleNote(currentNote)
+            _uiState.update { currentState ->
+                currentState.copy(
+                    editedTime = Utils.getFormattedTime(currentNote.editTime)
+                )
+            }
         }
     }
 
     private fun updateNote() {
         viewModelScope.launch {
             noteDataSource.updateNote(currentNote)
+            _uiState.update { currentState ->
+                currentState.copy(
+                    editedTime = Utils.getFormattedTime(currentNote.editTime)
+                )
+            }
         }
     }
 

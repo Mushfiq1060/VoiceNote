@@ -198,7 +198,7 @@ fun NoteEdit(
                                 horizontalArrangement = Arrangement.Center
                             ) {
                                 Text(
-                                    text = "Edited Jun 1",
+                                    text = "Edited " + noteEditUiState.editedTime,
                                     style = MaterialTheme.typography.bodySmall,
                                     fontWeight = FontWeight.Bold
                                 )

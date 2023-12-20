@@ -1,8 +1,49 @@
 package com.openai.voicenote.utils
 
+import android.util.Log
 import com.google.gson.Gson
+import java.util.Calendar
+import java.util.Date
 
 object Utils {
+
+    private val monthList = listOf<String>(
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec"
+    )
+
+    fun getFormattedTime(longTime: Long): String {
+        val dateObj = Date(longTime)
+        val calendar = Calendar.getInstance()
+        val currentCalendar = Calendar.getInstance()
+        calendar.time = dateObj
+        val year = calendar.get(Calendar.YEAR)
+        val currentYear = currentCalendar.get(Calendar.YEAR)
+        val month = calendar.get(Calendar.MONTH)
+        val currentMonth = currentCalendar.get(Calendar.MONTH)
+        val date = calendar.get(Calendar.DATE)
+        val currentDate = currentCalendar.get(Calendar.DATE)
+        val hour = calendar.get(Calendar.HOUR)
+        val am_pm = if (calendar.get(Calendar.AM_PM) == 0) "AM" else "PM"
+        val minute = calendar.get(Calendar.MINUTE)
+        if (year == currentYear) {
+            if (month == currentMonth && date == currentDate) {
+                return "$hour:$minute $am_pm"
+            }
+            return "${monthList[month]} $date"
+        }
+        return "${monthList[month]} $date, $year"
+    }
 
     fun <T> T.toJson(): String? {
         return Gson().toJson(this)
