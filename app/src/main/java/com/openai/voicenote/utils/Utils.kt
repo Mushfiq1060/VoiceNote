@@ -38,7 +38,9 @@ object Utils {
         val minute = calendar.get(Calendar.MINUTE)
         if (year == currentYear) {
             if (month == currentMonth && date == currentDate) {
-                return "$hour:$minute $am_pm"
+                val hourFormat = if (hour < 10) "0$hour" else "$hour"
+                val minuteFormat = if (minute < 10) "0$minute" else "$minute"
+                return "$hourFormat:$minuteFormat $am_pm"
             }
             return "${monthList[month]} $date"
         }
