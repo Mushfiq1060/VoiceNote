@@ -544,7 +544,7 @@ fun RenderGridItem(note: Note, isSelected: Boolean, onClick: (ClickType) -> Unit
                 }
             )
     ) {
-        if (note.backgroundImage != -1) {
+        if (note.backgroundImage != R.drawable.no_image_24) {
             Image(
                 modifier = Modifier
                     .matchParentSize()
