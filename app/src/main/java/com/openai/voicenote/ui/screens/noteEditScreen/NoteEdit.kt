@@ -110,137 +110,150 @@ fun NoteEdit(
                 contentScale = ContentScale.FillBounds
             )
         }
-        Scaffold(modifier = Modifier
-            .nestedScroll(scrollBehavior.nestedScrollConnection)
-            .systemBarsPadding()
-            .imePadding(), containerColor = Color.Transparent, topBar = {
-            TopAppBar(colors = TopAppBarDefaults.mediumTopAppBarColors(
-                containerColor = Color.Transparent,
-            ), title = {
-
-            }, scrollBehavior = scrollBehavior, navigationIcon = {
-                IconButton(onClick = {
-                    navHostController.navigate(NavigationItem.Home.route) {
-                        popUpTo(Screen.HOME.name) {
-                            inclusive = true
+        Scaffold(
+            modifier = Modifier
+                .nestedScroll(scrollBehavior.nestedScrollConnection)
+                .systemBarsPadding()
+                .imePadding(),
+            containerColor = Color.Transparent,
+            topBar = {
+                TopAppBar(
+                    colors = TopAppBarDefaults.mediumTopAppBarColors(
+                        containerColor = Color.Transparent,
+                    ),
+                    title = { },
+                    scrollBehavior = scrollBehavior,
+                    navigationIcon = {
+                        IconButton(onClick = {
+                            navHostController.navigate(NavigationItem.Home.route) {
+                                popUpTo(Screen.HOME.name) {
+                                    inclusive = true
+                                }
+                            }
+                        }) {
+                            Icon(
+                                imageVector = Icons.Default.ArrowBack,
+                                contentDescription = "back button"
+                            )
+                        }
+                    },
+                    actions = {
+                        IconButton(onClick = {
+                            noteEditViewModel.togglePinOfNote()
+                        }) {
+                            Image(
+                                painter = painterResource(
+                                    id = checkPinStatus(noteEditUiState.currentNotePinStatus)
+                                ), contentDescription = "pin note", modifier = Modifier.size(28.dp)
+                            )
+                        }
+                        IconButton(onClick = {
+                            //Archive note
+                        }) {
+                            Image(
+                                painter = painterResource(
+                                    id = checkArchiveStatus(noteEditUiState.currentNoteArchiveStatus)
+                                ), contentDescription = "pin note", modifier = Modifier.size(28.dp)
+                            )
                         }
                     }
-                }) {
-                    Icon(
-                        imageVector = Icons.Default.ArrowBack,
-                        contentDescription = "back button"
-                    )
-                }
-            }, actions = {
-                IconButton(onClick = {
-                    noteEditViewModel.togglePinOfNote()
-                }) {
-                    Image(
-                        painter = painterResource(
-                            id = checkPinStatus(noteEditUiState.currentNotePinStatus)
-                        ), contentDescription = "pin note", modifier = Modifier.size(28.dp)
-                    )
-                }
-                IconButton(onClick = {
-                    //Archive note
-                }) {
-                    Image(
-                        painter = painterResource(
-                            id = checkArchiveStatus(noteEditUiState.currentNoteArchiveStatus)
-                        ), contentDescription = "pin note", modifier = Modifier.size(28.dp)
-                    )
-                }
-            })
-        }, bottomBar = {
-            BottomAppBar(
-                modifier = Modifier
-                    .height(48.dp)
-                    .fillMaxWidth(), actions = {
-                    Row(
-                        modifier = Modifier.fillMaxSize(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
+                )
+            },
+            bottomBar = {
+                BottomAppBar(
+                    modifier = Modifier
+                        .height(48.dp)
+                        .fillMaxWidth(),
+                    actions = {
                         Row(
-                            modifier = Modifier.weight(0.33f)
+                            modifier = Modifier.fillMaxSize(),
+                            horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            IconButton(onClick = { /*TODO*/ }) {
-                                Icon(
-                                    modifier = Modifier.size(28.dp),
-                                    painter = painterResource(id = R.drawable.add_box_24),
-                                    contentDescription = "add box",
-                                    tint = Color.Black
-                                )
-                            }
-                            IconButton(onClick = {
-                                noteEditViewModel.toggleBottomSheetState(true)
-                            }) {
-                                Icon(
-                                    modifier = Modifier.size(28.dp),
-                                    painter = painterResource(id = R.drawable.color_palette_24),
-                                    contentDescription = "color palette",
-                                    tint = Color.Black
-                                )
-                            }
-                        }
-                        Row(
-                            modifier = Modifier
-                                .weight(0.33f)
-                                .fillMaxHeight(),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
-                        ) {
-                            if (!noteEditUiState.isNoteEditStarted) {
-                                Text(
-                                    text = "Edited " + noteEditUiState.editedTime,
-                                    style = MaterialTheme.typography.bodySmall,
-                                    fontWeight = FontWeight.Bold
-                                )
-                            } else {
-                                IconButton(
-                                    onClick = {
-                                        noteEditViewModel.undoHistory()
-                                    }, enabled = noteEditUiState.isUndoPossible
-                                ) {
+                            Row(
+                                modifier = Modifier.weight(0.33f)
+                            ) {
+                                IconButton(onClick = { /*TODO*/ }) {
                                     Icon(
-                                        painter = painterResource(id = R.drawable.undo_24),
-                                        contentDescription = "undo",
-                                        tint = if (noteEditUiState.isUndoPossible) Color.Black else Color.Gray
+                                        modifier = Modifier.size(28.dp),
+                                        painter = painterResource(id = R.drawable.add_box_24),
+                                        contentDescription = "add box",
+                                        tint = Color.Black
                                     )
                                 }
-                                IconButton(
-                                    onClick = {
-                                        noteEditViewModel.redoHistory()
-                                    }, enabled = noteEditUiState.isRedoPossible
-                                ) {
+                                IconButton(onClick = {
+                                    noteEditViewModel.toggleBottomSheetState(true)
+                                }) {
                                     Icon(
-                                        painter = painterResource(id = R.drawable.redo_24),
-                                        contentDescription = "redo",
-                                        tint = if (noteEditUiState.isRedoPossible) Color.Black else Color.Gray
+                                        modifier = Modifier.size(28.dp),
+                                        painter = painterResource(id = R.drawable.color_palette_24),
+                                        contentDescription = "color palette",
+                                        tint = Color.Black
                                     )
                                 }
                             }
-                        }
-                        Row(
-                            modifier = Modifier.weight(0.33f),
-                            horizontalArrangement = Arrangement.End
-                        ) {
-                            IconButton(onClick = { /*TODO*/ }) {
-                                Icon(
-                                    modifier = Modifier.size(28.dp),
-                                    painter = painterResource(id = R.drawable.more_vert_24),
-                                    contentDescription = "option",
-                                    tint = Color.Black
-                                )
+                            Row(
+                                modifier = Modifier
+                                    .weight(0.33f)
+                                    .fillMaxHeight(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                if (!noteEditUiState.isNoteEditStarted) {
+                                    Text(
+                                        text = "Edited " + noteEditUiState.editedTime,
+                                        style = MaterialTheme.typography.bodySmall,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                } else {
+                                    IconButton(
+                                        onClick = {
+                                            noteEditViewModel.undoHistory()
+                                        }, enabled = noteEditUiState.isUndoPossible
+                                    ) {
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.undo_24),
+                                            contentDescription = "undo",
+                                            tint = if (noteEditUiState.isUndoPossible) Color.Black else Color.Gray
+                                        )
+                                    }
+                                    IconButton(
+                                        onClick = {
+                                            noteEditViewModel.redoHistory()
+                                        }, enabled = noteEditUiState.isRedoPossible
+                                    ) {
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.redo_24),
+                                            contentDescription = "redo",
+                                            tint = if (noteEditUiState.isRedoPossible) Color.Black else Color.Gray
+                                        )
+                                    }
+                                }
+                            }
+                            Row(
+                                modifier = Modifier.weight(0.33f),
+                                horizontalArrangement = Arrangement.End
+                            ) {
+                                IconButton(onClick = { /*TODO*/ }) {
+                                    Icon(
+                                        modifier = Modifier.size(28.dp),
+                                        painter = painterResource(id = R.drawable.more_vert_24),
+                                        contentDescription = "option",
+                                        tint = Color.Black
+                                    )
+                                }
                             }
                         }
-                    }
-                }, containerColor = Color.Transparent
-            )
-        }) { paddingValues ->
+                    },
+                    containerColor = Color.Transparent
+                )
+            }
+        ) { paddingValues ->
             if (noteEditUiState.sheetOpenState) {
-                BottomSheet(onDismiss = {
-                    noteEditViewModel.toggleBottomSheetState(false)
-                }) {
+                BottomSheet(
+                    onDismiss = {
+                        noteEditViewModel.toggleBottomSheetState(false)
+                    }
+                ) {
                     ColorBottomSheet(noteEditUiState.backgroundColor) {
                         noteEditViewModel.changeBackgroundColor(it)
                     }
@@ -304,25 +317,20 @@ fun NoteEdit(
 @Composable
 fun ColorBottomSheet(selectedBackgroundColor: Int, onBackgroundColorSelect: (color: Int) -> Unit) {
     Column {
-        Column {
-            Text(
-                text = stringResource(id = R.string.color),
-                style = MaterialTheme.typography.bodySmall,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(start = 16.dp, top = 16.dp)
-            )
-            ColorBottomSheetRow(selectedBackgroundColor) {
-                onBackgroundColorSelect(it)
-            }
+        Text(
+            text = stringResource(id = R.string.color),
+            style = MaterialTheme.typography.bodySmall,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(start = 16.dp, top = 16.dp)
+        )
+        ColorBottomSheetRow(selectedBackgroundColor) {
+            onBackgroundColorSelect(it)
         }
     }
 }
 
 @Composable
-fun ColorBottomSheetRow(
-    selectedBackgroundColor: Int,
-    onBackgroundColorSelect: (color: Int) -> Unit
-) {
+fun ColorBottomSheetRow(selectedBackgroundColor: Int, onBackgroundColorSelect: (color: Int) -> Unit) {
     LazyRow(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         contentPadding = PaddingValues(16.dp)
@@ -336,8 +344,7 @@ fun ColorBottomSheetRow(
                         .size(48.dp)
                         .clip(CircleShape)
                         .border(
-                            shape = CircleShape,
-                            border = BorderStroke(
+                            shape = CircleShape, border = BorderStroke(
                                 width = if (selectedBackgroundColor == it.toArgb()) 3.dp else 1.dp,
                                 color = if (selectedBackgroundColor == it.toArgb()) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
                             )
@@ -400,10 +407,7 @@ fun PaletteBottomSheet(selectedBackgroundImageId: Int, onBackgroundImageSelect: 
 }
 
 @Composable
-fun BackgroundImageBottomSheetRow(
-    selectedBackgroundImageId: Int,
-    onBackgroundImageSelect: (id: Int) -> Unit
-) {
+fun BackgroundImageBottomSheetRow(selectedBackgroundImageId: Int, onBackgroundImageSelect: (id: Int) -> Unit) {
     LazyRow(
         horizontalArrangement = Arrangement.spacedBy(24.dp),
         contentPadding = PaddingValues(16.dp)
