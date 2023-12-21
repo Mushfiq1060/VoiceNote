@@ -71,10 +71,15 @@ fun NoteEdit(
 
     if (speechToText != null && !noteEditViewModel.getCompose()) {
         noteEditViewModel.setCompose()
-        noteEditViewModel.updateNoteText(speechToText)
+        noteEditViewModel.updateSpeechToText(speechToText)
+        noteEditViewModel.addHistory("", speechToText)
     } else if (note != null && !noteEditViewModel.getCompose()) {
         noteEditViewModel.setCompose()
         noteEditViewModel.setCurrentNote(note)
+        noteEditViewModel.addHistory(note.title, note.description)
+    } else if (!noteEditViewModel.getCompose()) {
+        noteEditViewModel.setCompose()
+        noteEditViewModel.addHistory("", "")
     }
 
     BackPressHandler {
@@ -197,11 +202,39 @@ fun NoteEdit(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.Center
                             ) {
-                                Text(
-                                    text = "Edited " + noteEditUiState.editedTime,
-                                    style = MaterialTheme.typography.bodySmall,
-                                    fontWeight = FontWeight.Bold
-                                )
+                                if (!noteEditUiState.isNoteEditStarted) {
+                                    Text(
+                                        text = "Edited " + noteEditUiState.editedTime,
+                                        style = MaterialTheme.typography.bodySmall,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+                                else {
+                                    IconButton(
+                                        onClick = {
+                                            noteEditViewModel.undoHistory()
+                                        },
+                                        enabled = noteEditUiState.isUndoPossible
+                                    ) {
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.undo_24),
+                                            contentDescription = "undo",
+                                            tint = if (noteEditUiState.isUndoPossible) Color.Black else Color.Gray
+                                        )
+                                    }
+                                    IconButton(
+                                        onClick = {
+                                            noteEditViewModel.redoHistory()
+                                        },
+                                        enabled = noteEditUiState.isRedoPossible
+                                    ) {
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.redo_24),
+                                            contentDescription = "redo",
+                                            tint = if (noteEditUiState.isRedoPossible) Color.Black else Color.Gray
+                                        )
+                                    }
+                                }
                             }
                             Row(
                                 modifier = Modifier.weight(0.33f),

@@ -1,5 +1,6 @@
 package com.openai.voicenote.ui.screens.noteEditScreen
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -23,6 +24,10 @@ class NoteEditViewModel @Inject constructor(private val noteDataSource: NoteData
 
     private val _uiState = MutableStateFlow(NoteEditUiState())
     val uiState: StateFlow<NoteEditUiState> = _uiState.asStateFlow()
+
+    private val history = mutableListOf<Pair<String, String>>() // first one is for note title & second one is for note description
+    private val redoHistory = mutableListOf<Pair<String, String>>() // first one is for note title & second one is for note description
+    private var isAddedToHistory = true
 
     private val noteAutoSaveOrUpdateHandler = QueryDeBouncer<Note>(
         durationInMilliseconds = 500,
@@ -48,12 +53,34 @@ class NoteEditViewModel @Inject constructor(private val noteDataSource: NoteData
         compose = true
     }
 
-    fun updateTitleText(title: String) {
+    fun updateTitleText(title: String, isAddedToHistory: Boolean = true) {
+        if (!_uiState.value.isNoteEditStarted) {
+            _uiState.update { currentState ->
+                currentState.copy(
+                    isNoteEditStarted = true
+                )
+            }
+        }
+        this.isAddedToHistory = isAddedToHistory
         titleText = title
         noteAutoSaveOrUpdateHandler.typeTValue = prepareNote()
     }
 
-    fun updateNoteText(note: String) {
+    fun updateNoteText(note: String, isAddedToHistory: Boolean = true) {
+        if (!_uiState.value.isNoteEditStarted) {
+            _uiState.update { currentState ->
+                currentState.copy(
+                    isNoteEditStarted = true
+                )
+            }
+        }
+        this.isAddedToHistory = isAddedToHistory
+        noteText = note
+        noteAutoSaveOrUpdateHandler.typeTValue = prepareNote()
+    }
+
+    fun updateSpeechToText(note: String) {
+        isAddedToHistory = true
         noteText = note
         noteAutoSaveOrUpdateHandler.typeTValue = prepareNote()
     }
@@ -126,7 +153,6 @@ class NoteEditViewModel @Inject constructor(private val noteDataSource: NoteData
         titleText = note.title
         noteText = note.description
         currentNote = note
-        noteAutoSaveOrUpdateHandler.typeTValue = currentNote
         _uiState.update { currentState ->
             currentState.copy(
                 currentNotePinStatus = note.pin,
@@ -137,9 +163,47 @@ class NoteEditViewModel @Inject constructor(private val noteDataSource: NoteData
         }
     }
 
+    private fun toggleUndoRedoState() {
+        _uiState.update { currentState ->
+            currentState.copy(
+                isUndoPossible = history.size > 1,
+                isRedoPossible = redoHistory.isNotEmpty()
+            )
+        }
+    }
+
+    fun addHistory(title: String, desc: String) {
+        history.add(Pair(title, desc))
+        redoHistory.clear()
+        toggleUndoRedoState()
+    }
+
+    fun undoHistory() {
+        if (history.size > 1) {
+            val lastHistory = history.removeLast()
+            redoHistory.add(lastHistory)
+            toggleUndoRedoState()
+            updateTitleText(history.last().first, false)
+            updateNoteText(history.last().second, false)
+        }
+    }
+
+    fun redoHistory() {
+        if (redoHistory.isNotEmpty()) {
+            val lastRedoHistory = redoHistory.removeLast()
+            history.add(lastRedoHistory)
+            toggleUndoRedoState()
+            updateTitleText(lastRedoHistory.first, false)
+            updateNoteText(lastRedoHistory.second, false)
+        }
+    }
+
     private fun saveNote() {
         viewModelScope.launch {
             currentNote.noteId = noteDataSource.insertSingleNote(currentNote)
+            if (_uiState.value.isNoteEditStarted && isAddedToHistory) {
+                addHistory(currentNote.title, currentNote.description)
+            }
             _uiState.update { currentState ->
                 currentState.copy(
                     editedTime = Utils.getFormattedTime(currentNote.editTime)
@@ -151,6 +215,9 @@ class NoteEditViewModel @Inject constructor(private val noteDataSource: NoteData
     private fun updateNote() {
         viewModelScope.launch {
             noteDataSource.updateNote(currentNote)
+            if (_uiState.value.isNoteEditStarted && isAddedToHistory) {
+                addHistory(currentNote.title, currentNote.description)
+            }
             _uiState.update { currentState ->
                 currentState.copy(
                     editedTime = Utils.getFormattedTime(currentNote.editTime)
