@@ -4,8 +4,11 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.openai.voicenote.R
 import com.openai.voicenote.data.local.NoteDataSource
 import com.openai.voicenote.model.Note
 import com.openai.voicenote.utils.QueryDeBouncer
@@ -25,8 +28,10 @@ class NoteEditViewModel @Inject constructor(private val noteDataSource: NoteData
     private val _uiState = MutableStateFlow(NoteEditUiState())
     val uiState: StateFlow<NoteEditUiState> = _uiState.asStateFlow()
 
-    private val history = mutableListOf<Pair<String, String>>() // first one is for note title & second one is for note description
-    private val redoHistory = mutableListOf<Pair<String, String>>() // first one is for note title & second one is for note description
+    private val history =
+        mutableListOf<Pair<String, String>>() // first one is for note title & second one is for note description
+    private val redoHistory =
+        mutableListOf<Pair<String, String>>() // first one is for note title & second one is for note description
     private var isAddedToHistory = true
 
     private val noteAutoSaveOrUpdateHandler = QueryDeBouncer<Note>(
@@ -101,7 +106,8 @@ class NoteEditViewModel @Inject constructor(private val noteDataSource: NoteData
             editTime = System.currentTimeMillis(),
             pin = false,
             archive = false,
-            backgroundImage = -1
+            backgroundImage = R.drawable.no_image_24,
+            backgroundColor = Color.Transparent.toArgb()
         )
         return currentNote
     }
@@ -127,10 +133,10 @@ class NoteEditViewModel @Inject constructor(private val noteDataSource: NoteData
     fun changeBackgroundImage(id: Int) {
         if (::currentNote.isInitialized) {
             currentNote.backgroundImage = id
+            currentNote.backgroundColor = Color.Transparent.toArgb()
             currentNote.editTime = System.currentTimeMillis()
             noteAutoSaveOrUpdateHandler.typeTValue = currentNote
-        }
-        else if (id != -1) {
+        } else {
             currentNote = Note(
                 noteId = null,
                 title = titleText,
@@ -138,13 +144,42 @@ class NoteEditViewModel @Inject constructor(private val noteDataSource: NoteData
                 editTime = System.currentTimeMillis(),
                 pin = false,
                 archive = false,
-                backgroundImage = id
+                backgroundImage = id,
+                backgroundColor = Color.Transparent.toArgb()
             )
             noteAutoSaveOrUpdateHandler.typeTValue = currentNote
         }
         _uiState.update { currentState ->
             currentState.copy(
-                backgroundImageId = id
+                backgroundImageId = id,
+                backgroundColor = Color.Transparent.toArgb()
+            )
+        }
+    }
+
+    fun changeBackgroundColor(color: Int) {
+        if (::currentNote.isInitialized) {
+            currentNote.backgroundImage = R.drawable.no_image_24
+            currentNote.backgroundColor = color
+            currentNote.editTime = System.currentTimeMillis()
+            noteAutoSaveOrUpdateHandler.typeTValue = currentNote
+        } else {
+            currentNote = Note(
+                noteId = null,
+                title = titleText,
+                description = noteText,
+                editTime = System.currentTimeMillis(),
+                pin = false,
+                archive = false,
+                backgroundImage = R.drawable.no_image_24,
+                backgroundColor = color
+            )
+            noteAutoSaveOrUpdateHandler.typeTValue = currentNote
+        }
+        _uiState.update { currentState ->
+            currentState.copy(
+                backgroundImageId = R.drawable.no_image_24,
+                backgroundColor = color
             )
         }
     }
@@ -158,6 +193,7 @@ class NoteEditViewModel @Inject constructor(private val noteDataSource: NoteData
                 currentNotePinStatus = note.pin,
                 currentNoteArchiveStatus = note.archive,
                 backgroundImageId = note.backgroundImage,
+                backgroundColor = note.backgroundColor,
                 editedTime = Utils.getFormattedTime(note.editTime)
             )
         }

@@ -527,7 +527,6 @@ fun LazyStaggeredGridScope.header(
 fun RenderGridItem(note: Note, isSelected: Boolean, onClick: (ClickType) -> Unit) {
     Box(
         modifier = Modifier
-            .background(Color.Transparent)
             .height(IntrinsicSize.Min)
             .fillMaxWidth()
             .clip(MaterialTheme.shapes.large)
@@ -535,6 +534,7 @@ fun RenderGridItem(note: Note, isSelected: Boolean, onClick: (ClickType) -> Unit
                 shape = MaterialTheme.shapes.large,
                 border = BorderStroke(getBorderWidth(isSelected), getBorderColor(isSelected)),
             )
+            .background(Color(note.backgroundColor))
             .combinedClickable(
                 onClick = {
                     onClick(ClickType.CLICK)
@@ -597,7 +597,7 @@ fun getBorderWidth(selected: Boolean): Dp {
     if (!selected) {
         return 2.dp
     }
-    return 4.dp
+    return 3.dp
 }
 
 @Composable
@@ -605,7 +605,7 @@ fun getBorderColor(selected: Boolean): Color {
     if (!selected) {
         return MaterialTheme.colorScheme.outlineVariant
     }
-    return MaterialTheme.colorScheme.onPrimaryContainer
+    return MaterialTheme.colorScheme.primary
 }
 
 fun countColumn(gridEnable: Boolean): Int {

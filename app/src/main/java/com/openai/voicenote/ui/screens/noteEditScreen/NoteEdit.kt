@@ -48,6 +48,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -96,7 +97,11 @@ fun NoteEdit(
         }
     }
 
-    Box {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(noteEditUiState.backgroundColor))
+    ) {
         if (noteEditUiState.backgroundImageId != R.drawable.no_image_24) {
             Image(
                 modifier = Modifier.fillMaxSize(),
@@ -236,6 +241,9 @@ fun NoteEdit(
                 BottomSheet(onDismiss = {
                     noteEditViewModel.toggleBottomSheetState(false)
                 }) {
+                    ColorBottomSheet(noteEditUiState.backgroundColor) {
+                        noteEditViewModel.changeBackgroundColor(it)
+                    }
                     PaletteBottomSheet(noteEditUiState.backgroundImageId) {
                         noteEditViewModel.changeBackgroundImage(it)
                     }
@@ -294,6 +302,89 @@ fun NoteEdit(
 }
 
 @Composable
+fun ColorBottomSheet(selectedBackgroundColor: Int, onBackgroundColorSelect: (color: Int) -> Unit) {
+    Column {
+        Column {
+            Text(
+                text = stringResource(id = R.string.color),
+                style = MaterialTheme.typography.bodySmall,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(start = 16.dp, top = 16.dp)
+            )
+            ColorBottomSheetRow(selectedBackgroundColor) {
+                onBackgroundColorSelect(it)
+            }
+        }
+    }
+}
+
+@Composable
+fun ColorBottomSheetRow(
+    selectedBackgroundColor: Int,
+    onBackgroundColorSelect: (color: Int) -> Unit
+) {
+    LazyRow(
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        contentPadding = PaddingValues(16.dp)
+    ) {
+        items(backgroundColorData) {
+            Box(
+                modifier = Modifier.size(48.dp)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(CircleShape)
+                        .border(
+                            shape = CircleShape,
+                            border = BorderStroke(
+                                width = if (selectedBackgroundColor == it.toArgb()) 3.dp else 1.dp,
+                                color = if (selectedBackgroundColor == it.toArgb()) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
+                            )
+                        )
+                        .clickable(onClick = {
+                            onBackgroundColorSelect(it.toArgb())
+                        })
+                ) {
+                    if (it == Color.Transparent) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.no_color_24),
+                            modifier = Modifier
+                                .size(36.dp)
+                                .align(Alignment.Center),
+                            contentDescription = "no_image"
+                        )
+                    } else {
+                        Spacer(
+                            modifier = Modifier
+                                .size(48.dp)
+                                .background(color = it)
+                        )
+                    }
+                }
+                if (it.toArgb() == selectedBackgroundColor) {
+                    Box(
+                        modifier = Modifier
+                            .offset(x = 36.dp, y = 0.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(MaterialTheme.colorScheme.onPrimary)
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.check_circle_24),
+                            modifier = Modifier
+                                .size(24.dp)
+                                .clip(RoundedCornerShape(12.dp)),
+                            contentDescription = "check_circle",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
 fun PaletteBottomSheet(selectedBackgroundImageId: Int, onBackgroundImageSelect: (id: Int) -> Unit) {
     Column {
         Text(
@@ -302,33 +393,38 @@ fun PaletteBottomSheet(selectedBackgroundImageId: Int, onBackgroundImageSelect: 
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(start = 16.dp, top = 16.dp)
         )
-        BottomSheetRow(selectedBackgroundImageId) {
+        BackgroundImageBottomSheetRow(selectedBackgroundImageId) {
             onBackgroundImageSelect(it)
         }
     }
 }
 
 @Composable
-fun BottomSheetRow(selectedBackgroundImageId: Int, onBackgroundImageSelect: (id: Int) -> Unit) {
+fun BackgroundImageBottomSheetRow(
+    selectedBackgroundImageId: Int,
+    onBackgroundImageSelect: (id: Int) -> Unit
+) {
     LazyRow(
-        horizontalArrangement = Arrangement.spacedBy(24.dp), contentPadding = PaddingValues(16.dp)
+        horizontalArrangement = Arrangement.spacedBy(24.dp),
+        contentPadding = PaddingValues(16.dp)
     ) {
         items(backgroundImageData) {
             Box(
                 modifier = Modifier.size(64.dp)
             ) {
-                Box(modifier = Modifier
-                    .size(64.dp)
-                    .clip(CircleShape)
-                    .border(
-                        shape = CircleShape, border = BorderStroke(
-                            width = if (selectedBackgroundImageId == it) 3.dp else 1.dp,
-                            color = if (selectedBackgroundImageId == it) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
+                Box(
+                    modifier = Modifier
+                        .size(64.dp)
+                        .clip(CircleShape)
+                        .border(
+                            shape = CircleShape, border = BorderStroke(
+                                width = if (selectedBackgroundImageId == it) 3.dp else 1.dp,
+                                color = if (selectedBackgroundImageId == it) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
+                            )
                         )
-                    )
-                    .clickable(onClick = {
-                        onBackgroundImageSelect(it)
-                    })
+                        .clickable(onClick = {
+                            onBackgroundImageSelect(it)
+                        })
                 ) {
                     if (it == R.drawable.no_image_24) {
                         Icon(
@@ -347,7 +443,6 @@ fun BottomSheetRow(selectedBackgroundImageId: Int, onBackgroundImageSelect: (id:
                     }
                 }
                 if (it == selectedBackgroundImageId) {
-                    Log.i("TAGG", "$it")
                     Box(
                         modifier = Modifier
                             .offset(x = 48.dp, y = 0.dp)
@@ -356,7 +451,9 @@ fun BottomSheetRow(selectedBackgroundImageId: Int, onBackgroundImageSelect: (id:
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.check_circle_24),
-                            modifier = Modifier.size(28.dp).clip(RoundedCornerShape(14.dp)),
+                            modifier = Modifier
+                                .size(28.dp)
+                                .clip(RoundedCornerShape(14.dp)),
                             contentDescription = "check_circle",
                             tint = MaterialTheme.colorScheme.primary
                         )
@@ -366,6 +463,21 @@ fun BottomSheetRow(selectedBackgroundImageId: Int, onBackgroundImageSelect: (id:
         }
     }
 }
+
+val backgroundColorData = listOf(
+    Color.Transparent,
+    Color(0xFFFAAFA8),
+    Color(0xFFF39F76),
+    Color(0xFFFFF8B8),
+    Color(0xFFE2F6D3),
+    Color(0xFFB4DDD3),
+    Color(0xFFD4E4ED),
+    Color(0xFFAECCDC),
+    Color(0xFFD3BFDB),
+    Color(0xFFF6E2DD),
+    Color(0xFFE9E3D4),
+    Color(0xFFEFEFF1),
+)
 
 val backgroundImageData = listOf(
     R.drawable.no_image_24,

@@ -16,5 +16,6 @@ data class Note(
     @ColumnInfo(name = "EditTime") var editTime: Long,
     @ColumnInfo(name = "Pin") var pin: Boolean,
     @ColumnInfo(name = "Archive") var archive: Boolean,
+    @ColumnInfo(name = "BackgroundColor") var backgroundColor: Int,
     @ColumnInfo(name = "BackgroundImage") var backgroundImage: Int
 ) : Serializable
