@@ -1,5 +1,7 @@
-package com.openai.voicenote.ui.navigation.graphs
+package com.openai.voicenote.ui.navigation
 
+import android.util.Log
+import androidx.compose.material3.DrawerState
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -7,42 +9,45 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.openai.voicenote.model.Note
-import com.openai.voicenote.ui.navigation.AppDrawer
-import com.openai.voicenote.ui.navigation.NavigationItem
-import com.openai.voicenote.ui.screens.editLabel.EditLabel
+import com.openai.voicenote.ui.screens.homeScreen.Home
 import com.openai.voicenote.ui.screens.noteEditScreen.NoteEdit
+import com.openai.voicenote.ui.screens.voiceRecordScreen.VoiceRecord
 import com.openai.voicenote.utils.Utils.fromJson
 
 @Composable
-fun RootNavGraph(
-    navController: NavHostController
+fun AppNavHost(
+    navHostController: NavHostController,
+    drawerState: DrawerState,
+    startDestination: String = NavigationItem.Home.route,
+    drawerGestureCallback: (Boolean) -> Unit
 ) {
-
     NavHost(
-        navController = navController,
-        startDestination = AppDrawer.APP_DRAWER
+        navController = navHostController,
+        startDestination = startDestination
     ) {
-
-        composable(
-            route = AppDrawer.APP_DRAWER
-        ) {
-            AppDrawer(navController = navController)
+        composable(NavigationItem.Home.route) {
+            drawerGestureCallback(true)
+            Home(navHostController = navHostController, drawerState = drawerState)
         }
-
+        composable(NavigationItem.VoiceRecord.route) {
+            drawerGestureCallback(false)
+            VoiceRecord(navHostController = navHostController)
+        }
         composable(
-            WithoutNavigationDrawerItem.NoteEdit.route + "/{noteString}/{speechToText}/{fromWhichPage}",
+            NavigationItem.NoteEdit.route + "/{noteString}/{speechToText}/{fromWhichPage}",
             arguments = listOf(
                 navArgument("noteString") { type = NavType.StringType },
                 navArgument("speechToText") { type = NavType.StringType },
                 navArgument("fromWhichPage") { type = NavType.IntType }
             )
         ) { navBackStack ->
+            drawerGestureCallback(false)
             when (navBackStack.arguments?.getInt("fromWhichPage")) {
                 1 -> { // by click on note in the home screen
                     val noteString = navBackStack.arguments?.getString("noteString")
                     val note = noteString?.fromJson(Note::class.java)
                     NoteEdit(
-                        navHostController = navController,
+                        navHostController = navHostController,
                         note = note,
                         speechToText = null
                     )
@@ -51,7 +56,7 @@ fun RootNavGraph(
                 2 -> { // from voice record screen
                     val speechToText = navBackStack.arguments?.getString("speechToText")
                     NoteEdit(
-                        navHostController = navController,
+                        navHostController = navHostController,
                         note = null,
                         speechToText = speechToText
                     )
@@ -59,43 +64,12 @@ fun RootNavGraph(
 
                 3 -> { // by click on fab in the home screen
                     NoteEdit(
-                        navHostController = navController,
+                        navHostController = navHostController,
                         note = null,
                         speechToText = null
                     )
                 }
             }
         }
-
-        composable(
-            route = WithoutNavigationDrawerItem.EditLabels.route
-        ) {
-            EditLabel(navController = navController)
-        }
-
     }
-
-}
-
-object AppDrawer {
-    const val APP_DRAWER = "APP_DRAWER"
-}
-
-enum class WithoutNavigationDrawerScreen {
-    NOTE_EDIT,
-    EDIT_LABELS,
-    SETTINGS,
-    HELP_AND_FEEDBACK
-}
-
-sealed class WithoutNavigationDrawerItem(val route: String) {
-
-    object NoteEdit: WithoutNavigationDrawerItem(WithoutNavigationDrawerScreen.NOTE_EDIT.name)
-
-    object EditLabels: WithoutNavigationDrawerItem(WithoutNavigationDrawerScreen.EDIT_LABELS.name)
-
-    object Settings: WithoutNavigationDrawerItem(WithoutNavigationDrawerScreen.SETTINGS.name)
-
-    object HelpAndFeedback: WithoutNavigationDrawerItem(WithoutNavigationDrawerScreen.HELP_AND_FEEDBACK.name)
-
 }

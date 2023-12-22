@@ -1,19 +1,16 @@
 package com.openai.voicenote.ui.component
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
@@ -25,9 +22,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.openai.voicenote.DrawerMenuOption
 import com.openai.voicenote.R
 import com.openai.voicenote.model.DrawerMenu
-import com.openai.voicenote.ui.navigation.DrawerMenuOption
 import kotlinx.coroutines.launch
 
 @Composable
@@ -51,81 +48,33 @@ fun AppNavDrawer(
             letterSpacing = 2.sp,
             modifier = Modifier.padding(start = 16.dp, bottom = 16.dp)
         )
-        Column(
-            modifier = Modifier.padding(start = 16.dp, end = 16.dp)
-        ) {
-            items.forEach { drawerMenu ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(MaterialTheme.shapes.extraLarge)
-                        .background(
-                            if (selectedIndex == drawerMenu.menuOption.ordinal)
-                                MaterialTheme.colorScheme.inversePrimary
-                            else
-                                Color.Transparent
-                        )
-                        .clickable (
-                            onClick = {
-                                onClick(drawerMenu.menuOption)
-                                scope.launch {
-                                    drawerState.close()
-                                }
-                            }
-                        )
-                        .padding(16.dp)
-                ) {
-                    Icon(
-                        painter = painterResource(id = drawerMenu.icon),
-                        contentDescription = stringResource(id = drawerMenu.title),
-                        tint = getColor(active = selectedIndex == drawerMenu.menuOption.ordinal)
-                    )
-                    Spacer(modifier = Modifier.size(8.dp))
+        items.forEach { drawerMenu ->
+            NavigationDrawerItem(
+                label = {
                     Text(
                         text = stringResource(id = drawerMenu.title),
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.W900,
                         color = getColor(drawerMenu.menuOption.ordinal == selectedIndex)
                     )
-                }
-//                Spacer(modifier = Modifier.size(8.dp))
-            }
+                },
+                selected = selectedIndex == drawerMenu.menuOption.ordinal,
+                onClick = {
+                    onClick(drawerMenu.menuOption)
+                    scope.launch {
+                        drawerState.close()
+                    }
+                },
+                icon = {
+                    Icon(
+                        painter = painterResource(id = drawerMenu.icon),
+                        contentDescription = stringResource(id = drawerMenu.title),
+                        tint = getColor(active = selectedIndex == drawerMenu.menuOption.ordinal)
+                    )
+                },
+                modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+            )
         }
-//        items.forEach { drawerMenu ->
-//            Row() {
-//                Text(
-//                    text = stringResource(id = drawerMenu.title),
-//                    style = MaterialTheme.typography.titleSmall,
-//                    fontWeight = FontWeight.W900,
-//                    color = getColor(drawerMenu.menuOption.ordinal == selectedIndex)
-//                )
-//            }
-//            NavigationDrawerItem(
-//                label = {
-//                    Text(
-//                        text = stringResource(id = drawerMenu.title),
-//                        style = MaterialTheme.typography.titleSmall,
-//                        fontWeight = FontWeight.W900,
-//                        color = getColor(drawerMenu.menuOption.ordinal == selectedIndex)
-//                    )
-//                },
-//                selected = selectedIndex == drawerMenu.menuOption.ordinal,
-//                onClick = {
-//                    onClick(drawerMenu.menuOption)
-//                    scope.launch {
-//                        drawerState.close()
-//                    }
-//                },
-//                icon = {
-//                    Icon(
-//                        painter = painterResource(id = drawerMenu.icon),
-//                        contentDescription = stringResource(id = drawerMenu.title),
-//                        tint = getColor(active = selectedIndex == drawerMenu.menuOption.ordinal)
-//                    )
-//                },
-//                modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
-//            )
-//        }
     }
 
 }
@@ -133,7 +82,7 @@ fun AppNavDrawer(
 @Composable
 fun getColor(active: Boolean): Color {
     if (active) {
-        return MaterialTheme.colorScheme.primary
+        return MaterialTheme.colorScheme.surfaceTint
     }
     return MaterialTheme.colorScheme.onSurface
 }

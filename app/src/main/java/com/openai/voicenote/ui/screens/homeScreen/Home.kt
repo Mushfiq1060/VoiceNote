@@ -48,7 +48,6 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -117,7 +116,7 @@ enum class HomeAppBar {
 
 @Composable
 fun Home(
-    navController: NavHostController,
+    navHostController: NavHostController,
     drawerState: DrawerState,
     homeViewModel: HomeViewModel = hiltViewModel()
 ) {
@@ -224,10 +223,10 @@ fun Home(
             ) {
                 if (it == SubFabType.TEXT) {
                     homeViewModel.toggleFabState(MultiFabState.COLLAPSED)
-                    navController.navigate(NavigationItem.NoteEdit.route + "/noNote/noText/3")
+                    navHostController.navigate(NavigationItem.NoteEdit.route + "/noNote/noText/3")
                 } else if (it == SubFabType.VOICE) {
                     homeViewModel.toggleFabState(MultiFabState.COLLAPSED)
-                    navController.navigate(NavigationItem.VoiceRecord.route)
+                    navHostController.navigate(NavigationItem.VoiceRecord.route)
                 }
             }
         }
@@ -267,7 +266,7 @@ fun Home(
                             }
                         } else {
                             val noteString = item.toJson()
-                            navController.navigate(NavigationItem.NoteEdit.route + "/$noteString" + "/clickNote" + "/1")
+                            navHostController.navigate(NavigationItem.NoteEdit.route + "/$noteString" + "/clickNote" + "/1")
                         }
                     } else if (clickType == ClickType.LONG_CLICK) {
                         homeViewModel.addSelectedNotes(NoteType.PIN, index)
@@ -300,7 +299,7 @@ fun Home(
                             }
                         } else {
                             val noteString = item.toJson()
-                            navController.navigate(NavigationItem.NoteEdit.route + "/$noteString" + "/clickNote" + "/1")
+                            navHostController.navigate(NavigationItem.NoteEdit.route + "/$noteString" + "/clickNote" + "/1")
                         }
                     } else if (clickType == ClickType.LONG_CLICK) {
                         homeViewModel.addSelectedNotes(NoteType.Other, index)
@@ -628,7 +627,7 @@ fun checkGridStatus(gridEnable: Boolean): Int {
 fun HomeScreenPreview() {
     VoiceNoteTheme {
         Home(
-            navController = rememberNavController(), drawerState = rememberDrawerState(
+            navHostController = rememberNavController(), drawerState = rememberDrawerState(
                 initialValue = DrawerValue.Closed
             )
         )
