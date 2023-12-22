@@ -22,4 +22,5 @@
     <string name="note_app">Note App</string>
     <string name="background">Background</string>
     <string name="color">Color</string>
+    <string name="edit_labels">Edit Labels</string>
 </resources>
