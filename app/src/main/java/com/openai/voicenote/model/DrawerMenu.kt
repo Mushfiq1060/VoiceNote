@@ -2,7 +2,7 @@ package com.openai.voicenote.model
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import com.openai.voicenote.DrawerMenuOption
+import com.openai.voicenote.app.DrawerMenuOption
 
 data class DrawerMenu(
     @StringRes var title: Int,
