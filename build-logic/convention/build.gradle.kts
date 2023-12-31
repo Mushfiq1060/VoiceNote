@@ -16,3 +16,12 @@ dependencies {
     compileOnly(libs.ksp.gradle.plugin)
     compileOnly(libs.room.gradle.plugin)
 }
+
+gradlePlugin {
+    plugins {
+        register("androidApplication") {
+            id = "voicenote.android.application"
+            implementationClass = "AndroidApplicationConventionPlugin"
+        }
+    }
+}

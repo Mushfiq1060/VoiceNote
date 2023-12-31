@@ -1,5 +1,5 @@
 plugins {
-    alias(libs.plugins.android.application)
+    alias(libs.plugins.voicenote.android.application)
     alias(libs.plugins.android.kotlin)
     alias(libs.plugins.android.hilt)
     alias(libs.plugins.google.devtools.ksp)
@@ -8,12 +8,9 @@ plugins {
 
 android {
     namespace = "com.openai.voicenote"
-    compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
         applicationId = "com.openai.voicenote"
-        minSdk = libs.versions.minSdk.get().toInt()
-        targetSdk = libs.versions.targetSdk.get().toInt()
         versionCode = libs.versions.versionCode.get().toInt()
         versionName = libs.versions.versionName.get()
 
@@ -31,13 +28,6 @@ android {
                 "proguard-rules.pro"
             )
         }
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-    kotlinOptions {
-        jvmTarget = libs.versions.jvmTarget.get()
     }
     buildFeatures {
         compose = true
