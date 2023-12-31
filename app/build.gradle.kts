@@ -1,10 +1,11 @@
 plugins {
     alias(libs.plugins.voicenote.android.application)
     alias(libs.plugins.voicenote.android.application.compose)
-    alias(libs.plugins.android.kotlin)
-    alias(libs.plugins.android.hilt)
-    alias(libs.plugins.google.devtools.ksp)
-    alias(libs.plugins.jetbrains.kotlin.kapt)
+    alias(libs.plugins.voicenote.android.hilt)
+//    alias(libs.plugins.android.kotlin)
+//    alias(libs.plugins.android.hilt)
+//    alias(libs.plugins.google.devtools.ksp)
+//    alias(libs.plugins.jetbrains.kotlin.kapt)
 }
 
 android {
@@ -37,10 +38,6 @@ android {
     }
 }
 
-kapt {
-    correctErrorTypes = true
-}
-
 dependencies {
 
     implementation(libs.androidx.core.ktx)
@@ -64,7 +61,6 @@ dependencies {
 
     // HILT
     implementation(libs.hilt.android)
-    kapt(libs.hilt.compiler)
 
     // Retrofit
     implementation(libs.retrofit)

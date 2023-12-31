@@ -35,5 +35,9 @@ gradlePlugin {
             id = "voicenote.android.library.compose"
             implementationClass = "AndroidLibraryComposeConventionPlugin"
         }
+        register("androidHilt") {
+            id = "voicenote.android.hilt"
+            implementationClass = "AndroidHiltConventionPlugin"
+        }
     }
 }
