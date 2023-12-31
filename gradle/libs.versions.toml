@@ -90,3 +90,4 @@ voicenote-android-library = { id = "voicenote.android.library", version = "unspe
 voicenote-android-library-compose = { id = "voicenote.android.library.compose", version = "unspecified" }
 voicenote-android-hilt = { id = "voicenote.android.hilt", version = "unspecified" }
 voicenote-android-room = { id = "voicenote.android.room", version = "unspecified" }
+voicenote-jvm-library = { id = "voicenote.jvm.library", version = "unspecified" }

@@ -43,5 +43,9 @@ gradlePlugin {
             id = "voicenote.android.room"
             implementationClass = "AndroidRoomConventionPlugin"
         }
+        register("jvmLibrary") {
+            id = "voicenote.jvm.library"
+            implementationClass = "JvmLibraryConventionPlugin"
+        }
     }
 }
