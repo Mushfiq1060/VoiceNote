@@ -27,5 +27,9 @@ gradlePlugin {
             id = "voicenote.android.application.compose"
             implementationClass = "AndroidApplicationComposeConventionPlugin"
         }
+        register("androidLibrary") {
+            id = "voicenote.android.library"
+            implementationClass = "AndroidLibraryConventionPlugin"
+        }
     }
 }
