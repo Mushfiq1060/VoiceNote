@@ -87,3 +87,4 @@ org-jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kot
 voicenote-android-application = { id = "voicenote.android.application", version = "unspecified" }
 voicenote-android-application-compose = { id = "voicenote.android.application.compose", version = "unspecified" }
 voicenote-android-library = { id = "voicenote.android.library", version = "unspecified" }
+voicenote-android-library-compose = { id = "voicenote.android.library.compose", version = "unspecified" }
