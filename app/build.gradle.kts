@@ -2,10 +2,7 @@ plugins {
     alias(libs.plugins.voicenote.android.application)
     alias(libs.plugins.voicenote.android.application.compose)
     alias(libs.plugins.voicenote.android.hilt)
-//    alias(libs.plugins.android.kotlin)
-//    alias(libs.plugins.android.hilt)
-//    alias(libs.plugins.google.devtools.ksp)
-//    alias(libs.plugins.jetbrains.kotlin.kapt)
+    alias(libs.plugins.voicenote.android.room) // remove this line after adding database module
 }
 
 android {
@@ -59,19 +56,11 @@ dependencies {
     // Compose View Model
     implementation(libs.androidx.lifecycle.viewmodel.compose)
 
-    // HILT
-    implementation(libs.hilt.android)
-
     // Retrofit
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.okhttp)
     implementation(libs.converter.scalars)
-
-    // Room Database
-    implementation(libs.androidx.room.runtime)
-    ksp(libs.androidx.room.compiler)
-    implementation(libs.androidx.room.ktx)
 
     // Google Font
     implementation(libs.androidx.ui.text.google.fonts)

@@ -39,5 +39,9 @@ gradlePlugin {
             id = "voicenote.android.hilt"
             implementationClass = "AndroidHiltConventionPlugin"
         }
+        register("androidRoom") {
+            id = "voicenote.android.room"
+            implementationClass = "AndroidRoomConventionPlugin"
+        }
     }
 }
