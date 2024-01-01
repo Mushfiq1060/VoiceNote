@@ -20,11 +20,12 @@ fun ViewToggle(
 ) {
     IconButton(
         onClick = { onClick(!gridEnable) },
-        modifier = modifier.size(24.dp)
+        modifier = modifier.size(36.dp)
     ) {
         Icon(
             painter = painterResource(id = if(gridEnable) VnIcons.gridView else VnIcons.listView),
-            contentDescription = "view"
+            contentDescription = "view",
+            modifier = Modifier.size(36.dp)
         )
     }
 }

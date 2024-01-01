@@ -3,7 +3,7 @@
     android:height="24dp"
     android:viewportWidth="960"
     android:viewportHeight="960"
-    android:tint="?attr/colorControlNormal">
+    android:tint="@android:color/black">
   <path
       android:fillColor="@android:color/black"
       android:pathData="M530,740L530,220L740,220L740,740L530,740ZM220,740L220,220L430,220L430,740L220,740ZM590,680L680,680L680,280L590,280L590,680ZM280,680L370,680L370,280L280,280L280,680ZM280,280L280,280L280,680L280,680L280,280ZM590,280L590,280L590,680L590,680L590,280Z"/>
