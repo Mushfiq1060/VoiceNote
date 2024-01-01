@@ -15,3 +15,4 @@ dependencyResolutionManagement {
 }
 rootProject.name = "VoiceNote"
 include(":app")
+include(":core:database")
