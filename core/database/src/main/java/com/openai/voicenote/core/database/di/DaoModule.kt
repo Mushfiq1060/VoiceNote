@@ -17,6 +17,7 @@ object DaoModule {
         return vnDatabase.noteResourceDao()
     }
 
+    @Provides
     fun providesLabelResourceDao(vnDatabase: VnDatabase): LabelResourceDao {
         return vnDatabase.labelResourceDao()
     }

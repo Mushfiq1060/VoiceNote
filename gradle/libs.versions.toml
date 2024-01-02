@@ -87,6 +87,7 @@ android-hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt-andr
 google-devtools-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 org-jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 room = { id = "androidx.room", version.ref = "room-runtime" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 
 # Plugins defined by this project
 voicenote-android-application = { id = "voicenote.android.application", version = "unspecified" }
