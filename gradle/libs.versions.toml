@@ -37,6 +37,7 @@ androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = 
 androidx-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "espresso-core" }
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hilt-navigation-compose" }
 androidx-junit = { module = "androidx.test.ext:junit", version.ref = "androidx-junit" }
+androidx-lifecycle-runtime-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "lifecycle-runtime-ktx" }
 androidx-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle-runtime-ktx" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle-runtime-ktx" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigation-compose" }
@@ -97,3 +98,4 @@ voicenote-android-library-compose = { id = "voicenote.android.library.compose", 
 voicenote-android-hilt = { id = "voicenote.android.hilt", version = "unspecified" }
 voicenote-android-room = { id = "voicenote.android.room", version = "unspecified" }
 voicenote-jvm-library = { id = "voicenote.jvm.library", version = "unspecified" }
+voicenote-android-feature = { id = "voicenote.android.feature", version = "unspecified" }

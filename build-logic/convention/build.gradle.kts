@@ -47,5 +47,9 @@ gradlePlugin {
             id = "voicenote.jvm.library"
             implementationClass = "JvmLibraryConventionPlugin"
         }
+        register("androidFeature") {
+            id = "voicenote.android.feature"
+            implementationClass = "AndroidFeatureConventionPlugin"
+        }
     }
 }
