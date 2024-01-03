@@ -9,7 +9,7 @@ import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridScope
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
-import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.foundation.lazy.staggeredgrid.itemsIndexed
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -53,19 +53,19 @@ fun LazyStaggeredGridScope.header(
 fun LazyStaggeredGridScope.noteFeed(
     noteItems: List<NoteResource>,
     isSelected: Boolean,
-    onClick: () -> Unit,
-    onLongClick: () -> Unit
+    onClick: (note: NoteResource, index: Int) -> Unit,
+    onLongClick: (index: Int) -> Unit
 ) {
-    items(
+    itemsIndexed(
         items = noteItems,
-        key = { it.noteId!! },
-        contentType = { "note item" }
-    ) {
+        key = { _, item -> item.noteId!! },
+        contentType = { _, _ -> "note item" }
+    ) { index, note ->
         NoteCard(
-            note = it,
+            note = note,
             isSelected = isSelected,
-            onClick = { onClick() },
-            onLongClick = { onLongClick() }
+            onClick = { onClick(note, index) },
+            onLongClick = { onLongClick(index) }
         )
     }
 }
@@ -96,8 +96,8 @@ fun NoteFeedPreview() {
                 noteFeed(
                     noteItems = notePinnedPreviewList,
                     isSelected = false,
-                    onClick = {},
-                    onLongClick = {}
+                    onClick = { _, _ -> },
+                    onLongClick = { _ -> }
                 )
                 header {
                     Text(
@@ -112,8 +112,8 @@ fun NoteFeedPreview() {
                 noteFeed(
                     noteItems = noteOthersPreviewList,
                     isSelected = false,
-                    onClick = {},
-                    onLongClick = {}
+                    onClick = { _, _ -> },
+                    onLongClick = { _ -> }
                 )
             }
         }

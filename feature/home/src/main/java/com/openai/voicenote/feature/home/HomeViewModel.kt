@@ -12,11 +12,9 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.forEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.annotation.meta.When
 import javax.inject.Inject
 
 @HiltViewModel
@@ -27,12 +25,19 @@ class HomeViewModel @Inject constructor(
     private val selectedPinNotes = MutableStateFlow(mutableSetOf<Int>())
     private val selectedOtherNotes = MutableStateFlow(mutableSetOf<Int>())
 
+    val isAnyNoteSelected = MutableStateFlow(false)
+
     val feedState: StateFlow<NoteFeedUiState> = combine(
         noteDataSource.observeAllPinNotes(),
         noteDataSource.observeAllOtherNotes(),
         selectedPinNotes.asStateFlow(),
         selectedOtherNotes.asStateFlow()
     ) { pinNotes, otherNotes, sPinNotes, sOtherNotes ->
+        isAnyNoteSelected.update {
+            it.apply {
+                (selectedOtherNotes.value.isNotEmpty() || selectedOtherNotes.value.isNotEmpty())
+            }
+        }
         NoteFeedUiState.Success(sPinNotes, sOtherNotes, pinNotes, otherNotes)
     }
         .stateIn(
@@ -113,15 +118,15 @@ class HomeViewModel @Inject constructor(
     fun updateNotesPin() {
         viewModelScope.launch {
             val pin: Boolean = selectedOtherNotes.value.isNotEmpty()
-            noteDataSource.togglePinStatus(getSelectedIdList(), pin)
             removeSelectedNotes()
+            noteDataSource.togglePinStatus(getSelectedIdList(), pin)
         }
     }
 
     fun deleteNotes() {
         viewModelScope.launch {
-            noteDataSource.deleteNotes(getSelectedIdList())
             removeSelectedNotes()
+            noteDataSource.deleteNotes(getSelectedIdList())
         }
     }
 
@@ -129,9 +134,9 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             val note: NoteResource? = getSelectedNotesForCopy()
             if (note != null) {
+                removeSelectedNotes()
                 noteDataSource.makeCopyOfNote(note)
             }
-            removeSelectedNotes()
         }
     }
 
