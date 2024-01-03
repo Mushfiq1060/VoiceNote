@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.openai.voicenote.core.data.NoteDataSource
 import com.openai.voicenote.core.model.NoteResource
+import com.openai.voicenote.core.ui.component.FABState
 import com.openai.voicenote.core.ui.component.NoteFeedUiState
 import com.openai.voicenote.core.ui.component.NoteType
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,6 +28,8 @@ class HomeViewModel @Inject constructor(
 
     val isAnyNoteSelected = MutableStateFlow(false)
 
+    val floatingButtonState = MutableStateFlow(FABState.COLLAPSED)
+
     val feedState: StateFlow<NoteFeedUiState> = combine(
         noteDataSource.observeAllPinNotes(),
         noteDataSource.observeAllOtherNotes(),
@@ -45,6 +48,12 @@ class HomeViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(5000L),
             initialValue = NoteFeedUiState.Loading
         )
+
+    fun changeFABState(fabState: FABState) {
+        floatingButtonState.update {
+            it.apply { fabState }
+        }
+    }
 
     fun addSelectedNote(noteType: NoteType, index: Int) {
         if (noteType == NoteType.PINNED) {

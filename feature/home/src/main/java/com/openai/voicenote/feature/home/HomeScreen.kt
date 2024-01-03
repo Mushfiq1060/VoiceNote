@@ -25,6 +25,8 @@ import com.openai.voicenote.core.designsystem.icon.VnIcons
 import com.openai.voicenote.core.designsystem.theme.VnTheme
 import com.openai.voicenote.core.model.NoteResource
 import com.openai.voicenote.core.ui.component.EmptyNoteList
+import com.openai.voicenote.core.ui.component.FABState
+import com.openai.voicenote.core.ui.component.FloatingButton
 import com.openai.voicenote.core.ui.component.NoteFeedUiState
 import com.openai.voicenote.core.ui.component.NoteType
 import com.openai.voicenote.core.ui.component.header
@@ -37,9 +39,11 @@ internal fun HomeRoute(
 ) {
     val feedState by viewModel.feedState.collectAsStateWithLifecycle()
     val isAnyNoteSelected by viewModel.isAnyNoteSelected.collectAsStateWithLifecycle()
+    val floatingButtonState by viewModel.floatingButtonState.collectAsStateWithLifecycle()
 
     HomeScreen(
         feedState = feedState,
+        fabState = floatingButtonState,
         onClick = { noteResource, index ->
             if (isAnyNoteSelected) {
                 if (noteResource.pin) {
@@ -53,7 +57,8 @@ internal fun HomeRoute(
         },
         onLongClick = { noteType, index ->
             viewModel.addSelectedNote(noteType, index)
-        }
+        },
+        onFabStateChanged = { viewModel.changeFABState(it) }
     )
 
 }
@@ -61,12 +66,23 @@ internal fun HomeRoute(
 @Composable
 internal fun HomeScreen(
     feedState: NoteFeedUiState,
+    fabState: FABState,
     onClick: (note: NoteResource, index: Int) -> Unit,
     onLongClick: (noteType: NoteType, index: Int) -> Unit,
+    onFabStateChanged: (fabState: FABState) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
-        modifier = modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize(),
+        floatingActionButton = {
+            FloatingButton(
+                currentState = fabState,
+                onFabClicked = { onFabStateChanged(it) },
+                onSubFabClicked = {
+
+                }
+            )
+        }
     ) { paddingValues ->
         when (feedState) {
             is NoteFeedUiState.Loading -> {
@@ -157,8 +173,10 @@ fun HomeScreenPreview() {
                     pinnedNoteList = pinnedNotePreviewList,
                     otherNoteList = otherNotePreviewList
                 ),
+                fabState = FABState.EXPANDED,
                 onClick = { _, _ -> },
-                onLongClick = { _, _ -> }
+                onLongClick = { _, _ -> },
+                onFabStateChanged = { }
             )
         }
     }
