@@ -1,15 +1,15 @@
 package com.openai.voicenote.core.data
 
-import com.openai.voicenote.core.database.model.NoteResourceEntity
+import com.openai.voicenote.core.model.NoteResource
 import kotlinx.coroutines.flow.Flow
 
 interface NoteDataSource {
 
-    suspend fun insertNote(notes: List<NoteResourceEntity>)
+    suspend fun insertNote(notes: List<NoteResource>)
 
-    fun getAllNotes(): Flow<List<NoteResourceEntity>>
+    fun observeAllNotes(): Flow<List<NoteResource>>
 
-    suspend fun updateNote(note: NoteResourceEntity)
+    suspend fun updateNote(note: NoteResource)
 
     suspend fun togglePinStatus(notesId: List<Long>, pin: Boolean)
 

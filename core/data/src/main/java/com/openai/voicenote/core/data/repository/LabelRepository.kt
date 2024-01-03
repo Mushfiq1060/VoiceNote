@@ -13,7 +13,7 @@ class LabelRepository @Inject constructor(
     suspend fun insertLabel(labels: List<LabelResourceEntity>) =
         labelResourceDao.insertLabel(labels)
 
-    fun getAllLabels() = labelResourceDao.getAllLabels()
+    fun observeAllLabels() = labelResourceDao.observeAllLabels()
 
     suspend fun updateLabel(label: LabelResourceEntity) =
         labelResourceDao.updateLabel(label)

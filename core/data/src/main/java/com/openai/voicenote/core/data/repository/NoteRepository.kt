@@ -13,7 +13,7 @@ class NoteRepository @Inject constructor(
     suspend fun insertNote(notes: List<NoteResourceEntity>) =
         noteResourceDao.insertNote(notes)
 
-    fun getAllNotes() = noteResourceDao.getAllNotes()
+    fun observeAllNotes() = noteResourceDao.observeAllNotes()
 
     suspend fun updateNote(note: NoteResourceEntity) = noteResourceDao.updateNote(note)
 

@@ -15,7 +15,7 @@ interface LabelResourceDao {
     suspend fun insertLabel(labels: List<LabelResourceEntity>)
 
     @Query("SELECT * FROM label_table")
-    fun getAllLabels(): Flow<List<LabelResourceEntity>>
+    fun observeAllLabels(): Flow<List<LabelResourceEntity>>
 
     @Update
     suspend fun updateLabel(label: LabelResourceEntity)

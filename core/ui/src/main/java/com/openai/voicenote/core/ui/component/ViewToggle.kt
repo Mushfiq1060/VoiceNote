@@ -1,4 +1,4 @@
-package com.openai.voicenote.core.designsystem.component
+package com.openai.voicenote.core.ui.component
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon

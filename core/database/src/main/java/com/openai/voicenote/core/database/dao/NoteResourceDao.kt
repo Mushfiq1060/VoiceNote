@@ -15,7 +15,7 @@ interface NoteResourceDao {
     suspend fun insertNote(notes: List<NoteResourceEntity>)
 
     @Query("SELECT * FROM note_table")
-    fun getAllNotes(): Flow<List<NoteResourceEntity>>
+    fun observeAllNotes(): Flow<List<NoteResourceEntity>>
 
     @Update
     suspend fun updateNote(note: NoteResourceEntity)

@@ -1,8 +1,11 @@
 package com.openai.voicenote.core.data
 
 import com.openai.voicenote.core.data.repository.NoteRepository
-import com.openai.voicenote.core.database.model.NoteResourceEntity
+import com.openai.voicenote.core.database.model.mapToNoteResource
+import com.openai.voicenote.core.database.model.mapToNoteResourceEntity
+import com.openai.voicenote.core.model.NoteResource
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -10,16 +13,18 @@ import javax.inject.Singleton
 class NoteLocalDataSource @Inject constructor(
     private val noteRepository: NoteRepository
 ) : NoteDataSource {
-    override suspend fun insertNote(notes: List<NoteResourceEntity>) {
-        noteRepository.insertNote(notes)
+    override suspend fun insertNote(notes: List<NoteResource>) {
+        noteRepository.insertNote(notes.mapToNoteResourceEntity())
     }
 
-    override fun getAllNotes(): Flow<List<NoteResourceEntity>> {
-        return noteRepository.getAllNotes()
+    override fun observeAllNotes(): Flow<List<NoteResource>> {
+        return noteRepository.observeAllNotes().map {
+            it.mapToNoteResource()
+        }
     }
 
-    override suspend fun updateNote(note: NoteResourceEntity) {
-        noteRepository.updateNote(note)
+    override suspend fun updateNote(note: NoteResource) {
+        noteRepository.updateNote(note.mapToNoteResourceEntity())
     }
 
     override suspend fun togglePinStatus(notesId: List<Long>, pin: Boolean) {
