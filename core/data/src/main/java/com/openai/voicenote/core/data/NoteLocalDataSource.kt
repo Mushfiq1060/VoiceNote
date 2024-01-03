@@ -23,6 +23,18 @@ class NoteLocalDataSource @Inject constructor(
         }
     }
 
+    override fun observeAllPinNotes(): Flow<List<NoteResource>> {
+        return noteRepository.observeAllPinNotes().map {
+            it.mapToNoteResource()
+        }
+    }
+
+    override fun observeAllOtherNotes(): Flow<List<NoteResource>> {
+        return noteRepository.observeAllOtherNotes().map {
+            it.mapToNoteResource()
+        }
+    }
+
     override suspend fun updateNote(note: NoteResource) {
         noteRepository.updateNote(note.mapToNoteResourceEntity())
     }
@@ -37,5 +49,12 @@ class NoteLocalDataSource @Inject constructor(
 
     override suspend fun deleteNotes(notesId: List<Long>) {
         noteRepository.deleteNotes(notesId)
+    }
+
+    override suspend fun makeCopyOfNote(note: NoteResource) {
+        val newNote = note.copy()
+        newNote.noteId = null
+        newNote.editTime = System.currentTimeMillis()
+        insertNote(listOf(newNote))
     }
 }

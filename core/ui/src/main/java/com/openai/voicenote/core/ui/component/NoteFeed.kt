@@ -35,7 +35,8 @@ sealed interface NoteFeedUiState {
     data class Success(
         val selectedPinNotes: MutableSet<Int>,
         val selectedOtherNotes: MutableSet<Int>,
-        val feed: List<NoteResource>
+        val pinnedNoteList: List<NoteResource>,
+        val otherNoteList: List<NoteResource>
     ) : NoteFeedUiState
 
 }
