@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+import "note_view.proto";
+
+option java_package = "com.openai.voicenote.core.datastoreproto";
+option java_multiple_files = true;
+
+message UserPreferences {
+  NoteViewProto note_view = 1;
+}
