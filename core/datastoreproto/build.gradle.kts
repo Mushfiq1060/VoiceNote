@@ -18,11 +18,22 @@ protobuf {
                 register("java") {
                     option("lite")
                 }
+                register("kotlin") {
+                    option("lite")
+                }
             }
         }
     }
 }
 
+androidComponents.beforeVariants {
+    android.sourceSets.getByName(it.name) {
+        val buildDir = layout.buildDirectory.get().asFile
+        java.srcDir(buildDir.resolve("generated/source/proto/${it.name}/java"))
+        kotlin.srcDir(buildDir.resolve("generated/source/proto/${it.name}/kotlin"))
+    }
+}
+
 dependencies {
-    api(libs.protobuf.java.lite)
+    api(libs.protobuf.kotlin.lite)
 }
