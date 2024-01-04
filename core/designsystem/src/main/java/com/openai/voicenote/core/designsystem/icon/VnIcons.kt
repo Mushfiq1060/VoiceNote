@@ -6,7 +6,7 @@ object VnIcons {
     val add = R.drawable.add
     val addBox = R.drawable.add_box
     val archive = R.drawable.archive
-    val checkCircle = R.drawable.check_circle
+    val check = R.drawable.check
     val close = R.drawable.close
     val colorPalette = R.drawable.color_palette
     val delete = R.drawable.delete
@@ -19,6 +19,7 @@ object VnIcons {
     val menu = R.drawable.menu
     val mic = R.drawable.mic
     val moreVert = R.drawable.more_vert
+    val arrowBack = R.drawable.arrow_back
     val noColor = R.drawable.no_color
     val noImage = R.drawable.no_image
     val note = R.drawable.note
