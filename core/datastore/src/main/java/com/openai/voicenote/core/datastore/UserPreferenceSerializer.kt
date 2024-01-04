@@ -6,8 +6,9 @@ import com.google.protobuf.InvalidProtocolBufferException
 import com.openai.voicenote.core.datastoreproto.UserPreferences
 import java.io.InputStream
 import java.io.OutputStream
+import javax.inject.Inject
 
-object UserPreferencesSerializer : Serializer<UserPreferences> {
+class UserPreferencesSerializer @Inject constructor() : Serializer<UserPreferences> {
     override val defaultValue: UserPreferences = UserPreferences.getDefaultInstance()
     override suspend fun readFrom(input: InputStream): UserPreferences {
         try {
