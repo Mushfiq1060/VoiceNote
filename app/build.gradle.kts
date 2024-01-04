@@ -37,6 +37,8 @@ android {
 
 dependencies {
 
+    implementation(project(":feature:home"))
+
     implementation(libs.androidx.core.ktx)
     implementation(platform(libs.jetbrains.kotlin.bom))
     implementation(libs.androidx.lifecycle.runtime.ktx)

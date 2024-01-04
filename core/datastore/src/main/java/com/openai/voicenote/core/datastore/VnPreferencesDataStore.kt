@@ -24,6 +24,10 @@ class VnPreferencesDataStore @Inject constructor(
             )
         }
 
+    /**
+     * [setNoteView] function toggle view state in here.
+     * So pass current state of [noteView] from UI layer
+     */
     suspend fun setNoteView(noteView: NoteView) {
         userPreferences.updateData {
             it.copy {
