@@ -48,6 +48,7 @@ import com.openai.voicenote.core.ui.component.FloatingButton
 import com.openai.voicenote.core.ui.component.NoteFeedUiState
 import com.openai.voicenote.core.ui.component.NoteType
 import com.openai.voicenote.core.ui.component.SelectedTopAppBar
+import com.openai.voicenote.core.ui.component.SelectedTopAppBarItem
 import com.openai.voicenote.core.ui.component.header
 import com.openai.voicenote.core.ui.component.noteFeed
 
@@ -63,6 +64,7 @@ fun HomeRoute(
 ) {
     val feedState by viewModel.feedState.collectAsStateWithLifecycle()
     val isAnyNoteSelected by viewModel.isAnyNoteSelected.collectAsStateWithLifecycle()
+    val contextMenuState by viewModel.contextMenuState.collectAsStateWithLifecycle()
     val floatingButtonState by viewModel.floatingButtonState.collectAsStateWithLifecycle()
     val noteViewState by viewModel.noteViewState.collectAsStateWithLifecycle()
 
@@ -71,6 +73,7 @@ fun HomeRoute(
         fabState = floatingButtonState,
         noteViewState = noteViewState,
         isAnyNoteSelected = isAnyNoteSelected,
+        isContextMenuOpen = contextMenuState,
         onHomeAppBarClick = {
             if (it == HomeAppBarItem.DRAWER) {
                 // drawer
@@ -78,19 +81,20 @@ fun HomeRoute(
                 viewModel.toggleNoteView()
             }
         },
-        onNoteClick = { noteResource, index ->
+        onSelectedTopAppBarClick = { viewModel.onSelectedTopAppBarClick(it) },
+        onNoteClick = { noteResource, noteId ->
             if (isAnyNoteSelected) {
                 if (noteResource.pin) {
-                    viewModel.removeSelectedNote(NoteType.PINNED, index)
+                    viewModel.checkSelectedNote(NoteType.PINNED, noteId)
                 } else {
-                    viewModel.removeSelectedNote(NoteType.OTHERS, index)
+                    viewModel.checkSelectedNote(NoteType.OTHERS, noteId)
                 }
             } else {
                 // navigate to note edit screen with noteResource
             }
         },
-        onNoteLongClick = { noteType, index ->
-            viewModel.addSelectedNote(noteType, index)
+        onNoteLongClick = { noteType, noteId ->
+            viewModel.checkSelectedNote(noteType, noteId)
         },
         onFabStateChanged = {
             if (it == FABState.EXPANDED) {
@@ -109,9 +113,11 @@ internal fun HomeScreen(
     fabState: FABState,
     noteViewState: NoteView,
     isAnyNoteSelected: Boolean,
+    isContextMenuOpen: Boolean,
     onHomeAppBarClick: (homeAppBarItem: HomeAppBarItem) -> Unit,
-    onNoteClick: (note: NoteResource, index: Int) -> Unit,
-    onNoteLongClick: (noteType: NoteType, index: Int) -> Unit,
+    onSelectedTopAppBarClick: (item: SelectedTopAppBarItem) -> Unit,
+    onNoteClick: (note: NoteResource, noteId: Long) -> Unit,
+    onNoteLongClick: (noteType: NoteType, noteId: Long) -> Unit,
     onFabStateChanged: (fabState: FABState) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -126,9 +132,9 @@ internal fun HomeScreen(
                         SelectedTopAppBar(
                             selectedCount = feedState.selectedOtherNotes.size + feedState.selectedPinNotes.size,
                             isSelectedOtherNote = feedState.selectedOtherNotes.isNotEmpty(),
-                            isContextMenuOpen = false,
+                            isContextMenuOpen = isContextMenuOpen,
                             archiveStatus = false, // future work
-                            onClick = {  }
+                            onClick = { onSelectedTopAppBarClick(it) }
                         )
                     }
                     else -> {}
@@ -164,6 +170,8 @@ internal fun HomeScreen(
                         modifier = Modifier.padding(paddingValues),
                         pinnedList = feedState.pinnedNoteList,
                         otherList = feedState.otherNoteList,
+                        selectedPinnedList = feedState.selectedPinNotes,
+                        selectedOthersList = feedState.selectedOtherNotes,
                         noteViewState = noteViewState,
                         onClick = { note, index -> onNoteClick(note, index) },
                         onLongClick = { noteType, index -> onNoteLongClick(noteType, index) }
@@ -243,9 +251,11 @@ internal fun NoteList(
     modifier: Modifier = Modifier,
     pinnedList: List<NoteResource>,
     otherList: List<NoteResource>,
+    selectedPinnedList: MutableSet<Long>,
+    selectedOthersList: MutableSet<Long>,
     noteViewState: NoteView,
-    onClick: (note: NoteResource, index: Int) -> Unit,
-    onLongClick: (noteType: NoteType, index: Int) -> Unit,
+    onClick: (note: NoteResource, noteId: Long) -> Unit,
+    onLongClick: (noteType: NoteType, noteId: Long) -> Unit,
 ) {
     LazyVerticalStaggeredGrid(
         modifier = modifier
@@ -269,9 +279,9 @@ internal fun NoteList(
         }
         noteFeed(
             noteItems = pinnedList,
-            isSelected = false,
-            onClick = { note, index -> onClick(note, index) },
-            onLongClick = { index -> onLongClick(NoteType.PINNED, index) }
+            selectedList = selectedPinnedList,
+            onClick = { note, noteId -> onClick(note, noteId) },
+            onLongClick = { noteId -> onLongClick(NoteType.PINNED, noteId) }
         )
         header {
             Text(
@@ -285,9 +295,9 @@ internal fun NoteList(
         }
         noteFeed(
             noteItems = otherList,
-            isSelected = false,
-            onClick = { note, index -> onClick(note, index) },
-            onLongClick = { index -> onLongClick(NoteType.OTHERS, index) }
+            selectedList = selectedOthersList,
+            onClick = { note, noteId -> onClick(note, noteId) },
+            onLongClick = { noteId -> onLongClick(NoteType.OTHERS, noteId) }
         )
     }
 }
@@ -307,7 +317,9 @@ fun HomeScreenPreview() {
                 fabState = FABState.EXPANDED,
                 noteViewState = NoteView.GRID,
                 isAnyNoteSelected = false,
+                isContextMenuOpen = false,
                 onHomeAppBarClick = {  },
+                onSelectedTopAppBarClick = {  },
                 onNoteClick = { _, _ -> },
                 onNoteLongClick = { _, _ -> },
                 onFabStateChanged = { }

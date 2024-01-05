@@ -26,7 +26,8 @@ enum class SelectedTopAppBarItem {
     TOGGLE_PIN,
     DRAW,
     LABEL,
-    CONTEXT_MENU,
+    CONTEXT_MENU_OPEN,
+    CONTEXT_MENU_CLOSE,
     TOGGLE_ARCHIVE,
     DELETE,
     MAKE_A_COPY
@@ -106,7 +107,7 @@ fun SelectedTopAppBar(
             }
             IconButton(
                 onClick = {
-                    onClick(SelectedTopAppBarItem.CONTEXT_MENU)
+                    onClick(SelectedTopAppBarItem.CONTEXT_MENU_OPEN)
                 }
             ) {
                 Icon(
@@ -118,7 +119,7 @@ fun SelectedTopAppBar(
                 DropdownMenu(
                     expanded = isContextMenuOpen,
                     onDismissRequest = {
-                        onClick(SelectedTopAppBarItem.CONTEXT_MENU)
+                        onClick(SelectedTopAppBarItem.CONTEXT_MENU_CLOSE)
                     }
                 ) {
                     DropdownMenuItem(
@@ -163,7 +164,7 @@ fun SelectedTopAppBar(
 }
 
 fun checkPinStatus(pinState: Boolean): Int {
-    if (pinState) {
+    if (!pinState) {
         return VnIcons.filledPin
     }
     return VnIcons.pin

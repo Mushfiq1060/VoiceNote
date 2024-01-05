@@ -19,6 +19,8 @@ class NoteRepository @Inject constructor(
 
     fun observeAllOtherNotes() = noteResourceDao.observeAllOtherNotes()
 
+    suspend fun getNoteById(noteId: Long) = noteResourceDao.getNoteById(noteId)
+
     suspend fun updateNote(note: NoteResourceEntity) = noteResourceDao.updateNote(note)
 
     suspend fun togglePinStatus(notesId: List<Long>, pin: Boolean) =

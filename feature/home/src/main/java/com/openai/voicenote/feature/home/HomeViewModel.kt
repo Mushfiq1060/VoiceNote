@@ -9,6 +9,7 @@ import com.openai.voicenote.core.model.NoteView
 import com.openai.voicenote.core.ui.component.FABState
 import com.openai.voicenote.core.ui.component.NoteFeedUiState
 import com.openai.voicenote.core.ui.component.NoteType
+import com.openai.voicenote.core.ui.component.SelectedTopAppBarItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -27,10 +28,11 @@ class HomeViewModel @Inject constructor(
     private val userDataRepository: UserDataRepository
 ) : ViewModel() {
 
-    private val selectedPinNotes = MutableStateFlow(mutableSetOf<Int>())
-    private val selectedOtherNotes = MutableStateFlow(mutableSetOf<Int>())
+    private val selectedPinNotes = MutableStateFlow(mutableSetOf<Long>())
+    private val selectedOtherNotes = MutableStateFlow(mutableSetOf<Long>())
 
     val isAnyNoteSelected = MutableStateFlow(false)
+    val contextMenuState = MutableStateFlow(false)
 
     val floatingButtonState = MutableStateFlow(FABState.COLLAPSED)
 
@@ -48,9 +50,10 @@ class HomeViewModel @Inject constructor(
         selectedOtherNotes.asStateFlow()
     ) { pinNotes, otherNotes, sPinNotes, sOtherNotes ->
         isAnyNoteSelected.update {
-            it.apply {
-                (sOtherNotes.isNotEmpty() || sPinNotes.isNotEmpty())
-            }
+            (sOtherNotes.isNotEmpty() || sPinNotes.isNotEmpty())
+        }
+        contextMenuState.update {
+            !(sOtherNotes.isNotEmpty() || sPinNotes.isNotEmpty())
         }
         NoteFeedUiState.Success(sPinNotes, sOtherNotes, pinNotes, otherNotes)
     }
@@ -59,6 +62,24 @@ class HomeViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(5000L),
             initialValue = NoteFeedUiState.Loading
         )
+
+    fun onSelectedTopAppBarClick(item: SelectedTopAppBarItem) {
+        when (item) {
+            SelectedTopAppBarItem.CANCEL -> { removeAllSelectedNotes() }
+            SelectedTopAppBarItem.TOGGLE_PIN -> { updateNotesPin() }
+            SelectedTopAppBarItem.DRAW -> {
+
+            }
+            SelectedTopAppBarItem.LABEL -> {
+
+            }
+            SelectedTopAppBarItem.CONTEXT_MENU_OPEN -> { contextMenuState.update { true } }
+            SelectedTopAppBarItem.CONTEXT_MENU_CLOSE -> { removeAllSelectedNotes() }
+            SelectedTopAppBarItem.TOGGLE_ARCHIVE -> { updateNotesArchive() }
+            SelectedTopAppBarItem.DELETE -> { deleteNotes() }
+            SelectedTopAppBarItem.MAKE_A_COPY -> { makeCopyOfNote() }
+        }
+    }
 
     fun toggleFABState(fabState: FABState) {
         floatingButtonState.update { fabState }
@@ -70,41 +91,58 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun addSelectedNote(noteType: NoteType, index: Int) {
+    fun checkSelectedNote(type: NoteType, noteId: Long) {
+        if (type == NoteType.PINNED) {
+            if (selectedPinNotes.value.contains(noteId)) {
+                removeSelectedNote(type, noteId)
+            } else {
+                addSelectedNote(type, noteId)
+            }
+        }
+        else if (type == NoteType.OTHERS) {
+            if (selectedOtherNotes.value.contains(noteId)) {
+                removeSelectedNote(type, noteId)
+            } else {
+                addSelectedNote(type, noteId)
+            }
+        }
+    }
+
+    private fun addSelectedNote(noteType: NoteType, noteId: Long) {
         if (noteType == NoteType.PINNED) {
             selectedPinNotes.update {
                 it.toMutableSet().apply {
-                    add(index)
+                    add(noteId)
                 }
             }
         }
         else if (noteType == NoteType.OTHERS) {
             selectedOtherNotes.update {
                 it.toMutableSet().apply {
-                    add(index)
+                    add(noteId)
                 }
             }
         }
     }
 
-    fun removeSelectedNote(noteType: NoteType, index: Int) {
+    private fun removeSelectedNote(noteType: NoteType, noteId: Long) {
         if (noteType == NoteType.PINNED) {
             selectedPinNotes.update {
                 it.toMutableSet().apply {
-                    remove(index)
+                    remove(noteId)
                 }
             }
         }
         else if (noteType == NoteType.OTHERS) {
             selectedOtherNotes.update {
                 it.toMutableSet().apply {
-                    remove(index)
+                    remove(noteId)
                 }
             }
         }
     }
 
-    private fun removeSelectedNotes() {
+    private fun removeAllSelectedNotes() {
         selectedPinNotes.update {
             it.toMutableSet().apply {
                 clear()
@@ -119,66 +157,49 @@ class HomeViewModel @Inject constructor(
 
     private fun getSelectedIdList(): List<Long> {
         val list = mutableListOf<Long>()
-        when (val feed = feedState.value) {
-            is NoteFeedUiState.Success -> {
-                selectedPinNotes.value.forEach {
-                    list.add(
-                        feed.pinnedNoteList[it].noteId!!
-                    )
-                }
-                selectedOtherNotes.value.forEach {
-                    list.add(
-                        feed.otherNoteList[it].noteId!!
-                    )
-                }
-            }
-            else -> {
-                // do nothing
-            }
+        selectedPinNotes.value.forEach {
+            list.add(it)
+        }
+        selectedOtherNotes.value.forEach {
+            list.add(it)
         }
         return list
     }
 
-    fun updateNotesPin() {
+    private fun updateNotesArchive() {
+        viewModelScope.launch {
+            noteDataSource.toggleArchiveStatus(getSelectedIdList(), true)
+            removeAllSelectedNotes()
+        }
+    }
+
+    private fun updateNotesPin() {
         viewModelScope.launch {
             val pin: Boolean = selectedOtherNotes.value.isNotEmpty()
-            removeSelectedNotes()
             noteDataSource.togglePinStatus(getSelectedIdList(), pin)
+            removeAllSelectedNotes()
         }
     }
 
-    fun deleteNotes() {
+    private fun deleteNotes() {
         viewModelScope.launch {
-            removeSelectedNotes()
             noteDataSource.deleteNotes(getSelectedIdList())
+            removeAllSelectedNotes()
         }
     }
 
-    fun makeCopyOfNote() {
+    private fun makeCopyOfNote() {
         viewModelScope.launch {
-            val note: NoteResource? = getSelectedNotesForCopy()
-            if (note != null) {
-                removeSelectedNotes()
-                noteDataSource.makeCopyOfNote(note)
-            }
+            noteDataSource.makeCopyOfNote(getSelectedNotesIdForCopy())
+            removeAllSelectedNotes()
         }
     }
 
-    private fun getSelectedNotesForCopy(): NoteResource? {
-        when (val feed = feedState.value) {
-            is NoteFeedUiState.Success -> {
-                if (selectedPinNotes.value.isNotEmpty()) {
-                    return feed.pinnedNoteList[selectedPinNotes.value.first()]
-                }
-                else if (selectedOtherNotes.value.isNotEmpty()) {
-                    return feed.otherNoteList[selectedOtherNotes.value.first()]
-                }
-            }
-            else -> {
-                return null
-            }
+    private fun getSelectedNotesIdForCopy(): Long {
+        if (selectedPinNotes.value.isNotEmpty()) {
+            return selectedPinNotes.value.first()
         }
-        return null
+        return selectedOtherNotes.value.first()
     }
 
 

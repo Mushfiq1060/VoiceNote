@@ -33,8 +33,8 @@ sealed interface NoteFeedUiState {
     data object Loading : NoteFeedUiState
 
     data class Success(
-        val selectedPinNotes: MutableSet<Int>,
-        val selectedOtherNotes: MutableSet<Int>,
+        val selectedPinNotes: MutableSet<Long>,
+        val selectedOtherNotes: MutableSet<Long>,
         val pinnedNoteList: List<NoteResource>,
         val otherNoteList: List<NoteResource>
     ) : NoteFeedUiState
@@ -52,9 +52,9 @@ fun LazyStaggeredGridScope.header(
 
 fun LazyStaggeredGridScope.noteFeed(
     noteItems: List<NoteResource>,
-    isSelected: Boolean,
-    onClick: (note: NoteResource, index: Int) -> Unit,
-    onLongClick: (index: Int) -> Unit
+    selectedList: MutableSet<Long>,
+    onClick: (note: NoteResource, noteId: Long) -> Unit,
+    onLongClick: (noteId: Long) -> Unit
 ) {
     itemsIndexed(
         items = noteItems,
@@ -63,9 +63,9 @@ fun LazyStaggeredGridScope.noteFeed(
     ) { index, note ->
         NoteCard(
             note = note,
-            isSelected = isSelected,
-            onClick = { onClick(note, index) },
-            onLongClick = { onLongClick(index) }
+            isSelected = (selectedList.contains(note.noteId)),
+            onClick = { onClick(note, note.noteId!!) },
+            onLongClick = { onLongClick(note.noteId!!) }
         )
     }
 }
@@ -95,7 +95,7 @@ fun NoteFeedPreview() {
                 }
                 noteFeed(
                     noteItems = notePinnedPreviewList,
-                    isSelected = false,
+                    selectedList = mutableSetOf(),
                     onClick = { _, _ -> },
                     onLongClick = { _ -> }
                 )
@@ -111,7 +111,7 @@ fun NoteFeedPreview() {
                 }
                 noteFeed(
                     noteItems = noteOthersPreviewList,
-                    isSelected = false,
+                    selectedList = mutableSetOf(),
                     onClick = { _, _ -> },
                     onLongClick = { _ -> }
                 )

@@ -59,3 +59,15 @@ fun NoteResource.mapToNoteResourceEntity(): NoteResourceEntity =
         backgroundColor = this.backgroundColor,
         backgroundImage = this.backgroundImage
     )
+
+fun NoteResourceEntity.mapToNoteResource(): NoteResource =
+    NoteResource(
+        noteId = this.noteId,
+        title = this.title,
+        description = this.description,
+        editTime = this.editTime,
+        pin = this.pin,
+        archive = this.archive,
+        backgroundColor = this.backgroundColor,
+        backgroundImage = this.backgroundImage
+    )

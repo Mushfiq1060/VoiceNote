@@ -1,6 +1,7 @@
 package com.openai.voicenote.core.data
 
 import com.openai.voicenote.core.data.repository.NoteRepository
+import com.openai.voicenote.core.database.model.NoteResourceEntity
 import com.openai.voicenote.core.database.model.mapToNoteResource
 import com.openai.voicenote.core.database.model.mapToNoteResourceEntity
 import com.openai.voicenote.core.model.NoteResource
@@ -35,6 +36,10 @@ class NoteLocalDataSource @Inject constructor(
         }
     }
 
+    override suspend fun getNoteById(noteId: Long): NoteResource {
+        return noteRepository.getNoteById(noteId).mapToNoteResource()
+    }
+
     override suspend fun updateNote(note: NoteResource) {
         noteRepository.updateNote(note.mapToNoteResourceEntity())
     }
@@ -51,10 +56,10 @@ class NoteLocalDataSource @Inject constructor(
         noteRepository.deleteNotes(notesId)
     }
 
-    override suspend fun makeCopyOfNote(note: NoteResource) {
-        val newNote = note.copy()
-        newNote.noteId = null
-        newNote.editTime = System.currentTimeMillis()
-        insertNote(listOf(newNote))
+    override suspend fun makeCopyOfNote(noteId: Long) {
+        val note = getNoteById(noteId)
+        note.noteId = null
+        note.editTime = System.currentTimeMillis()
+        insertNote(listOf(note))
     }
 }

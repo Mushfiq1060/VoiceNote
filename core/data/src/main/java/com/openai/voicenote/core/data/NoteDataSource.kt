@@ -13,6 +13,8 @@ interface NoteDataSource {
 
     fun observeAllOtherNotes(): Flow<List<NoteResource>>
 
+    suspend fun getNoteById(noteId: Long): NoteResource
+
     suspend fun updateNote(note: NoteResource)
 
     suspend fun togglePinStatus(notesId: List<Long>, pin: Boolean)
@@ -21,6 +23,6 @@ interface NoteDataSource {
 
     suspend fun deleteNotes(notesId: List<Long>)
 
-    suspend fun makeCopyOfNote(note: NoteResource)
+    suspend fun makeCopyOfNote(noteId: Long)
 
 }
