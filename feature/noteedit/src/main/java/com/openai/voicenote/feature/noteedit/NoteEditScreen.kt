@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,6 +13,7 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -41,6 +41,7 @@ import com.openai.voicenote.core.designsystem.icon.VnIcons
 import com.openai.voicenote.core.designsystem.icon.VnImage
 import com.openai.voicenote.core.designsystem.theme.VnTheme
 import com.openai.voicenote.core.ui.component.BackgroundPickerBottomSheet
+import com.openai.voicenote.core.ui.component.CustomTextField
 
 @Composable
 fun NoteEditRoute(
@@ -53,6 +54,7 @@ fun NoteEditRoute(
         noteEditUiState = noteEditUiState,
         onClickPinIcon = { viewModel.togglePinOfNote() },
         onClickArchiveIcon = { viewModel.toggleArchiveOfNote() },
+        onTextChange = { type, text -> viewModel.onTextChange(type, text) },
         onClickBottomAppBarItem = { viewModel.onClickBottomAppBarItem(it) },
         dismissBottomSheet = { viewModel.dismissBottomSheet() },
         onBackgroundColorChange = { viewModel.onBackgroundColorChange(it) },
@@ -68,6 +70,7 @@ internal fun NoteEditeScreen(
     noteEditUiState: NoteEditUiState,
     onClickPinIcon: () -> Unit,
     onClickArchiveIcon: () -> Unit,
+    onTextChange: (type: InputType, text: String) -> Unit,
     onClickBottomAppBarItem: (item: BottomAppBarItem) -> Unit,
     dismissBottomSheet: () -> Unit,
     onBackgroundColorChange: (Int) -> Unit,
@@ -134,9 +137,57 @@ internal fun NoteEditeScreen(
                 BottomSheetType.ADD_BOX_OPTION -> {
                     // open bottom sheet while click on add box icon
                 }
-                else -> { /* do nothing */ }
+                BottomSheetType.NONE -> { /* do nothing */ }
             }
-            Spacer(modifier = Modifier.padding(paddingValues))
+            NoteContent(
+                modifier = Modifier.padding(paddingValues),
+                onTextChange = { type, text -> onTextChange(type, text) },
+                titleText = noteEditUiState.titleText,
+                noteText = noteEditUiState.noteText
+            )
+        }
+    }
+}
+
+@Composable
+fun NoteContent(
+    modifier: Modifier = Modifier,
+    onTextChange: (type: InputType, text: String) -> Unit,
+    titleText: String,
+    noteText: String
+) {
+    LazyColumn(
+        modifier = modifier
+    ) {
+        item {
+            CustomTextField(
+                value = titleText,
+                onTextChange = { onTextChange(InputType.TITLE, it) },
+                textStyle = MaterialTheme.typography.titleLarge,
+                singleLine = true,
+                maxLines = 1
+            ) {
+                Text(
+                    text = "Title",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.outline
+                )
+            }
+        }
+        item {
+            CustomTextField(
+                value = noteText,
+                onTextChange = { onTextChange(InputType.NOTE, it) },
+                textStyle = MaterialTheme.typography.bodyMedium,
+                singleLine = false,
+                maxLines = Int.MAX_VALUE
+            ) {
+                Text(
+                    text = "Note",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.outline
+                )
+            }
         }
     }
 }
@@ -353,6 +404,25 @@ fun NoteEditBottomAppBarPreview() {
                 isUndoPossible = true,
                 isRedoPossible = true,
                 onClickBottomAppBarItem = {}
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun NoteEditScreenPreview() {
+    VnTheme {
+        Surface {
+            NoteEditeScreen(
+                noteEditUiState = NoteEditUiState(),
+                onClickPinIcon = {},
+                onClickArchiveIcon = {},
+                onTextChange = { _, _ -> },
+                onClickBottomAppBarItem = {},
+                dismissBottomSheet = {},
+                onBackgroundColorChange = {},
+                onBackgroundImageChange = {}
             )
         }
     }

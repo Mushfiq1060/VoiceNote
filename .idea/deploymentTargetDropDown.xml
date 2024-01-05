@@ -2,10 +2,19 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
-      <entry key="SelectedTopAppBarPreview">
+      <entry key="BackgroundPickerBottomSheetPreview">
         <State />
       </entry>
-      <entry key="ViewTogglePreview">
+      <entry key="ColorContentPreview">
+        <State />
+      </entry>
+      <entry key="HomeScreenPreview">
+        <State />
+      </entry>
+      <entry key="ImageContentPreview">
+        <State />
+      </entry>
+      <entry key="SelectedTopAppBarPreview">
         <State />
       </entry>
       <entry key="app">
@@ -21,7 +30,7 @@
               </deviceKey>
             </Target>
           </targetSelectedWithDropDown>
-          <timeTargetWasSelectedWithDropDown value="2024-01-03T03:38:54.030619300Z" />
+          <timeTargetWasSelectedWithDropDown value="2024-01-04T11:10:26.035781500Z" />
         </State>
       </entry>
     </value>

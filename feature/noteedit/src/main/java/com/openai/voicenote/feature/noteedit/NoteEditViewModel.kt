@@ -8,7 +8,6 @@ import com.openai.voicenote.core.common.utils.Utils
 import com.openai.voicenote.core.designsystem.icon.VnColor
 import com.openai.voicenote.core.designsystem.icon.VnImage
 import com.openai.voicenote.core.model.NoteResource
-import com.openai.voicenote.core.model.NoteView
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,6 +16,8 @@ import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 data class NoteEditUiState(
+    val titleText: String = "",
+    val noteText: String = "",
     val notePinStatus: Boolean = false,
     val noteArchiveStatus: Boolean = false,
     val bottomSheetType: BottomSheetType = BottomSheetType.NONE,
@@ -43,6 +44,11 @@ enum class BottomAppBarItem {
     REDO,
 }
 
+enum class InputType {
+    TITLE,
+    NOTE
+}
+
 @HiltViewModel
 class NoteEditViewModel @Inject constructor(): ViewModel() {
 
@@ -66,6 +72,30 @@ class NoteEditViewModel @Inject constructor(): ViewModel() {
 
     fun toggleArchiveOfNote() {
 
+    }
+
+    fun changeTitleText(text: String) {
+        mUiState.update {
+            it.copy(
+                titleText = text
+            )
+        }
+    }
+
+    fun changeNoteText(text: String) {
+        mUiState.update {
+            it.copy(
+                noteText = text
+            )
+        }
+    }
+
+    fun onTextChange(type: InputType, text: String) {
+        if (type == InputType.TITLE) {
+            changeTitleText(text)
+        } else if (type == InputType.NOTE) {
+            changeNoteText(text)
+        }
     }
 
     fun onBackgroundColorChange(id: Int) {
