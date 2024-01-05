@@ -13,8 +13,8 @@ import javax.inject.Singleton
 class NoteLocalDataSource @Inject constructor(
     private val noteRepository: NoteRepository
 ) : NoteDataSource {
-    override suspend fun insertNote(notes: List<NoteResource>) {
-        noteRepository.insertNote(notes.mapToNoteResourceEntity())
+    override suspend fun insertNote(notes: List<NoteResource>): List<Long> {
+        return noteRepository.insertNote(notes.mapToNoteResourceEntity())
     }
 
     override fun observeAllNotes(): Flow<List<NoteResource>> {

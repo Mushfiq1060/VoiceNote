@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface NoteDataSource {
 
-    suspend fun insertNote(notes: List<NoteResource>)
+    suspend fun insertNote(notes: List<NoteResource>): List<Long>
 
     fun observeAllNotes(): Flow<List<NoteResource>>
 

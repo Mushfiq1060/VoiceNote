@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.Flow
 interface NoteResourceDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertNote(notes: List<NoteResourceEntity>)
+    suspend fun insertNote(notes: List<NoteResourceEntity>): List<Long>
 
     @Query("SELECT * FROM note_table")
     fun observeAllNotes(): Flow<List<NoteResourceEntity>>
