@@ -28,6 +28,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.openai.voicenote.core.designsystem.icon.VnColor
 import com.openai.voicenote.core.designsystem.icon.VnImage
 import com.openai.voicenote.core.designsystem.theme.VnTheme
 import com.openai.voicenote.core.model.NoteResource
@@ -49,7 +50,7 @@ fun NoteCard(
                 shape = MaterialTheme.shapes.large,
                 border = BorderStroke(getBorderWidth(isSelected), getBorderColor(isSelected)),
             )
-            .background(Color(note.backgroundColor))
+            .background(Color(VnColor.bgColorList[note.backgroundColor].colorCode))
             .combinedClickable(
                 onClick = { onClick() },
                 onLongClick = { onLongClick() }
@@ -129,6 +130,6 @@ val previewNote = NoteResource(
     editTime = 263566L,
     pin = true,
     archive = false,
-    backgroundColor = Color.Transparent.toArgb(),
+    backgroundColor = 0,
     backgroundImage = 2
 )

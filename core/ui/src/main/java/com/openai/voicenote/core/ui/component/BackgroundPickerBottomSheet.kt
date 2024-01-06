@@ -105,17 +105,17 @@ fun ColorRow(
                         .clip(CircleShape)
                         .border(
                             shape = CircleShape, border = BorderStroke(
-                                width = if (selectedBackgroundColor == it) 2.dp else 1.dp,
-                                color = if (selectedBackgroundColor == it) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
+                                width = if (selectedBackgroundColor == it.id) 2.dp else 1.dp,
+                                color = if (selectedBackgroundColor == it.id) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
                             )
                         )
-                        .clickable(onClick = { onBackgroundColorChange(it) })
+                        .clickable(onClick = { onBackgroundColorChange(it.id) })
                 ) {
-                    if (it == Color.Transparent.toArgb() && it != selectedBackgroundColor) {
+                    if (it.colorCode == Color.Transparent.toArgb() && it.id != selectedBackgroundColor) {
                         Icon(
                             painter = painterResource(id = VnIcons.noColor),
                             modifier = Modifier
-                                .size(36.dp)
+                                .size(28.dp)
                                 .align(Alignment.Center),
                             contentDescription = "no_color"
                         )
@@ -123,11 +123,11 @@ fun ColorRow(
                         Spacer(
                             modifier = Modifier
                                 .size(48.dp)
-                                .background(color = Color(it))
+                                .background(color = Color(it.colorCode))
                         )
                     }
                 }
-                if (it == selectedBackgroundColor) {
+                if (it.id == selectedBackgroundColor) {
                     Icon(
                         painter = painterResource(id = VnIcons.check),
                         modifier = Modifier
@@ -201,7 +201,7 @@ fun BackgroundRow(
                         Icon(
                             painter = painterResource(id = it.drawableId),
                             modifier = Modifier
-                                .size(48.dp)
+                                .size(36.dp)
                                 .align(Alignment.Center),
                             contentDescription = "no_image"
                         )
@@ -251,7 +251,7 @@ fun ColorContentPreview() {
     VnTheme {
         Surface {
             ColorContent(
-                selectedBackgroundColor = Color.Transparent.toArgb(),
+                selectedBackgroundColor = VnColor.bgColorList[0].id,
                 onBackgroundColorChange = {}
             )
         }

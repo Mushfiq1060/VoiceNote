@@ -107,7 +107,7 @@ class NoteEditViewModel @Inject constructor(
         editTime = System.currentTimeMillis(),
         pin = false,
         archive = false,
-        backgroundColor = VnColor.bgColorList[0],
+        backgroundColor = VnColor.bgColorList[0].id,
         backgroundImage = VnImage.bgImageList[0].id
     )
 
@@ -189,7 +189,7 @@ class NoteEditViewModel @Inject constructor(
             currentNote = getDefaultNote()
         }
         currentNote.backgroundImage = id
-        currentNote.backgroundColor = VnColor.bgColorList[0]
+        currentNote.backgroundColor = VnColor.bgColorList[0].id
         currentNote.editTime = System.currentTimeMillis()
         noteAutoSaveOrUpdateHandler.typeTValue = currentNote
         toggleBackgroundState()

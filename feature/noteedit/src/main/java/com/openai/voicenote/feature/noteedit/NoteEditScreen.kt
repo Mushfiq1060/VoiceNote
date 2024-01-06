@@ -37,6 +37,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.openai.voicenote.core.designsystem.icon.VnColor
 import com.openai.voicenote.core.designsystem.icon.VnIcons
 import com.openai.voicenote.core.designsystem.icon.VnImage
 import com.openai.voicenote.core.designsystem.theme.VnTheme
@@ -81,7 +82,7 @@ internal fun NoteEditeScreen(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(Color(noteEditUiState.backgroundColor))
+            .background(Color(VnColor.bgColorList[noteEditUiState.backgroundColor].colorCode))
     ) {
         if (noteEditUiState.backgroundImageId != VnImage.bgImageList[0].id) {
             Image(
