@@ -1,5 +1,6 @@
 package com.openai.voicenote.core.ui.component
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
@@ -22,12 +24,19 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -36,6 +45,7 @@ import com.openai.voicenote.core.designsystem.icon.VnColor
 import com.openai.voicenote.core.designsystem.icon.VnIcons
 import com.openai.voicenote.core.designsystem.icon.VnImage
 import com.openai.voicenote.core.designsystem.theme.VnTheme
+import com.openai.voicenote.core.ui.composeState.visibleItemsWithThreshold
 
 @Composable
 fun BackgroundPickerBottomSheet(
@@ -156,11 +166,17 @@ fun BackgroundRow(
     selectedBackgroundImage: Int,
     onBackgroundImageChange: (Int) -> Unit
 ) {
+    var isClickOnImage by rememberSaveable {
+        mutableStateOf(false)
+    }
+    val listState = rememberLazyListState()
+
     LazyRow(
         horizontalArrangement = Arrangement.spacedBy(24.dp),
+        state = listState,
         contentPadding = PaddingValues(16.dp)
     ) {
-        items(VnImage.bgImageList) {
+        items(VnImage.bgImageList, key = { it.id }) {
             Box(
                 modifier = Modifier.size(64.dp)
             ) {
@@ -174,7 +190,12 @@ fun BackgroundRow(
                                 color = if (selectedBackgroundImage == it.id) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
                             )
                         )
-                        .clickable(onClick = { onBackgroundImageChange(it.id) })
+                        .clickable(
+                            onClick = {
+                                isClickOnImage = true
+                                onBackgroundImageChange(it.id)
+                            }
+                        )
                 ) {
                     if (it.id == VnImage.bgImageList[0].id) {
                         Icon(
@@ -210,6 +231,16 @@ fun BackgroundRow(
                     }
                 }
             }
+        }
+    }
+
+    val visibleItems = listState.visibleItemsWithThreshold(percentThreshold = 1f)
+
+    LaunchedEffect(key1 = selectedBackgroundImage) {
+        if (!isClickOnImage) {
+            listState.animateScrollToItem(selectedBackgroundImage)
+        } else if (!visibleItems.contains(selectedBackgroundImage)) {
+            listState.animateScrollToItem(selectedBackgroundImage)
         }
     }
 }

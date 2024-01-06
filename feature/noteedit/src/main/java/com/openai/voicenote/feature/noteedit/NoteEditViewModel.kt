@@ -174,25 +174,23 @@ class NoteEditViewModel @Inject constructor(
     }
 
     fun onBackgroundColorChange(id: Int) {
-        if (::currentNote.isInitialized) {
-            currentNote.backgroundColor = id
-            currentNote.backgroundImage = VnImage.bgImageList[0].id
-            currentNote.editTime = System.currentTimeMillis()
-        } else {
+        if (!::currentNote.isInitialized) {
             currentNote = getDefaultNote()
         }
+        currentNote.backgroundColor = id
+        currentNote.backgroundImage = VnImage.bgImageList[0].id
+        currentNote.editTime = System.currentTimeMillis()
         noteAutoSaveOrUpdateHandler.typeTValue = currentNote
         toggleBackgroundState()
     }
 
     fun onBackgroundImageChange(id: Int) {
-        if (::currentNote.isInitialized) {
-            currentNote.backgroundImage = id
-            currentNote.backgroundColor = VnColor.bgColorList[0]
-            currentNote.editTime = System.currentTimeMillis()
-        } else {
+        if (!::currentNote.isInitialized) {
             currentNote = getDefaultNote()
         }
+        currentNote.backgroundImage = id
+        currentNote.backgroundColor = VnColor.bgColorList[0]
+        currentNote.editTime = System.currentTimeMillis()
         noteAutoSaveOrUpdateHandler.typeTValue = currentNote
         toggleBackgroundState()
     }
