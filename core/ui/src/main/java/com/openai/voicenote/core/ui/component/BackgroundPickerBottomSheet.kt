@@ -91,8 +91,14 @@ fun ColorRow(
     selectedBackgroundColor: Int,
     onBackgroundColorChange: (Int) -> Unit
 ) {
+    var isClickOnColor by rememberSaveable {
+        mutableStateOf(false)
+    }
+    val listState = rememberLazyListState()
+
     LazyRow(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
+        state = listState,
         contentPadding = PaddingValues(16.dp)
     ) {
         items(VnColor.bgColorList) {
@@ -109,7 +115,12 @@ fun ColorRow(
                                 color = if (selectedBackgroundColor == it.id) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
                             )
                         )
-                        .clickable(onClick = { onBackgroundColorChange(it.id) })
+                        .clickable(
+                            onClick = {
+                                isClickOnColor = true
+                                onBackgroundColorChange(it.id)
+                            }
+                        )
                 ) {
                     if (it.colorCode == Color.Transparent.toArgb() && it.id != selectedBackgroundColor) {
                         Icon(
@@ -138,6 +149,16 @@ fun ColorRow(
                     )
                 }
             }
+        }
+    }
+
+    val visibleItems = listState.visibleItemsWithThreshold(percentThreshold = 1f)
+
+    LaunchedEffect(key1 = selectedBackgroundColor) {
+        if (!isClickOnColor) {
+            listState.animateScrollToItem(selectedBackgroundColor)
+        } else if (!visibleItems.contains(selectedBackgroundColor)) {
+            listState.animateScrollToItem(selectedBackgroundColor)
         }
     }
 }
