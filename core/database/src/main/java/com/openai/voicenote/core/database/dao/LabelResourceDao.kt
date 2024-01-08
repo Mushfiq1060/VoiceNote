@@ -23,4 +23,7 @@ interface LabelResourceDao {
     @Query("DELETE FROM label_table WHERE LabelId IN (:labelsId)")
     suspend fun deleteLabels(labelsId: List<Long>)
 
+    @Query("SELECT LabelName FROM label_table WHERE LabelId =:labelId")
+    fun getLabelNameById(labelId: Long): Flow<String>
+
 }

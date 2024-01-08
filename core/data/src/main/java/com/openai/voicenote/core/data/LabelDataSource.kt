@@ -14,4 +14,6 @@ interface LabelDataSource {
 
     suspend fun deleteLabels(labelsId: List<Long>)
 
+    fun getLabelNameById(labelId: Long): Flow<String>
+
 }

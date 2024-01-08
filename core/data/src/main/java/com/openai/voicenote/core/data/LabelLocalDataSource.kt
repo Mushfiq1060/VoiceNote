@@ -30,4 +30,8 @@ class LabelLocalDataSource @Inject constructor(
     override suspend fun deleteLabels(labelsId: List<Long>) {
         labelRepository.deleteLabels(labelsId)
     }
+
+    override fun getLabelNameById(labelId: Long): Flow<String> {
+        return labelRepository.getLabelNameById(labelId)
+    }
 }

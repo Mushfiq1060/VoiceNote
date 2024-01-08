@@ -103,7 +103,7 @@ class VnAppState(
     fun navigateToDrawerDestination(drawerDestination: DrawerDestination, labelId: Long?) {
         val drawerNavOption = navOptions {
             popUpTo(NOTES_ROUTE) {
-                inclusive = true
+                inclusive = false
             }
         }
         when (drawerDestination) {
@@ -113,11 +113,7 @@ class VnAppState(
                     navController.navigateToLabelEdit(navOptions {  })
                 } else {
                     selectedLabelId.update { labelId }
-                    navController.navigateToLabel(navOptions {
-                        popUpTo(NOTES_ROUTE) {
-                            inclusive = false
-                        }
-                    }, labelId)
+                    navController.navigateToLabel(drawerNavOption, labelId)
                 }
             }
             DrawerDestination.ARCHIVE -> { /** go to archive screen */ }

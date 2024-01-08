@@ -15,7 +15,8 @@ fun NavController.navigateToLabel(navOptions: NavOptions, labelId: Long) =
     navigate("$LABEL_ROUTE/$labelId", navOptions)
 
 fun NavGraphBuilder.labelScreen(
-
+    onBackClick: () -> Unit,
+    onDrawerOpen: () -> Unit
 ) {
     composable(
         route = "${LABEL_ROUTE}/{$LABEL_ID}",
@@ -23,6 +24,9 @@ fun NavGraphBuilder.labelScreen(
             navArgument(LABEL_ID) { type = NavType.LongType }
         )
     ) {
-        LabelRoute()
+        LabelRoute(
+            onBackClick = onBackClick,
+            onDrawerOpen = onDrawerOpen
+        )
     }
 }

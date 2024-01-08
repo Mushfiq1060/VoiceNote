@@ -21,4 +21,7 @@ class LabelRepository @Inject constructor(
     suspend fun deleteLabels(labelsId: List<Long>) =
         labelResourceDao.deleteLabels(labelsId)
 
+    fun getLabelNameById(labelId: Long) =
+        labelResourceDao.getLabelNameById(labelId)
+
 }

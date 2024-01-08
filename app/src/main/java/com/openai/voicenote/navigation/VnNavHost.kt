@@ -32,7 +32,10 @@ fun VnNavHost(
         labelEditScreen(
             onBackClick = { navController.popBackStack() }
         )
-        labelScreen()
+        labelScreen(
+            onBackClick = { navController.popBackStack() },
+            onDrawerOpen = { appState.openDrawer() }
+        )
     }
 
 }
