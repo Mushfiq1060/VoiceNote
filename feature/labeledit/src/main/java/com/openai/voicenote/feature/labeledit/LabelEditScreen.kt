@@ -4,7 +4,9 @@ import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -42,7 +44,13 @@ fun LabelEditRoute(
 
     LabelEditScreen(
         labelEditUiState = labelEditUiState,
-        onBackClick = { onBackClick() }
+        onBackClick = { onBackClick() },
+        toggleEnableEditing = { viewModel.toggleEnableEditing() },
+        onAddLabel = { viewModel.addLabel() },
+        onUpdateLabel = { viewModel.updateLabel(it) },
+        onChangeTextInCreateLabel = { viewModel.onChangeTextInCreateLabel(it) },
+        onChangeUpdateLabelText = { viewModel.onChangeUpdateLabelText(it) },
+        onClickLabel = { viewModel.onChangeUpdateLabelIndex(it) }
     )
 
 }
@@ -50,7 +58,13 @@ fun LabelEditRoute(
 @Composable
 fun LabelEditScreen(
     labelEditUiState: LabelEditUiState,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    toggleEnableEditing: () -> Unit,
+    onAddLabel: () -> Unit,
+    onUpdateLabel: (index: Int) -> Unit,
+    onChangeTextInCreateLabel: (text: String) -> Unit,
+    onChangeUpdateLabelText: (text: String) -> Unit,
+    onClickLabel: (index: Int) -> Unit
 ) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -65,71 +79,45 @@ fun LabelEditScreen(
         Column(
             modifier = Modifier.padding(paddingValues)
         ) {
+            Spacer(modifier = Modifier.height(1.dp))
             LabelTextField(
-                value = "",
+                value = labelEditUiState.createLabelText,
                 enableEditing = labelEditUiState.enableEditing,
-                onTextChange = {  },
+                onTextChange = { onChangeTextInCreateLabel(it) },
                 prefixIcon = if (labelEditUiState.enableEditing) VnIcons.close else VnIcons.add,
                 suffixIcon = VnIcons.check,
                 placeholderText = "Create a label",
-                onPrefixIconClick = { /*TODO*/ },
-                onSuffixIconClick = { /*TODO*/ }
+                isSuffixIconVisible = labelEditUiState.enableEditing,
+                onPrefixIconClick = { toggleEnableEditing() },
+                onSuffixIconClick = { onAddLabel() }
             )
+            Spacer(modifier = Modifier.height(2.dp))
             LazyColumn() {
                 itemsIndexed(
                     labelEditUiState.labelList,
                     key = { _, label -> label.labelId!! },
                     contentType = { _, _ -> "label item" }
                 ) { index, label ->
-                    LabelCard(
-                        index = index,
-                        label = label,
-                        onPrefixIconClick = {},
-                        onSuffixIconClick = {}
+                    LabelTextField(
+                        value = if (labelEditUiState.updateLabelIndex == index) labelEditUiState.updateLabelText else label.labelName,
+                        enableEditing = labelEditUiState.updateLabelIndex == index,
+                        onTextChange = { onChangeUpdateLabelText(it) },
+                        prefixIcon = if (labelEditUiState.updateLabelIndex == index) VnIcons.delete else VnIcons.label,
+                        suffixIcon = if (labelEditUiState.updateLabelIndex == index) VnIcons.check else VnIcons.edit,
+                        placeholderText = "",
+                        prefixIconEnable = labelEditUiState.updateLabelIndex == index,
+                        isSuffixIconVisible = true,
+                        onPrefixIconClick = {  },
+                        onSuffixIconClick = {
+                            if (labelEditUiState.updateLabelIndex == index) {
+                                onUpdateLabel(index)
+                            } else {
+                                onClickLabel(index)
+                            }
+                        }
                     )
                 }
             }
-        }
-    }
-}
-
-@Composable
-fun LabelCard(
-    index: Int,
-    label: LabelResource,
-    onPrefixIconClick: () -> Unit,
-    onSuffixIconClick: () -> Unit
-) {
-    Row() {
-        IconButton(
-            modifier = Modifier.weight(0.1f),
-            onClick = { onPrefixIconClick() }
-        ) {
-            Icon(
-                painter = painterResource(id = VnIcons.label),
-                contentDescription = "prefix icon",
-                modifier = Modifier.size(28.dp),
-                tint = MaterialTheme.colorScheme.onBackground
-            )
-        }
-        Text(
-            modifier = Modifier
-                .weight(0.8f)
-                .padding(start = 24.dp, end = 24.dp)
-                .align(Alignment.CenterVertically),
-            text = label.labelName,
-            style = MaterialTheme.typography.titleMedium
-        )
-        IconButton(
-            modifier = Modifier.weight(0.1f),
-            onClick = { onSuffixIconClick() }
-        ) {
-            Icon(
-                painter = painterResource(id = VnIcons.edit),
-                contentDescription = "suffix icon",
-                modifier = Modifier.size(28.dp),
-                tint = MaterialTheme.colorScheme.onBackground
-            )
         }
     }
 }
@@ -142,6 +130,8 @@ fun LabelTextField(
     @DrawableRes prefixIcon: Int,
     @DrawableRes suffixIcon: Int,
     placeholderText: String,
+    prefixIconEnable: Boolean = true,
+    isSuffixIconVisible: Boolean,
     onPrefixIconClick: () -> Unit,
     onSuffixIconClick: () -> Unit
 ) {
@@ -149,31 +139,39 @@ fun LabelTextField(
     BasicTextField(
         value = value,
         onValueChange = { onTextChange(it) },
+        textStyle = MaterialTheme.typography.bodyMedium,
+        enabled = enableEditing,
         singleLine = true,
         decorationBox = { innerTextField ->
             Row(
                 modifier = Modifier
                     .drawBehind {
-                        val strokeWidth = 2.dp.toPx()
-                        val yTop = 0f
-                        val yBottom = size.height - strokeWidth
-                        drawLine(
-                            color = borderColor,
-                            start = Offset(0f, yTop),
-                            end = Offset(size.width, yTop),
-                            strokeWidth = strokeWidth
-                        )
-                        drawLine(
-                            color = borderColor,
-                            start = Offset(0f, yBottom),
-                            end = Offset(size.width, yBottom),
-                            strokeWidth = strokeWidth
-                        )
+                        if (enableEditing) {
+                            val strokeWidth = 2f
+                            val x = size.width - strokeWidth
+                            val y = size.height - strokeWidth
+                            //top line
+                            drawLine(
+                                color = borderColor,
+                                start = Offset(0f, 0f), //(0,0) at top-left point of the box
+                                end = Offset(x, 0f), //top-right point of the box
+                                strokeWidth = strokeWidth
+                            )
+                            //bottom line
+                            drawLine(
+                                color = borderColor,
+                                start = Offset(0f, y),// bottom-left point of the box
+                                end = Offset(x, y),// bottom-right point of the box
+                                strokeWidth = strokeWidth
+                            )
+                        }
                     }
+                    .padding(top = 8.dp, bottom = 8.dp, start = 8.dp, end = 8.dp)
             ) {
                 IconButton(
                     modifier = Modifier.weight(0.1f),
-                    onClick = { onPrefixIconClick() }
+                    onClick = { onPrefixIconClick() },
+                    enabled = prefixIconEnable
                 ) {
                     Icon(
                         painter = painterResource(id = prefixIcon),
@@ -193,7 +191,7 @@ fun LabelTextField(
                     }
                     innerTextField()
                 }
-                if (enableEditing) {
+                if (isSuffixIconVisible) {
                     IconButton(
                         modifier = Modifier.weight(0.1f),
                         onClick = { onSuffixIconClick() }
@@ -216,7 +214,7 @@ fun LabelTextField(
 fun Placeholder(text: String) {
     Text(
         text = text,
-        style = MaterialTheme.typography.titleMedium,
+        style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.outline
     )
 }
@@ -235,6 +233,7 @@ fun LabelTextFieldPreview() {
                 prefixIcon = VnIcons.close,
                 suffixIcon = VnIcons.check,
                 placeholderText = "Create a label",
+                isSuffixIconVisible = false,
                 onPrefixIconClick = {},
                 onSuffixIconClick = {}
             )
@@ -257,8 +256,17 @@ fun LabelEditScreenPreview() {
                         LabelResource(labelId = 4, labelName = "Four"),
                         LabelResource(labelId = 5, labelName = "Five"),
                     ),
-                    enableEditing = true
-                )
+                    enableEditing = true,
+                    createLabelText = "",
+                    updateLabelText = "",
+                    updateLabelIndex = -1
+                ),
+                toggleEnableEditing = {},
+                onAddLabel = {},
+                onUpdateLabel = {},
+                onChangeTextInCreateLabel = {},
+                onChangeUpdateLabelText = {},
+                onClickLabel = {}
             )
         }
     }

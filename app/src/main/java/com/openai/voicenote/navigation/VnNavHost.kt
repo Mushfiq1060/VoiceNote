@@ -2,6 +2,7 @@ package com.openai.voicenote.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
+import com.openai.voicenote.feature.labeledit.navigation.labelEditScreen
 import com.openai.voicenote.feature.noteedit.navigation.noteEditScreen
 import com.openai.voicenote.feature.notes.navigation.NOTES_ROUTE
 import com.openai.voicenote.feature.notes.navigation.notesScreen
@@ -25,6 +26,9 @@ fun VnNavHost(
             onDrawerOpen = { appState.openDrawer() }
         )
         noteEditScreen(
+            onBackClick = { navController.popBackStack() }
+        )
+        labelEditScreen(
             onBackClick = { navController.popBackStack() }
         )
     }

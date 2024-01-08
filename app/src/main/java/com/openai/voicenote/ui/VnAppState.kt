@@ -12,6 +12,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
+import com.openai.voicenote.feature.labeledit.navigation.LABEL_EDIT_ROUTE
+import com.openai.voicenote.feature.labeledit.navigation.navigateToLabelEdit
 import com.openai.voicenote.feature.noteedit.navigation.NOTE_EDIT_ROUTE
 import com.openai.voicenote.feature.noteedit.navigation.navigateToNoteEdit
 import com.openai.voicenote.feature.notes.navigation.NOTES_ROUTE
@@ -78,6 +80,7 @@ class VnAppState(
         return when (route) {
             NOTES_ROUTE -> true
             NOTE_EDIT_ROUTE -> false
+            LABEL_EDIT_ROUTE -> false
             else -> false
         }
     }
@@ -90,9 +93,7 @@ class VnAppState(
         }
         when (drawerDestination) {
             DrawerDestination.NOTES -> navController.navigateToNotes(drawerNavOption)
-            DrawerDestination.CREATE_NEW_LABEL -> {
-                // drawer gesture should be disable before navigate
-            }
+            DrawerDestination.CREATE_NEW_LABEL -> navController.navigateToLabelEdit(navOptions {  })
             DrawerDestination.ARCHIVE -> { /** go to archive screen */ }
             DrawerDestination.TRASH -> { /** go to trash screen */ }
             DrawerDestination.SETTINGS -> { /** go to settings screen */ }
