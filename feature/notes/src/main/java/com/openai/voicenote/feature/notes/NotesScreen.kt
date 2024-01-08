@@ -102,6 +102,7 @@ fun NotesRoute(
             viewModel.checkSelectedNote(noteType, noteId)
         },
         onSubFabClick = {
+            viewModel.toggleFABState(FABState.COLLAPSED)
             if (it == SubFabType.VOICE) {
                 goToVoiceNoteScreen()
             } else {
@@ -273,7 +274,7 @@ internal fun NoteList(
         modifier = modifier
             .padding(start = 8.dp, end = 8.dp),
         columns = StaggeredGridCells.Fixed(
-            if (noteViewState == NoteView.GRID) 2 else 1
+            if (noteViewState == NoteView.GRID) 1 else 2
         ),
         verticalItemSpacing = 8.dp,
         horizontalArrangement = Arrangement.spacedBy(8.dp),

@@ -1,5 +1,6 @@
 package com.openai.voicenote.feature.noteedit
 
+import android.util.Log
 import androidx.compose.runtime.currentRecomposeScope
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
@@ -8,10 +9,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.openai.voicenote.core.common.utils.QueryDeBouncer
 import com.openai.voicenote.core.common.utils.Utils
+import com.openai.voicenote.core.common.utils.Utils.fromJson
 import com.openai.voicenote.core.data.NoteDataSource
 import com.openai.voicenote.core.designsystem.icon.VnColor
 import com.openai.voicenote.core.designsystem.icon.VnImage
 import com.openai.voicenote.core.model.NoteResource
+import com.openai.voicenote.feature.noteedit.navigation.NOTE_TO_STRING
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -69,7 +72,28 @@ class NoteEditViewModel @Inject constructor(
     private lateinit var currentNote: NoteResource
 
     init {
-        // execute saveStateHandle key (navigation arguments)
+        val noteString = savedStateHandle.get<String>(NOTE_TO_STRING)
+        if (noteString != null) {
+            val argNote = noteString.fromJson(NoteResource::class.java)
+            if (argNote.noteId != null) {
+                currentNote = argNote
+                mUiState.update {
+                    it.copy(
+                        titleText = argNote.title,
+                        noteText = argNote.description,
+                        notePinStatus = argNote.pin,
+                        noteArchiveStatus = argNote.archive,
+                        editTime = Utils.getFormattedTime(argNote.editTime),
+                        backgroundColor = argNote.backgroundColor,
+                        backgroundImageId = argNote.backgroundImage
+                    )
+                }
+            }
+            else if (argNote.description.isEmpty()) {
+                // from voice note screen
+                currentNote = argNote
+            }
+        }
     }
 
     private val noteAutoSaveOrUpdateHandler = QueryDeBouncer<NoteResource>(
