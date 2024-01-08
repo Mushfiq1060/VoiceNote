@@ -32,4 +32,5 @@ object VnIcons {
     val speechToText = R.drawable.speech_to_text
     val unarchive = R.drawable.unarchive
     val undo = R.drawable.undo
+    val edit = R.drawable.edit
 }
