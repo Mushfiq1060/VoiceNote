@@ -21,7 +21,7 @@ enum class DrawerDestination(
     ),
     TRASH(
         icon = VnIcons.delete,
-        text = "TRASH"
+        text = "Trash"
     ),
     SETTINGS(
         icon = VnIcons.settings,
