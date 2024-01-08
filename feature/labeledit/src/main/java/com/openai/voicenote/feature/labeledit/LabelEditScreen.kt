@@ -32,6 +32,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.openai.voicenote.core.designsystem.icon.VnIcons
 import com.openai.voicenote.core.designsystem.theme.VnTheme
 import com.openai.voicenote.core.model.LabelResource
+import com.openai.voicenote.core.ui.component.ConfirmationDialog
 import com.openai.voicenote.core.ui.component.SimpleTopAppBar
 
 @Composable
@@ -41,6 +42,7 @@ fun LabelEditRoute(
     viewModel: LabelEditViewModel = hiltViewModel()
 ) {
     val labelEditUiState by viewModel.labelEditUiState.collectAsStateWithLifecycle()
+    val shouldShowDeleteDialog by viewModel.shouldShowDeleteDialog.collectAsStateWithLifecycle()
 
     LabelEditScreen(
         labelEditUiState = labelEditUiState,
@@ -50,7 +52,11 @@ fun LabelEditRoute(
         onUpdateLabel = { viewModel.updateLabel(it) },
         onChangeTextInCreateLabel = { viewModel.onChangeTextInCreateLabel(it) },
         onChangeUpdateLabelText = { viewModel.onChangeUpdateLabelText(it) },
-        onClickLabel = { viewModel.onChangeUpdateLabelIndex(it) }
+        onClickLabel = { viewModel.onChangeUpdateLabelIndex(it) },
+        shouldShowDeleteDialog = shouldShowDeleteDialog,
+        onOpenDeleteDialog = { viewModel.toggleDeleteDialog() },
+        onDialogConfirmClick = { viewModel.deleteLabel() },
+        onDialogCancelClick = { viewModel.toggleDeleteDialog() }
     )
 
 }
@@ -64,7 +70,11 @@ fun LabelEditScreen(
     onUpdateLabel: (index: Int) -> Unit,
     onChangeTextInCreateLabel: (text: String) -> Unit,
     onChangeUpdateLabelText: (text: String) -> Unit,
-    onClickLabel: (index: Int) -> Unit
+    onClickLabel: (index: Int) -> Unit,
+    shouldShowDeleteDialog: Boolean,
+    onOpenDeleteDialog: (index: Int) -> Unit,
+    onDialogConfirmClick: () -> Unit,
+    onDialogCancelClick: () -> Unit
 ) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -76,6 +86,16 @@ fun LabelEditScreen(
             )
         }
     ) { paddingValues ->
+        if (shouldShowDeleteDialog) {
+            ConfirmationDialog(
+                heading = "Delete label?",
+                description = "We'll delete this label and remove it from all of your keep notes. Your notes won't be deleted.",
+                confirmButtonText = "Delete",
+                dismissButtonText = "Cancel",
+                onConfirmClick = { onDialogConfirmClick() },
+                onDismissClick = { onDialogCancelClick() }
+            )
+        }
         Column(
             modifier = Modifier.padding(paddingValues)
         ) {
@@ -107,7 +127,7 @@ fun LabelEditScreen(
                         placeholderText = "",
                         prefixIconEnable = labelEditUiState.updateLabelIndex == index,
                         isSuffixIconVisible = true,
-                        onPrefixIconClick = {  },
+                        onPrefixIconClick = { onOpenDeleteDialog(index) },
                         onSuffixIconClick = {
                             if (labelEditUiState.updateLabelIndex == index) {
                                 onUpdateLabel(index)
@@ -266,7 +286,11 @@ fun LabelEditScreenPreview() {
                 onUpdateLabel = {},
                 onChangeTextInCreateLabel = {},
                 onChangeUpdateLabelText = {},
-                onClickLabel = {}
+                onClickLabel = {},
+                shouldShowDeleteDialog = false,
+                onOpenDeleteDialog = { },
+                onDialogConfirmClick = { },
+                onDialogCancelClick = {  }
             )
         }
     }

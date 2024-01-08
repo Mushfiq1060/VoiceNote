@@ -23,7 +23,7 @@ data class LabelEditUiState(
     val enableEditing: Boolean,
     val createLabelText: String,
     val updateLabelText: String,
-    val updateLabelIndex: Int
+    val updateLabelIndex: Int,
 )
 
 @HiltViewModel
@@ -35,6 +35,7 @@ class LabelEditViewModel @Inject constructor(
     private val createLabelTextState = MutableStateFlow("")
     private val updateLabelTextState = MutableStateFlow("")
     private val updateLabelIndex = MutableStateFlow(-1)
+    val shouldShowDeleteDialog = MutableStateFlow(false)
 
     val labelEditUiState = combine(
         labelDataSource.observeAllLabels(),
@@ -61,6 +62,10 @@ class LabelEditViewModel @Inject constructor(
             updateLabelIndex = -1
         )
     )
+
+    fun toggleDeleteDialog() {
+        shouldShowDeleteDialog.update { !it }
+    }
 
     fun toggleEnableEditing() {
         editEnable.update { !it }
@@ -93,15 +98,28 @@ class LabelEditViewModel @Inject constructor(
         }
     }
 
-    fun updateLabel(index: Int) {
-        val curLabel = labelEditUiState.value.labelList[index].copy()
-        curLabel.labelName = updateLabelTextState.value
+    private fun resetState() {
         editEnable.update { false }
         createLabelTextState.update { "" }
         updateLabelTextState.update { "" }
         updateLabelIndex.update { -1 }
+    }
+
+    fun updateLabel(index: Int) {
+        val curLabel = labelEditUiState.value.labelList[index].copy()
+        curLabel.labelName = updateLabelTextState.value
+        resetState()
         viewModelScope.launch {
             labelDataSource.updateLabel(curLabel)
+        }
+    }
+
+    fun deleteLabel() {
+        val label = labelEditUiState.value.labelList[updateLabelIndex.value]
+        toggleDeleteDialog()
+        resetState()
+        viewModelScope.launch {
+            labelDataSource.deleteLabels(listOf(label.labelId!!))
         }
     }
 
