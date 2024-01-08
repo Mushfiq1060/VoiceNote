@@ -29,7 +29,7 @@ fun SimpleTopAppBar(
             Text(
                 text = title,
                 color = MaterialTheme.colorScheme.onBackground,
-                style = MaterialTheme.typography.titleMedium
+                style = MaterialTheme.typography.bodyMedium
             )
         },
         navigationIcon = {

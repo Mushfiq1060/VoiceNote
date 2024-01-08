@@ -40,6 +40,7 @@ dependencies {
     implementation(project(":feature:notes"))
     implementation(project(":feature:noteedit"))
     implementation(project(":feature:labeledit"))
+    implementation(project(":feature:label"))
     implementation(project(":core:data"))
     implementation(project(":core:model"))
     implementation(project(":core:ui"))

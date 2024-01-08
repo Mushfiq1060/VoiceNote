@@ -12,11 +12,15 @@ import kotlinx.coroutines.flow.MutableStateFlow
 
 @Composable
 fun VnApp(
-    appState: VnAppState = rememberVnAppState(drawerGesture = MutableStateFlow(true)),
+    appState: VnAppState = rememberVnAppState(
+        drawerGesture = MutableStateFlow(true),
+        selectedLabelId = MutableStateFlow(null)
+    ),
     labelItems: List<LabelResource>
 ) {
 
     val drawerGesture by appState.drawerGesture.collectAsState()
+    val selectedLabelId by appState.selectedLabelId.collectAsState()
 
     Surface {
         ModalNavigationDrawer(
@@ -26,11 +30,11 @@ fun VnApp(
                 NavDrawer(
                     destinations = appState.drawerDestination,
                     labelItems = labelItems,
-                    currentDrawerDestination = appState.currentDrawerDestination!!,
-                    selectedLabelIndex = -1 ,
+                    currentDrawerDestination = appState.currentDrawerDestination,
+                    selectedLabelId = selectedLabelId,
                     drawerState = appState.drawerState,
                     coroutineScope = appState.coroutineScope,
-                    onNavigateToDrawerDestination = { appState.navigateToDrawerDestination(it) }
+                    onNavigateToDrawerDestination = { dest, index -> appState.navigateToDrawerDestination(dest, index) }
                 )
             }
         ) {

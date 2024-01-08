@@ -42,10 +42,10 @@ fun NavDrawer(
     destinations: List<DrawerDestination>,
     labelItems: List<LabelResource>,
     currentDrawerDestination: DrawerDestination,
-    selectedLabelIndex: Int,
+    selectedLabelId: Long?,
     drawerState: DrawerState,
     coroutineScope: CoroutineScope,
-    onNavigateToDrawerDestination: (DrawerDestination) -> Unit
+    onNavigateToDrawerDestination: (DrawerDestination, Long?) -> Unit
 ) {
     ModalDrawerSheet(
         modifier = Modifier
@@ -87,18 +87,18 @@ fun NavDrawer(
                         DrawerItem(
                             title = labelResource.labelName,
                             drawableId = VnIcons.label,
-                            active = selectedLabelIndex == index
+                            active = selectedLabelId == labelResource.labelId
                         ) {
-                            onNavigateToDrawerDestination(items) // must be passed level info
+                            onNavigateToDrawerDestination(items, labelResource.labelId) // must be passed level info
                             coroutineScope.launch { drawerState.close() }
                         }
                     }
                     DrawerItem(
                         title = items.text,
                         drawableId = items.icon,
-                        active = items == currentDrawerDestination
+                        active = false
                     ) {
-                        onNavigateToDrawerDestination(items)
+                        onNavigateToDrawerDestination(items, null)
                         coroutineScope.launch { drawerState.close() }
                     }
                     DividerWithSpacer()
@@ -109,7 +109,7 @@ fun NavDrawer(
                         drawableId = items.icon,
                         active = items == currentDrawerDestination
                     ) {
-                        onNavigateToDrawerDestination(items)
+                        onNavigateToDrawerDestination(items, null)
                         coroutineScope.launch { drawerState.close() }
                     }
                 }
@@ -175,10 +175,10 @@ fun NavDrawerPreview() {
                 destinations = DrawerDestination.entries,
                 labelItems = labelResourcePreview,
                 currentDrawerDestination = DrawerDestination.SETTINGS,
-                selectedLabelIndex = 2,
+                selectedLabelId = null,
                 drawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
                 coroutineScope = rememberCoroutineScope(),
-                onNavigateToDrawerDestination = {}
+                onNavigateToDrawerDestination = { _, _ -> }
             )
         }
     }
