@@ -7,6 +7,8 @@ import androidx.activity.compose.setContent
 import androidx.core.app.ActivityCompat
 import androidx.core.view.WindowCompat
 import com.openai.voicenote.app.App
+import com.openai.voicenote.core.designsystem.theme.VnTheme
+import com.openai.voicenote.ui.VnApp
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -22,7 +24,9 @@ class MainActivity : ComponentActivity() {
         )
 
         setContent {
-            App()
+            VnTheme {
+                VnApp(labelItems = listOf())
+            }
         }
     }
 }

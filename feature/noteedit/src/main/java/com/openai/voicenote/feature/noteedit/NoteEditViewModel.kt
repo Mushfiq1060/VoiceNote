@@ -3,6 +3,7 @@ package com.openai.voicenote.feature.noteedit
 import androidx.compose.runtime.currentRecomposeScope
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.openai.voicenote.core.common.utils.QueryDeBouncer
@@ -55,7 +56,8 @@ enum class InputType {
 
 @HiltViewModel
 class NoteEditViewModel @Inject constructor(
-    private val noteDataSource: NoteDataSource
+    private val noteDataSource: NoteDataSource,
+    private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val mUiState = MutableStateFlow(NoteEditUiState())
@@ -65,6 +67,10 @@ class NoteEditViewModel @Inject constructor(
     private val redoHistory = mutableListOf<Pair<String, String>>()
     private var isAddedToHistory = true
     private lateinit var currentNote: NoteResource
+
+    init {
+        // execute saveStateHandle key (navigation arguments)
+    }
 
     private val noteAutoSaveOrUpdateHandler = QueryDeBouncer<NoteResource>(
         durationInMilliseconds = 300,

@@ -4,9 +4,10 @@ plugins {
 }
 
 android {
-    namespace = "com.openai.voicenote.feature.home"
+    namespace = "com.openai.voicenote.feature.notes"
 }
 
 dependencies {
     implementation(project(":core:data"))
+    implementation(project(":core:common"))
 }

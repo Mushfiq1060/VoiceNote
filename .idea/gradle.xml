@@ -35,8 +35,8 @@
             <option value="$PROJECT_DIR$/core/model" />
             <option value="$PROJECT_DIR$/core/ui" />
             <option value="$PROJECT_DIR$/feature" />
-            <option value="$PROJECT_DIR$/feature/home" />
             <option value="$PROJECT_DIR$/feature/noteedit" />
+            <option value="$PROJECT_DIR$/feature/notes" />
           </set>
         </option>
         <option name="resolveExternalAnnotations" value="false" />

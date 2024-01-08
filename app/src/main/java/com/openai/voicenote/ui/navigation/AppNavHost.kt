@@ -1,6 +1,5 @@
 package com.openai.voicenote.ui.navigation
 
-import android.util.Log
 import androidx.compose.material3.DrawerState
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
@@ -8,8 +7,6 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.openai.voicenote.feature.home.HomeRoute
-import com.openai.voicenote.feature.noteedit.NoteEditRoute
 import com.openai.voicenote.model.Note
 import com.openai.voicenote.ui.screens.homeScreen.Home
 import com.openai.voicenote.ui.screens.noteEditScreen.NoteEdit
@@ -29,9 +26,9 @@ fun AppNavHost(
     ) {
         composable(NavigationItem.Home.route) {
             drawerGestureCallback(false)
-            NoteEditRoute()
+//            NoteEditRoute()
 //            HomeRoute()
-//            Home(navHostController = navHostController, drawerState = drawerState)
+            Home(navHostController = navHostController, drawerState = drawerState)
         }
         composable(NavigationItem.VoiceRecord.route) {
             drawerGestureCallback(false)

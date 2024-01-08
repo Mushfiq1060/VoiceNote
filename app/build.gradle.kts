@@ -37,8 +37,11 @@ android {
 
 dependencies {
 
-    implementation(project(":feature:home"))
+    implementation(project(":feature:notes"))
     implementation(project(":feature:noteedit"))
+    implementation(project(":core:model"))
+    implementation(project(":core:ui"))
+    implementation(project(":core:designsystem"))
 
     implementation(libs.androidx.core.ktx)
     implementation(platform(libs.jetbrains.kotlin.bom))

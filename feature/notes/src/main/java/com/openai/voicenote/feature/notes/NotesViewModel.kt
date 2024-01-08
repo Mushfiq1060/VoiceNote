@@ -1,9 +1,11 @@
-package com.openai.voicenote.feature.home
+package com.openai.voicenote.feature.notes
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.openai.voicenote.core.data.NoteDataSource
 import com.openai.voicenote.core.data.repository.UserDataRepository
+import com.openai.voicenote.core.designsystem.icon.VnColor
+import com.openai.voicenote.core.designsystem.icon.VnImage
 import com.openai.voicenote.core.model.NoteResource
 import com.openai.voicenote.core.model.NoteView
 import com.openai.voicenote.core.ui.component.FABState
@@ -23,7 +25,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class HomeViewModel @Inject constructor(
+class NotesViewModel @Inject constructor(
     private val noteDataSource: NoteDataSource,
     private val userDataRepository: UserDataRepository
 ) : ViewModel() {
@@ -62,6 +64,19 @@ class HomeViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(5000L),
             initialValue = NoteFeedUiState.Loading
         )
+
+    fun getEmptyNote(): NoteResource {
+        return NoteResource(
+            noteId = null,
+            title = "",
+            description = "",
+            editTime = 0L,
+            pin = false,
+            archive = false,
+            backgroundColor = VnColor.bgColorList[0].id,
+            backgroundImage = VnImage.bgImageList[0].id
+        )
+    }
 
     fun onSelectedTopAppBarClick(item: SelectedTopAppBarItem) {
         when (item) {

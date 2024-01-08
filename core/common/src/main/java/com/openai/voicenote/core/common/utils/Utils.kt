@@ -46,7 +46,7 @@ object Utils {
         return "${monthList[month]} $date, $year"
     }
 
-    fun <T> T.toJson(): String? {
+    fun <T> T.toJson(): String {
         return Gson().toJson(this)
     }
 

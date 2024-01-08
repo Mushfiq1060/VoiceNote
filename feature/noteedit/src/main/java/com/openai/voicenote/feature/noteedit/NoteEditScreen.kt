@@ -47,12 +47,14 @@ import com.openai.voicenote.core.ui.component.CustomTextField
 @Composable
 fun NoteEditRoute(
     modifier: Modifier = Modifier,
+    onBackClick: () -> Unit,
     viewModel: NoteEditViewModel = hiltViewModel()
 ) {
     val noteEditUiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    NoteEditeScreen(
+    NoteEditScreen(
         noteEditUiState = noteEditUiState,
+        onBackClick = { onBackClick() },
         onClickPinIcon = { viewModel.togglePinOfNote() },
         onClickArchiveIcon = { viewModel.toggleArchiveOfNote() },
         onTextChange = { type, text -> viewModel.onTextChange(type, text) },
@@ -66,9 +68,10 @@ fun NoteEditRoute(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun NoteEditeScreen(
+internal fun NoteEditScreen(
     modifier: Modifier = Modifier,
     noteEditUiState: NoteEditUiState,
+    onBackClick: () -> Unit,
     onClickPinIcon: () -> Unit,
     onClickArchiveIcon: () -> Unit,
     onTextChange: (type: InputType, text: String) -> Unit,
@@ -105,9 +108,7 @@ internal fun NoteEditeScreen(
                     scrollBehavior = scrollBehavior,
                     notePinStatus = noteEditUiState.notePinStatus,
                     noteArchiveStatus = noteEditUiState.noteArchiveStatus,
-                    onClickBackIcon = {
-                        // navigate to previous screen not voice note screen
-                    },
+                    onClickBackIcon = { onBackClick() },
                     onClickPinIcon = { onClickPinIcon() },
                     onClickArchiveIcon = { onClickArchiveIcon() }
                 )
@@ -415,8 +416,9 @@ fun NoteEditBottomAppBarPreview() {
 fun NoteEditScreenPreview() {
     VnTheme {
         Surface {
-            NoteEditeScreen(
+            NoteEditScreen(
                 noteEditUiState = NoteEditUiState(),
+                onBackClick = {},
                 onClickPinIcon = {},
                 onClickArchiveIcon = {},
                 onTextChange = { _, _ -> },

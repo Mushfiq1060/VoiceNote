@@ -1,4 +1,4 @@
-package com.openai.voicenote.feature.home
+package com.openai.voicenote.feature.notes
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.ScrollableDefaults
@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.openai.voicenote.core.common.utils.Utils.toJson
 import com.openai.voicenote.core.designsystem.icon.VnIcons
 import com.openai.voicenote.core.designsystem.theme.VnTheme
 import com.openai.voicenote.core.model.NoteResource
@@ -49,18 +50,22 @@ import com.openai.voicenote.core.ui.component.NoteFeedUiState
 import com.openai.voicenote.core.ui.component.NoteType
 import com.openai.voicenote.core.ui.component.SelectedTopAppBar
 import com.openai.voicenote.core.ui.component.SelectedTopAppBarItem
+import com.openai.voicenote.core.ui.component.SubFabType
 import com.openai.voicenote.core.ui.component.header
 import com.openai.voicenote.core.ui.component.noteFeed
 
-enum class HomeAppBarItem {
+enum class NotesAppBarItem {
     DRAWER,
     NOTE_VIEW
 }
 
 @Composable
-fun HomeRoute(
+fun NotesRoute(
     modifier: Modifier = Modifier,
-    viewModel: HomeViewModel = hiltViewModel()
+    goToNoteEditScreen: (note: String) -> Unit,
+    goToVoiceNoteScreen: () -> Unit,
+    onDrawerOpen: () -> Unit,
+    viewModel: NotesViewModel = hiltViewModel()
 ) {
     val feedState by viewModel.feedState.collectAsStateWithLifecycle()
     val isAnyNoteSelected by viewModel.isAnyNoteSelected.collectAsStateWithLifecycle()
@@ -68,16 +73,16 @@ fun HomeRoute(
     val floatingButtonState by viewModel.floatingButtonState.collectAsStateWithLifecycle()
     val noteViewState by viewModel.noteViewState.collectAsStateWithLifecycle()
 
-    HomeScreen(
+    NotesScreen(
         feedState = feedState,
         fabState = floatingButtonState,
         noteViewState = noteViewState,
         isAnyNoteSelected = isAnyNoteSelected,
         isContextMenuOpen = contextMenuState,
-        onHomeAppBarClick = {
-            if (it == HomeAppBarItem.DRAWER) {
-                // drawer
-            } else if (it == HomeAppBarItem.NOTE_VIEW) {
+        onNotesAppBarClick = {
+            if (it == NotesAppBarItem.DRAWER) {
+                onDrawerOpen()
+            } else if (it == NotesAppBarItem.NOTE_VIEW) {
                 viewModel.toggleNoteView()
             }
         },
@@ -90,11 +95,19 @@ fun HomeRoute(
                     viewModel.checkSelectedNote(NoteType.OTHERS, noteId)
                 }
             } else {
-                // navigate to note edit screen with noteResource
+                goToNoteEditScreen(noteResource.toJson())
             }
         },
         onNoteLongClick = { noteType, noteId ->
             viewModel.checkSelectedNote(noteType, noteId)
+        },
+        onSubFabClick = {
+            if (it == SubFabType.VOICE) {
+                goToVoiceNoteScreen()
+            } else {
+                val noteString = viewModel.getEmptyNote().toJson()
+                goToNoteEditScreen(noteString)
+            }
         },
         onFabStateChanged = {
             if (it == FABState.EXPANDED) {
@@ -108,16 +121,17 @@ fun HomeRoute(
 }
 
 @Composable
-internal fun HomeScreen(
+internal fun NotesScreen(
     feedState: NoteFeedUiState,
     fabState: FABState,
     noteViewState: NoteView,
     isAnyNoteSelected: Boolean,
     isContextMenuOpen: Boolean,
-    onHomeAppBarClick: (homeAppBarItem: HomeAppBarItem) -> Unit,
+    onNotesAppBarClick: (homeAppBarItem: NotesAppBarItem) -> Unit,
     onSelectedTopAppBarClick: (item: SelectedTopAppBarItem) -> Unit,
     onNoteClick: (note: NoteResource, noteId: Long) -> Unit,
     onNoteLongClick: (noteType: NoteType, noteId: Long) -> Unit,
+    onSubFabClick: (type: SubFabType) -> Unit,
     onFabStateChanged: (fabState: FABState) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -125,7 +139,7 @@ internal fun HomeScreen(
         modifier = modifier.fillMaxSize(),
         topBar = {
             if (!isAnyNoteSelected) {
-                HomeTopAppBar(noteViewState = noteViewState, onClick = { onHomeAppBarClick(it) })
+                NotesTopAppBar(noteViewState = noteViewState, onClick = { onNotesAppBarClick(it) })
             } else {
                 when (feedState) {
                     is NoteFeedUiState.Success -> {
@@ -145,9 +159,7 @@ internal fun HomeScreen(
             FloatingButton(
                 currentState = fabState,
                 onFabClicked = { onFabStateChanged(it) },
-                onSubFabClicked = {
-                    // navigate to screen by checking SubFabType
-                }
+                onSubFabClicked = { onSubFabClick(it) }
             )
         }
     ) { paddingValues ->
@@ -184,9 +196,9 @@ internal fun HomeScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeTopAppBar(
+fun NotesTopAppBar(
     noteViewState: NoteView,
-    onClick: (homeAppBarItem: HomeAppBarItem) -> Unit
+    onClick: (homeAppBarItem: NotesAppBarItem) -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -218,7 +230,7 @@ fun HomeTopAppBar(
             },
             navigationIcon = {
                 IconButton(
-                    onClick = { onClick(HomeAppBarItem.DRAWER) }
+                    onClick = { onClick(NotesAppBarItem.DRAWER) }
                 ) {
                     Icon(
                         painter = painterResource(id = VnIcons.menu),
@@ -230,7 +242,7 @@ fun HomeTopAppBar(
             },
             actions = {
                 IconButton(
-                    onClick = { onClick(HomeAppBarItem.NOTE_VIEW) }
+                    onClick = { onClick(NotesAppBarItem.NOTE_VIEW) }
                 ) {
                     Icon(
                         painter = painterResource(
@@ -304,10 +316,10 @@ internal fun NoteList(
 
 @Preview(showBackground = true)
 @Composable
-fun HomeScreenPreview() {
+fun NotesScreenPreview() {
     VnTheme {
         Surface {
-            HomeScreen(
+            NotesScreen(
                 feedState = NoteFeedUiState.Success(
                     selectedPinNotes = mutableSetOf(),
                     selectedOtherNotes = mutableSetOf(),
@@ -318,10 +330,11 @@ fun HomeScreenPreview() {
                 noteViewState = NoteView.GRID,
                 isAnyNoteSelected = false,
                 isContextMenuOpen = false,
-                onHomeAppBarClick = {  },
+                onNotesAppBarClick = {  },
                 onSelectedTopAppBarClick = {  },
                 onNoteClick = { _, _ -> },
                 onNoteLongClick = { _, _ -> },
+                onSubFabClick = {  },
                 onFabStateChanged = { }
             )
         }
