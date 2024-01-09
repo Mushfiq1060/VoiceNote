@@ -12,4 +12,8 @@ dependencies {
     api(project(":core:database"))
     api(project(":core:model"))
     api(project(":core:datastore"))
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    implementation(libs.okhttp)
+    implementation(libs.converter.scalars)
 }

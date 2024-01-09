@@ -35,9 +35,11 @@
             <option value="$PROJECT_DIR$/core/model" />
             <option value="$PROJECT_DIR$/core/ui" />
             <option value="$PROJECT_DIR$/feature" />
+            <option value="$PROJECT_DIR$/feature/label" />
             <option value="$PROJECT_DIR$/feature/labeledit" />
             <option value="$PROJECT_DIR$/feature/noteedit" />
             <option value="$PROJECT_DIR$/feature/notes" />
+            <option value="$PROJECT_DIR$/feature/recordaudio" />
           </set>
         </option>
         <option name="resolveExternalAnnotations" value="false" />
