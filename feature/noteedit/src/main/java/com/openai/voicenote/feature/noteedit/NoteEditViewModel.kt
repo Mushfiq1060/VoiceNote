@@ -70,7 +70,7 @@ class NoteEditViewModel @Inject constructor(
     private val redoHistory = mutableListOf<String>()
     private var isAddedToHistory = true
     private lateinit var currentNote: NoteResource
-    private lateinit var noteAutoSaveOrUpdateHandler: QueryDeBouncer<NoteResource>
+    private var noteAutoSaveOrUpdateHandler: QueryDeBouncer<NoteResource>
 
     init {
         noteAutoSaveOrUpdateHandler = QueryDeBouncer<NoteResource>(

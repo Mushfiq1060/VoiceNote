@@ -2,7 +2,6 @@ plugins {
     alias(libs.plugins.voicenote.android.application)
     alias(libs.plugins.voicenote.android.application.compose)
     alias(libs.plugins.voicenote.android.hilt)
-    alias(libs.plugins.voicenote.android.room) // remove this line after adding database module
 }
 
 android {
@@ -48,17 +47,17 @@ dependencies {
     implementation(project(":core:designsystem"))
 
     implementation(libs.androidx.core.ktx)
-    implementation(platform(libs.jetbrains.kotlin.bom))
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.ui)
-    implementation(libs.bundles.compose)
+//    implementation(libs.bundles.compose)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.compose.ui.test.junit4)
     debugImplementation(libs.compose.ui.tooling)
     debugImplementation(libs.compose.ui.test.manifest)
+    implementation(libs.androidx.core.splash.screen)
 
     // Google Accompanist
     implementation(libs.accompanist.systemuicontroller)
@@ -66,19 +65,8 @@ dependencies {
     // Compose View Model
     implementation(libs.androidx.lifecycle.viewmodel.compose)
 
-    // Retrofit
-    implementation(libs.retrofit)
-    implementation(libs.converter.gson)
-    implementation(libs.okhttp)
-    implementation(libs.converter.scalars)
-
-    // Google Font
-    implementation(libs.androidx.ui.text.google.fonts)
-
     // Navigation
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.hilt.navigation.compose)
 
-    // Lottie Animation
-    implementation(libs.lottie.compose)
 }

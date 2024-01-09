@@ -9,6 +9,7 @@ android-gradle-plugin = "8.2.0"
 android-tools = "31.2.0"
 kotlin = "1.9.21"
 ksp = "1.9.21-1.0.16"
+androidx-core-splash-screen = "1.0.1"
 accompanist-systemuicontroller = "0.27.0"
 activity-compose = "1.8.2"
 androidx-junit = "1.1.5"
@@ -44,6 +45,7 @@ androidx-lifecycle-runtime-compose = { group = "androidx.lifecycle", name = "lif
 androidx-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle-runtime-ktx" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle-runtime-ktx" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigation-compose" }
+androidx-core-splash-screen = { group = "androidx.core", name = "core-splashscreen", version.ref = "androidx-core-splash-screen" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room-runtime" }
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room-runtime" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room-runtime" }
