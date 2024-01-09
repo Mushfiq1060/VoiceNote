@@ -3,10 +3,13 @@ package com.openai.voicenote.navigation
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import com.openai.voicenote.feature.label.navigation.labelScreen
+import com.openai.voicenote.feature.labeledit.navigation.LABEL_EDIT_ROUTE
 import com.openai.voicenote.feature.labeledit.navigation.labelEditScreen
 import com.openai.voicenote.feature.noteedit.navigation.noteEditScreen
 import com.openai.voicenote.feature.notes.navigation.NOTES_ROUTE
 import com.openai.voicenote.feature.notes.navigation.notesScreen
+import com.openai.voicenote.feature.recordaudio.navigation.RECORD_AUDIO_ROUTE
+import com.openai.voicenote.feature.recordaudio.navigation.recordAudioScreen
 import com.openai.voicenote.ui.VnAppState
 
 @Composable
@@ -23,7 +26,9 @@ fun VnNavHost(
             goToNoteEditScreen = {
                 appState.navigateToNoteEdit(0, it)
             },
-            goToVoiceNoteScreen = {  },
+            goToVoiceNoteScreen = {
+                navController.navigate(RECORD_AUDIO_ROUTE)
+            },
             onDrawerOpen = { appState.openDrawer() }
         )
         noteEditScreen(
@@ -35,6 +40,10 @@ fun VnNavHost(
         labelScreen(
             onBackClick = { navController.popBackStack() },
             onDrawerOpen = { appState.openDrawer() }
+        )
+        recordAudioScreen(
+            onBackClick = { navController.popBackStack() },
+            goToNoteEditScreen = { appState.navigateToNoteEdit(1, it) }
         )
     }
 

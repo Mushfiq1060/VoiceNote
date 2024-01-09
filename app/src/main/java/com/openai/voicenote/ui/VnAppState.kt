@@ -23,6 +23,7 @@ import com.openai.voicenote.feature.noteedit.navigation.NOTE_TO_STRING
 import com.openai.voicenote.feature.noteedit.navigation.navigateToNoteEdit
 import com.openai.voicenote.feature.notes.navigation.NOTES_ROUTE
 import com.openai.voicenote.feature.notes.navigation.navigateToNotes
+import com.openai.voicenote.feature.recordaudio.navigation.RECORD_AUDIO_ROUTE
 import com.openai.voicenote.navigation.DrawerDestination
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -96,6 +97,7 @@ class VnAppState(
             "$NOTE_EDIT_ROUTE{$NOTE_TO_STRING}" -> false
             LABEL_EDIT_ROUTE -> false
             "$LABEL_ROUTE/{$LABEL_ID}" -> true
+            RECORD_AUDIO_ROUTE -> false
             else -> false
         }
     }
@@ -123,11 +125,23 @@ class VnAppState(
         }
     }
 
+    /**
+     * [fromWhichScreen] value is either 0 or 1.
+     * If 0 then we navigate from notes screen.
+     * If 1 then we navigate from voice note screen
+     */
     fun navigateToNoteEdit(fromWhichScreen: Int = 0, noteString: String) {
-        // fromWhichScreen = 0 ---> From Notes screen
-        // fromWhichScreen = 1 ---> From VoiceNote screen
         if (fromWhichScreen == 0) {
             navController.navigateToNoteEdit(navOptions {  }, noteString = noteString)
+        } else if (fromWhichScreen == 1) {
+            navController.navigateToNoteEdit(
+                navOptions {
+                    popUpTo(RECORD_AUDIO_ROUTE) {
+                        inclusive = true
+                    }
+                },
+                noteString = noteString
+            )
         }
     }
 

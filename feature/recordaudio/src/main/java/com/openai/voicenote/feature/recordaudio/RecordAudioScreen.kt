@@ -37,6 +37,7 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
+import com.openai.voicenote.core.common.utils.Utils.toJson
 import com.openai.voicenote.core.designsystem.icon.VnIcons
 import com.openai.voicenote.core.designsystem.theme.VnTheme
 import com.openai.voicenote.core.ui.component.SimpleTopAppBar
@@ -60,9 +61,9 @@ fun RecordAudioRoute(
         onClickPlay = { viewModel.startPlaying() },
         onClickRecord = { viewModel.startRecording() },
         onClickSpeechToText = {
-            viewModel.convertSpeechToText { response ->
+            viewModel.convertSpeechToText { response, note ->
                 if (response.success == true) {
-                    goToNoteEditScreen(response.text)
+                    goToNoteEditScreen(note.toJson())
                 } else {
                     Toast.makeText(context, response.text, Toast.LENGTH_LONG).show()
                 }

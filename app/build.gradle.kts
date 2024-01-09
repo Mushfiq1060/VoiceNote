@@ -41,6 +41,7 @@ dependencies {
     implementation(project(":feature:noteedit"))
     implementation(project(":feature:labeledit"))
     implementation(project(":feature:label"))
+    implementation(project(":feature:recordaudio"))
     implementation(project(":core:data"))
     implementation(project(":core:model"))
     implementation(project(":core:ui"))

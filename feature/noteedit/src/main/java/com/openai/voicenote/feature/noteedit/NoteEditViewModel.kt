@@ -70,8 +70,15 @@ class NoteEditViewModel @Inject constructor(
     private val redoHistory = mutableListOf<Pair<String, String>>()
     private var isAddedToHistory = true
     private lateinit var currentNote: NoteResource
+    private lateinit var noteAutoSaveOrUpdateHandler: QueryDeBouncer<NoteResource>
 
     init {
+        noteAutoSaveOrUpdateHandler = QueryDeBouncer<NoteResource>(
+            durationInMilliseconds = 300,
+            onValue = {
+                noteAutoSaveOrUpdate(it)
+            }
+        )
         val noteString = savedStateHandle.get<String>(NOTE_TO_STRING)
         if (noteString != null) {
             val argNote = noteString.fromJson(NoteResource::class.java)
@@ -89,19 +96,18 @@ class NoteEditViewModel @Inject constructor(
                     )
                 }
             }
-            else if (argNote.description.isEmpty()) {
-                // from voice note screen
-                currentNote = argNote
+            else {
+                if (argNote.description.isNotEmpty()) {
+                    /** Navigate from voice note screen */
+                    updateNoteText(argNote.description, isAddedToHistory = false)
+                }
+                else {
+                    /** Navigate from notes screen by clicking on note */
+                    currentNote = argNote
+                }
             }
         }
     }
-
-    private val noteAutoSaveOrUpdateHandler = QueryDeBouncer<NoteResource>(
-        durationInMilliseconds = 300,
-        onValue = {
-            noteAutoSaveOrUpdate(it)
-        }
-    )
 
     private fun noteAutoSaveOrUpdate(note: NoteResource) {
         if (::currentNote.isInitialized) {

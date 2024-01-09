@@ -19,7 +19,7 @@ class RemoteDataSourceImpl @Inject constructor(
         val fileReqBody = MultipartBody.Part.createFormData("file", file.name, requestedFile)
         val modelReqBody =
             RequestBody.create(MediaType.parse("multipart/form-data"), "whisper-1")
-        val header = "Bearer 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"
+        val header = "Bearer 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"
         val response = api.getTextFromAudio(fileReqBody, modelReqBody, header)
         if (response.isSuccessful) {
             val text = response.body()?.text

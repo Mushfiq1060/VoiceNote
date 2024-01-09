@@ -7,7 +7,10 @@ import com.openai.voicenote.core.common.utils.player.AudioPlayerImpl
 import com.openai.voicenote.core.common.utils.recorder.AudioRecorderImpl
 import com.openai.voicenote.core.data.remote.RemoteDataSource
 import com.openai.voicenote.core.data.repository.FileRepository
+import com.openai.voicenote.core.designsystem.icon.VnColor
+import com.openai.voicenote.core.designsystem.icon.VnImage
 import com.openai.voicenote.core.model.ApiResponse
+import com.openai.voicenote.core.model.NoteResource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -145,7 +148,20 @@ class RecordAudioViewModel @Inject constructor(
         audioPlayerImpl.stopPlayer()
     }
 
-    fun convertSpeechToText(resultCallback: (response: ApiResponse) -> Unit) {
+    private fun prepareNoteForPassingNoteEditScreen(desc: String): NoteResource {
+        return NoteResource(
+            noteId = null,
+            title = "",
+            description = desc,
+            editTime = System.currentTimeMillis(),
+            pin = false,
+            archive = false,
+            backgroundColor = VnColor.bgColorList[0].id,
+            backgroundImage = VnImage.bgImageList[0].id
+        )
+    }
+
+    fun convertSpeechToText(resultCallback: (response: ApiResponse, note: NoteResource) -> Unit) {
         mUiState.update { currentState ->
             currentState.copy(
                 isSpeechToTextConvertStart = true
@@ -154,7 +170,15 @@ class RecordAudioViewModel @Inject constructor(
         viewModelScope.launch {
             val result = remoteDataSource.transcribeAudio(file)
             withContext(Dispatchers.Main) {
-                resultCallback(result)
+                resultCallback(
+                    result,
+                    prepareNoteForPassingNoteEditScreen(result.text)
+                )
+                mUiState.update { currentState ->
+                    currentState.copy(
+                        isSpeechToTextConvertStart = false
+                    )
+                }
             }
         }
     }
