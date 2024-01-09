@@ -66,8 +66,8 @@ class NoteEditViewModel @Inject constructor(
     private val mUiState = MutableStateFlow(NoteEditUiState())
     val uiState: StateFlow<NoteEditUiState> = mUiState.asStateFlow()
 
-    private val history = mutableListOf<Pair<String, String>>()
-    private val redoHistory = mutableListOf<Pair<String, String>>()
+    private val history = mutableListOf<String>()
+    private val redoHistory = mutableListOf<String>()
     private var isAddedToHistory = true
     private lateinit var currentNote: NoteResource
     private lateinit var noteAutoSaveOrUpdateHandler: QueryDeBouncer<NoteResource>
@@ -84,6 +84,7 @@ class NoteEditViewModel @Inject constructor(
             val argNote = noteString.fromJson(NoteResource::class.java)
             if (argNote.noteId != null) {
                 currentNote = argNote
+                history.add(argNote.description)
                 mUiState.update {
                     it.copy(
                         titleText = argNote.title,
@@ -99,10 +100,12 @@ class NoteEditViewModel @Inject constructor(
             else {
                 if (argNote.description.isNotEmpty()) {
                     /** Navigate from voice note screen */
+                    history.add(argNote.description)
                     updateNoteText(argNote.description, isAddedToHistory = false)
                 }
                 else {
                     /** Navigate from notes screen by clicking on note */
+                    history.add("")
                     currentNote = argNote
                 }
             }
@@ -179,14 +182,14 @@ class NoteEditViewModel @Inject constructor(
         }
     }
 
-    private fun updateTitleText(text: String, isAddedToHistory: Boolean = true) {
+    private fun updateTitleText(text: String) {
         mUiState.update {
             it.copy(
                 titleText = text,
                 isNoteEditStarted = true
             )
         }
-        this.isAddedToHistory = isAddedToHistory
+        this.isAddedToHistory = false
         noteAutoSaveOrUpdateHandler.typeTValue = prepareNote()
     }
 
@@ -281,8 +284,8 @@ class NoteEditViewModel @Inject constructor(
         }
     }
 
-    private fun addHistory(titleText: String, noteText: String) {
-        history.add(Pair(titleText, noteText))
+    private fun addHistory(noteText: String) {
+        history.add(noteText)
         redoHistory.clear()
         toggleUndoRedoState()
     }
@@ -292,8 +295,7 @@ class NoteEditViewModel @Inject constructor(
             val lastHistory = history.removeLast()
             redoHistory.add(lastHistory)
             toggleUndoRedoState()
-            updateTitleText(history.last().first, false)
-            updateNoteText(history.last().second, false)
+            updateNoteText(history.last(), false)
         }
     }
 
@@ -302,8 +304,7 @@ class NoteEditViewModel @Inject constructor(
             val lastRedoHistory = redoHistory.removeLast()
             history.add(lastRedoHistory)
             toggleUndoRedoState()
-            updateTitleText(lastRedoHistory.first, false)
-            updateNoteText(lastRedoHistory.second, false)
+            updateNoteText(lastRedoHistory, false)
         }
     }
 
@@ -311,7 +312,7 @@ class NoteEditViewModel @Inject constructor(
         viewModelScope.launch {
             currentNote.noteId = noteDataSource.insertNote(listOf(currentNote))[0]
             if (mUiState.value.isNoteEditStarted && isAddedToHistory) {
-                addHistory(currentNote.title, currentNote.description)
+                addHistory(currentNote.description)
             }
             mUiState.update {
                 it.copy(
@@ -325,7 +326,7 @@ class NoteEditViewModel @Inject constructor(
         viewModelScope.launch {
             noteDataSource.updateNote(currentNote)
             if (mUiState.value.isNoteEditStarted && isAddedToHistory) {
-                addHistory(currentNote.title, currentNote.description)
+                addHistory(currentNote.description)
             }
             mUiState.update {
                 it.copy(
