@@ -6,20 +6,27 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -28,6 +35,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.openai.voicenote.core.designsystem.icon.VnIcons
 import com.openai.voicenote.core.designsystem.theme.VnTheme
 import com.openai.voicenote.core.model.NoteView
+import com.openai.voicenote.core.ui.component.ConfirmationDialog
 import com.openai.voicenote.core.ui.component.EmptyNoteList
 
 enum class LabelAppBarItem {
@@ -46,17 +54,25 @@ fun LabelRoute(
     val labelName by viewModel.labelName.collectAsStateWithLifecycle("")
     val noteViewState by viewModel.noteViewState.collectAsStateWithLifecycle()
     val contextMenuState by viewModel.contextMenuState.collectAsStateWithLifecycle()
+    val shouldShowDeleteDialog by viewModel.shouldShowDeleteDialog.collectAsStateWithLifecycle()
+    val shouldShowRenameDialog by viewModel.shouldShowRenameDialog.collectAsStateWithLifecycle()
+    val renameLabelText by viewModel.renameLabelText.collectAsStateWithLifecycle()
 
     LabelScreen(
         labelName = labelName,
         noteViewState = noteViewState,
         contextMenuState = contextMenuState,
+        shouldShowDeleteDialog = shouldShowDeleteDialog,
+        shouldShowRenameDialog = shouldShowRenameDialog,
+        renameLabelText = renameLabelText,
+        onRenameLabelTextChange = { viewModel.updateRenameLabelText(it) },
         onClickRenameLabel = {
             viewModel.toggleContextMenuState()
-
+            viewModel.toggleRenameDialogState(labelName)
         },
         onClickDeleteLabel = {
             viewModel.toggleContextMenuState()
+            viewModel.toggleDeleteDialogState()
         },
         onClickLabelAppBarItem = {
             when (it) {
@@ -70,7 +86,15 @@ fun LabelRoute(
                     viewModel.toggleNoteView()
                 }
             }
-        }
+        },
+        onDeleteDialogConfirmClick = {
+            viewModel.toggleDeleteDialogState()
+            viewModel.deleteLabel()
+            onBackClick()
+        },
+        onDeleteDialogCancelClick = { viewModel.toggleDeleteDialogState() },
+        onRenameDialogConfirmClick = { viewModel.updateLabel() },
+        onRenameDialogCancelClick = { viewModel.toggleRenameDialogState(labelName) }
     )
 }
 
@@ -79,9 +103,17 @@ fun LabelScreen(
     labelName: String,
     noteViewState: NoteView,
     contextMenuState: Boolean,
+    shouldShowDeleteDialog: Boolean,
+    shouldShowRenameDialog: Boolean,
+    renameLabelText: String,
+    onRenameLabelTextChange: (text: String) -> Unit,
     onClickRenameLabel: () -> Unit,
     onClickDeleteLabel: () -> Unit,
-    onClickLabelAppBarItem: (item: LabelAppBarItem) -> Unit
+    onClickLabelAppBarItem: (item: LabelAppBarItem) -> Unit,
+    onDeleteDialogConfirmClick: () -> Unit,
+    onDeleteDialogCancelClick: () -> Unit,
+    onRenameDialogConfirmClick: () -> Unit,
+    onRenameDialogCancelClick: () -> Unit
 ) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -96,6 +128,24 @@ fun LabelScreen(
             )
         }
     ) { paddingValues ->
+        if (shouldShowDeleteDialog) {
+            ConfirmationDialog(
+                heading = "Delete label?",
+                description = "We'll delete this label and remove it from all of your keep notes. Your notes won't be deleted.",
+                confirmButtonText = "Delete",
+                dismissButtonText = "Cancel",
+                onConfirmClick = { onDeleteDialogConfirmClick() },
+                onDismissClick = { onDeleteDialogCancelClick() }
+            )
+        }
+        if (shouldShowRenameDialog) {
+            RenameLabelDialog(
+                renameLabelText = renameLabelText,
+                onTextChange = { onRenameLabelTextChange(it) },
+                onConfirmClick = { onRenameDialogConfirmClick() },
+                onDismissClick = { onRenameDialogCancelClick() }
+            )
+        }
         EmptyNoteList(
             modifier = Modifier
                 .fillMaxSize()
@@ -192,6 +242,77 @@ fun LabelScreenTopAppBar(
             }
         }
     )
+}
+
+@Composable
+fun RenameLabelDialog(
+    renameLabelText: String,
+    onTextChange: (text: String) -> Unit,
+    onConfirmClick: () -> Unit,
+    onDismissClick: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = { onDismissClick() },
+        confirmButton = {
+            Button(
+                onClick = { onConfirmClick() },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary
+                )
+            ) {
+                Text(
+                    text = "Rename",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onPrimary
+                )
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = { onDismissClick() }) {
+                Text(
+                    text = "Cancel",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+        },
+        title = {
+            Text(
+                text = "Rename Label",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+        },
+        text = {
+            OutlinedTextField(
+                value = renameLabelText,
+                onValueChange = { onTextChange(it) },
+                textStyle = MaterialTheme.typography.bodyMedium,
+                singleLine = true,
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                    focusedIndicatorColor = MaterialTheme.colorScheme.primary,
+                    unfocusedIndicatorColor = MaterialTheme.colorScheme.primary
+                )
+            )
+        }
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun RenameLabelDialogPreview() {
+    VnTheme {
+        Surface {
+            RenameLabelDialog(
+                renameLabelText = "Who Cares??",
+                onTextChange = {},
+                onConfirmClick = {},
+                onDismissClick = {}
+            )
+        }
+    }
 }
 
 @Preview(showBackground = true)

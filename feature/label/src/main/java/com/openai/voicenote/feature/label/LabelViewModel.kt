@@ -5,13 +5,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.openai.voicenote.core.data.LabelDataSource
 import com.openai.voicenote.core.data.repository.UserDataRepository
+import com.openai.voicenote.core.model.LabelResource
 import com.openai.voicenote.core.model.NoteView
 import com.openai.voicenote.feature.label.navigation.LABEL_ID
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -38,7 +37,14 @@ class LabelViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(5000L),
             initialValue = NoteView.GRID
         )
+    val renameLabelText = MutableStateFlow("")
     val labelName = labelDataSource.getLabelNameById(argLabelId)
+    val shouldShowDeleteDialog = MutableStateFlow(false)
+    val shouldShowRenameDialog = MutableStateFlow(false)
+
+    fun updateRenameLabelText(text: String) {
+        renameLabelText.update { text }
+    }
 
     fun toggleNoteView() {
         viewModelScope.launch {
@@ -48,6 +54,23 @@ class LabelViewModel @Inject constructor(
 
     fun toggleContextMenuState() {
         contextMenuState.update { !it }
+    }
+
+    fun toggleDeleteDialogState() {
+        shouldShowDeleteDialog.update { !it }
+    }
+
+    fun toggleRenameDialogState(label: String) {
+        renameLabelText.update { label }
+        shouldShowRenameDialog.update { !it }
+    }
+
+    fun updateLabel() {
+        val curLabelName = renameLabelText.value
+        toggleRenameDialogState("")
+        viewModelScope.launch {
+            labelDataSource.updateLabel(LabelResource(labelId = argLabelId, curLabelName))
+        }
     }
 
     fun deleteLabel() {
