@@ -13,12 +13,14 @@ fun NavController.navigateToNotes(navOptions: NavOptions) = navigate(NOTES_ROUTE
 fun NavGraphBuilder.notesScreen(
     goToNoteEditScreen: (note: String) -> Unit,
     goToVoiceNoteScreen: () -> Unit,
+    goToNoteLabelScreen: () -> Unit,
     onDrawerOpen: () -> Unit
 ) {
     composable(route = NOTES_ROUTE) {
         NotesRoute(
             goToNoteEditScreen = goToNoteEditScreen,
             goToVoiceNoteScreen = goToVoiceNoteScreen,
+            goToNoteLabelScreen = goToNoteLabelScreen,
             onDrawerOpen = onDrawerOpen
         )
     }

@@ -31,12 +31,14 @@ fun NoteLabelRoute(
     viewModel: NoteLabelViewModel = hiltViewModel()
 ) {
     NoteLabelScreen(
-        labelList = listOf(),
+        onBackClick = { onBackClick() },
+        labelList = listOf()
     )
 }
 
 @Composable
 fun NoteLabelScreen(
+    onBackClick: () -> Unit,
     labelList: List<LabelResource>,
 ) {
     Scaffold(
@@ -44,7 +46,7 @@ fun NoteLabelScreen(
             SimpleTopAppBar(
                 navigationIcon = VnIcons.arrowBack,
                 title = "Add label",
-                onClickNavigationIcon = {}
+                onClickNavigationIcon = { onBackClick() }
             )
         }
     ) { paddingValues ->
@@ -119,6 +121,7 @@ fun NoteLabelScreenPreview() {
     VnTheme {
         Surface {
             NoteLabelScreen(
+                onBackClick = {},
                 labelList = previewLabelList
             )
         }

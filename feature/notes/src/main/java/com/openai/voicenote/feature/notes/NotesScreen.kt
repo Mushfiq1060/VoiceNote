@@ -63,6 +63,7 @@ enum class NotesAppBarItem {
 fun NotesRoute(
     goToNoteEditScreen: (note: String) -> Unit,
     goToVoiceNoteScreen: () -> Unit,
+    goToNoteLabelScreen: () -> Unit,
     onDrawerOpen: () -> Unit,
     viewModel: NotesViewModel = hiltViewModel()
 ) {
@@ -85,7 +86,12 @@ fun NotesRoute(
                 viewModel.toggleNoteView()
             }
         },
-        onSelectedTopAppBarClick = { viewModel.onSelectedTopAppBarClick(it) },
+        onSelectedTopAppBarClick = {
+            if (it == SelectedTopAppBarItem.LABEL) {
+                goToNoteLabelScreen()
+            }
+            viewModel.onSelectedTopAppBarClick(it)
+        },
         onNoteClick = { noteResource, noteId ->
             if (isAnyNoteSelected) {
                 if (noteResource.pin) {

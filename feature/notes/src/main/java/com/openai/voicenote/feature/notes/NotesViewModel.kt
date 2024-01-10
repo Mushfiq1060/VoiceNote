@@ -85,9 +85,7 @@ class NotesViewModel @Inject constructor(
             SelectedTopAppBarItem.DRAW -> {
 
             }
-            SelectedTopAppBarItem.LABEL -> {
-
-            }
+            SelectedTopAppBarItem.LABEL -> { removeAllSelectedNotes() }
             SelectedTopAppBarItem.CONTEXT_MENU_OPEN -> { contextMenuState.update { true } }
             SelectedTopAppBarItem.CONTEXT_MENU_CLOSE -> { removeAllSelectedNotes() }
             SelectedTopAppBarItem.TOGGLE_ARCHIVE -> { updateNotesArchive() }

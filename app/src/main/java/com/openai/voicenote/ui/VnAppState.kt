@@ -94,10 +94,7 @@ class VnAppState(
     private fun checkDrawerVisibility(route: String): Boolean {
         return when (route) {
             NOTES_ROUTE -> true
-            "$NOTE_EDIT_ROUTE{$NOTE_TO_STRING}" -> false
-            LABEL_EDIT_ROUTE -> false
             "$LABEL_ROUTE/{$LABEL_ID}" -> true
-            RECORD_AUDIO_ROUTE -> false
             else -> false
         }
     }
