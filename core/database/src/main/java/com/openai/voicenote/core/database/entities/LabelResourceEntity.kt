@@ -8,9 +8,8 @@ import com.openai.voicenote.core.model.LabelResource
 @Entity(tableName = "label_table")
 data class LabelResourceEntity(
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "LabelId")
     val labelId: Long?,
-    @ColumnInfo(name = "LabelName") val labelName: String
+    val labelName: String
 )
 
 fun List<LabelResourceEntity>.mapToLabelResource(): List<LabelResource> =

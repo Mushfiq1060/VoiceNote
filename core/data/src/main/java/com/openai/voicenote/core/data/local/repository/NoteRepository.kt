@@ -2,6 +2,7 @@ package com.openai.voicenote.core.data.local.repository
 
 import com.openai.voicenote.core.database.dao.NoteResourceDao
 import com.openai.voicenote.core.database.entities.NoteResourceEntity
+import com.openai.voicenote.core.database.entities.relations.NoteLabelCrossRef
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -13,7 +14,15 @@ class NoteRepository @Inject constructor(
     suspend fun insertNote(notes: List<NoteResourceEntity>) =
         noteResourceDao.insertNote(notes)
 
+    suspend fun insertNoteLabelCrossRef(crossRefs: List<NoteLabelCrossRef>) =
+        noteResourceDao.insertNoteLabelCrossRef(crossRefs)
+
+    suspend fun deleteCrossRefWithNotesId(notesId: List<Long>) =
+        noteResourceDao.deleteCrossRefWithNotesId(notesId)
+
     fun observeAllNotes() = noteResourceDao.observeAllNotes()
+
+    fun observeAllNoteWithLabels() = noteResourceDao.observeAllNoteWithLabels()
 
     fun observeAllPinNotes() = noteResourceDao.observeAllPinNotes()
 

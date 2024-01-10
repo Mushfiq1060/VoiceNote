@@ -7,7 +7,11 @@ interface LabelDataSource {
 
     suspend fun insertLabel(labels: List<LabelResource>)
 
+    suspend fun deleteCrossRefWithLabelsId(labelsId: List<Long>)
+
     fun observeAllLabels(): Flow<List<LabelResource>>
+
+    fun observeAllLabelsWithNote(): Flow<List<LabelResource>>
 
     suspend fun updateLabel(label: LabelResource)
 

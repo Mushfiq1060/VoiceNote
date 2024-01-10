@@ -1,6 +1,5 @@
 package com.openai.voicenote.core.data.local
 
-import com.openai.voicenote.core.data.local.LabelDataSource
 import com.openai.voicenote.core.data.local.repository.LabelRepository
 import com.openai.voicenote.core.database.entities.mapToLabelResource
 import com.openai.voicenote.core.database.entities.mapToLabelResourceEntity
@@ -18,8 +17,18 @@ class LabelLocalDataSource @Inject constructor(
         labelRepository.insertLabel(labels.mapToLabelResourceEntity())
     }
 
+    override suspend fun deleteCrossRefWithLabelsId(labelsId: List<Long>) {
+        labelRepository.deleteCrossRefWithLabelsId(labelsId)
+    }
+
     override fun observeAllLabels(): Flow<List<LabelResource>> {
         return labelRepository.observeAllLabels().map {
+            it.mapToLabelResource()
+        }
+    }
+
+    override fun observeAllLabelsWithNote(): Flow<List<LabelResource>> {
+        return labelRepository.observeAllLabelsWithNote().map {
             it.mapToLabelResource()
         }
     }

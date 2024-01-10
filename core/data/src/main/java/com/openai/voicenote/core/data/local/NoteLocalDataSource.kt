@@ -1,9 +1,10 @@
 package com.openai.voicenote.core.data.local
 
-import com.openai.voicenote.core.data.local.NoteDataSource
 import com.openai.voicenote.core.data.local.repository.NoteRepository
 import com.openai.voicenote.core.database.entities.mapToNoteResource
 import com.openai.voicenote.core.database.entities.mapToNoteResourceEntity
+import com.openai.voicenote.core.database.entities.relations.NoteLabelCrossRef
+import com.openai.voicenote.core.database.entities.relations.mapToNoteResource
 import com.openai.voicenote.core.model.NoteResource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -18,8 +19,26 @@ class NoteLocalDataSource @Inject constructor(
         return noteRepository.insertNote(notes.mapToNoteResourceEntity())
     }
 
+    override suspend fun insertNoteLabelCrossRef(notesId: List<Long>, labelId: Long) {
+        val crossRef = mutableListOf<NoteLabelCrossRef>()
+        notesId.forEach {
+            crossRef.add(NoteLabelCrossRef(noteId = it, labelId = labelId))
+        }
+        noteRepository.insertNoteLabelCrossRef(crossRef)
+    }
+
+    override suspend fun deleteCrossRefWithNotesId(notesId: List<Long>) {
+        noteRepository.deleteCrossRefWithNotesId(notesId)
+    }
+
     override fun observeAllNotes(): Flow<List<NoteResource>> {
         return noteRepository.observeAllNotes().map {
+            it.mapToNoteResource()
+        }
+    }
+
+    override fun observeAllNoteWithLabels(): Flow<List<NoteResource>> {
+        return noteRepository.observeAllNoteWithLabels().map {
             it.mapToNoteResource()
         }
     }

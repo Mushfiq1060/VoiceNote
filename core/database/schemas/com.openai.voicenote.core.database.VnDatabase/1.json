@@ -2,57 +2,57 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "97dc9c47f320c524a224b0e4ec908cb7",
+    "identityHash": "4938da66eb9c3c5cfde5cbe61042a075",
     "entities": [
       {
         "tableName": "note_table",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`NoteId` INTEGER PRIMARY KEY AUTOINCREMENT, `Title` TEXT NOT NULL, `Description` TEXT NOT NULL, `EditTime` INTEGER NOT NULL, `Pin` INTEGER NOT NULL, `Archive` INTEGER NOT NULL, `BackgroundColor` INTEGER NOT NULL, `BackgroundImage` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`noteId` INTEGER PRIMARY KEY AUTOINCREMENT, `title` TEXT NOT NULL, `description` TEXT NOT NULL, `editTime` INTEGER NOT NULL, `pin` INTEGER NOT NULL, `archive` INTEGER NOT NULL, `backgroundColor` INTEGER NOT NULL, `backgroundImage` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "noteId",
-            "columnName": "NoteId",
+            "columnName": "noteId",
             "affinity": "INTEGER",
             "notNull": false
           },
           {
             "fieldPath": "title",
-            "columnName": "Title",
+            "columnName": "title",
             "affinity": "TEXT",
             "notNull": true
           },
           {
             "fieldPath": "description",
-            "columnName": "Description",
+            "columnName": "description",
             "affinity": "TEXT",
             "notNull": true
           },
           {
             "fieldPath": "editTime",
-            "columnName": "EditTime",
+            "columnName": "editTime",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
             "fieldPath": "pin",
-            "columnName": "Pin",
+            "columnName": "pin",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
             "fieldPath": "archive",
-            "columnName": "Archive",
+            "columnName": "archive",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
             "fieldPath": "backgroundColor",
-            "columnName": "BackgroundColor",
+            "columnName": "backgroundColor",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
             "fieldPath": "backgroundImage",
-            "columnName": "BackgroundImage",
+            "columnName": "backgroundImage",
             "affinity": "INTEGER",
             "notNull": true
           }
@@ -60,7 +60,7 @@
         "primaryKey": {
           "autoGenerate": true,
           "columnNames": [
-            "NoteId"
+            "noteId"
           ]
         },
         "indices": [],
@@ -68,17 +68,17 @@
       },
       {
         "tableName": "label_table",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`LabelId` INTEGER PRIMARY KEY AUTOINCREMENT, `LabelName` TEXT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`labelId` INTEGER PRIMARY KEY AUTOINCREMENT, `labelName` TEXT NOT NULL)",
         "fields": [
           {
             "fieldPath": "labelId",
-            "columnName": "LabelId",
+            "columnName": "labelId",
             "affinity": "INTEGER",
             "notNull": false
           },
           {
             "fieldPath": "labelName",
-            "columnName": "LabelName",
+            "columnName": "labelName",
             "affinity": "TEXT",
             "notNull": true
           }
@@ -86,17 +86,63 @@
         "primaryKey": {
           "autoGenerate": true,
           "columnNames": [
-            "LabelId"
+            "labelId"
           ]
         },
         "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "note_label_cross_ref",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`noteId` INTEGER NOT NULL, `labelId` INTEGER NOT NULL, PRIMARY KEY(`noteId`, `labelId`))",
+        "fields": [
+          {
+            "fieldPath": "noteId",
+            "columnName": "noteId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "labelId",
+            "columnName": "labelId",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "noteId",
+            "labelId"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_note_label_cross_ref_noteId",
+            "unique": false,
+            "columnNames": [
+              "noteId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_note_label_cross_ref_noteId` ON `${TABLE_NAME}` (`noteId`)"
+          },
+          {
+            "name": "index_note_label_cross_ref_labelId",
+            "unique": false,
+            "columnNames": [
+              "labelId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_note_label_cross_ref_labelId` ON `${TABLE_NAME}` (`labelId`)"
+          }
+        ],
         "foreignKeys": []
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '97dc9c47f320c524a224b0e4ec908cb7')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '4938da66eb9c3c5cfde5cbe61042a075')"
     ]
   }
 }

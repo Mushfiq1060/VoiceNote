@@ -8,8 +8,6 @@ data class NoteResource(
     var pin: Boolean,
     var archive: Boolean,
     var backgroundColor: Int,
-    var backgroundImage: Int
+    var backgroundImage: Int,
+    var labelList: List<LabelResource> = listOf()
 )
-
-
-
