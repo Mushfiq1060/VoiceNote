@@ -1,7 +1,7 @@
-package com.openai.voicenote.core.data.repository
+package com.openai.voicenote.core.data.local.repository
 
 import com.openai.voicenote.core.database.dao.LabelResourceDao
-import com.openai.voicenote.core.database.model.LabelResourceEntity
+import com.openai.voicenote.core.database.entities.LabelResourceEntity
 import javax.inject.Inject
 import javax.inject.Singleton
 

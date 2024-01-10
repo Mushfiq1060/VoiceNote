@@ -5,7 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import com.openai.voicenote.core.database.model.LabelResourceEntity
+import com.openai.voicenote.core.database.entities.LabelResourceEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao

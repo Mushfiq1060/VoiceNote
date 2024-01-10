@@ -1,7 +1,5 @@
 package com.openai.voicenote.feature.noteedit
 
-import android.util.Log
-import androidx.compose.runtime.currentRecomposeScope
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.SavedStateHandle
@@ -10,7 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.openai.voicenote.core.common.utils.QueryDeBouncer
 import com.openai.voicenote.core.common.utils.Utils
 import com.openai.voicenote.core.common.utils.Utils.fromJson
-import com.openai.voicenote.core.data.NoteDataSource
+import com.openai.voicenote.core.data.local.NoteDataSource
 import com.openai.voicenote.core.designsystem.icon.VnColor
 import com.openai.voicenote.core.designsystem.icon.VnImage
 import com.openai.voicenote.core.model.NoteResource
@@ -115,9 +113,9 @@ class NoteEditViewModel @Inject constructor(
     private fun noteAutoSaveOrUpdate(note: NoteResource) {
         if (::currentNote.isInitialized) {
             if (currentNote.noteId == null) {
-                saveNote()
+                saveNote(note)
             } else {
-                updateNote()
+                updateNote(note)
             }
         }
     }
@@ -308,29 +306,29 @@ class NoteEditViewModel @Inject constructor(
         }
     }
 
-    private fun saveNote() {
+    private fun saveNote(note: NoteResource) {
         viewModelScope.launch {
-            currentNote.noteId = noteDataSource.insertNote(listOf(currentNote))[0]
+            currentNote.noteId = noteDataSource.insertNote(listOf(note))[0]
             if (mUiState.value.isNoteEditStarted && isAddedToHistory) {
-                addHistory(currentNote.description)
+                addHistory(note.description)
             }
             mUiState.update {
                 it.copy(
-                    editTime = Utils.getFormattedTime(currentNote.editTime)
+                    editTime = Utils.getFormattedTime(note.editTime)
                 )
             }
         }
     }
 
-    private fun updateNote() {
+    private fun updateNote(note: NoteResource) {
         viewModelScope.launch {
-            noteDataSource.updateNote(currentNote)
+            noteDataSource.updateNote(note)
             if (mUiState.value.isNoteEditStarted && isAddedToHistory) {
-                addHistory(currentNote.description)
+                addHistory(note.description)
             }
             mUiState.update {
                 it.copy(
-                    editTime = Utils.getFormattedTime(currentNote.editTime)
+                    editTime = Utils.getFormattedTime(note.editTime)
                 )
             }
         }

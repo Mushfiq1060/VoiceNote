@@ -1,4 +1,4 @@
-package com.openai.voicenote.core.data
+package com.openai.voicenote.core.data.local
 
 import com.openai.voicenote.core.model.NoteResource
 import kotlinx.coroutines.flow.Flow

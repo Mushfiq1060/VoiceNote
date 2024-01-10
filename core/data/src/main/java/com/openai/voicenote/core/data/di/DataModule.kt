@@ -1,11 +1,11 @@
 package com.openai.voicenote.core.data.di
 
-import com.openai.voicenote.core.data.LabelDataSource
-import com.openai.voicenote.core.data.LabelLocalDataSource
-import com.openai.voicenote.core.data.NoteDataSource
-import com.openai.voicenote.core.data.NoteLocalDataSource
-import com.openai.voicenote.core.data.repository.UserDataRepository
-import com.openai.voicenote.core.data.repository.UserDataRepositoryImpl
+import com.openai.voicenote.core.data.local.LabelDataSource
+import com.openai.voicenote.core.data.local.LabelLocalDataSource
+import com.openai.voicenote.core.data.local.NoteDataSource
+import com.openai.voicenote.core.data.local.NoteLocalDataSource
+import com.openai.voicenote.core.data.local.repository.UserDataRepository
+import com.openai.voicenote.core.data.local.repository.UserDataRepositoryImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

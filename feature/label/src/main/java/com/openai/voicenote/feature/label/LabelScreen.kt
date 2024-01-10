@@ -46,7 +46,6 @@ enum class LabelAppBarItem {
 
 @Composable
 fun LabelRoute(
-    modifier: Modifier = Modifier,
     onBackClick: () -> Unit,
     onDrawerOpen: () -> Unit,
     viewModel: LabelViewModel = hiltViewModel()

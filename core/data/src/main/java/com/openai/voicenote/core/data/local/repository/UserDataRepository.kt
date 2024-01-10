@@ -1,4 +1,4 @@
-package com.openai.voicenote.core.data.repository
+package com.openai.voicenote.core.data.local.repository
 
 import com.openai.voicenote.core.model.NoteView
 import com.openai.voicenote.core.model.UserData

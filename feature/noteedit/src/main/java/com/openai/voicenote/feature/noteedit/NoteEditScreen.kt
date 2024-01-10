@@ -46,7 +46,6 @@ import com.openai.voicenote.core.ui.component.CustomTextField
 
 @Composable
 fun NoteEditRoute(
-    modifier: Modifier = Modifier,
     onBackClick: () -> Unit,
     viewModel: NoteEditViewModel = hiltViewModel()
 ) {

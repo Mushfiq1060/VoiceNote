@@ -2,8 +2,8 @@ package com.openai.voicenote
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.openai.voicenote.core.data.LabelDataSource
-import com.openai.voicenote.core.data.repository.UserDataRepository
+import com.openai.voicenote.core.data.local.LabelDataSource
+import com.openai.voicenote.core.data.local.repository.UserDataRepository
 import com.openai.voicenote.core.model.LabelResource
 import com.openai.voicenote.core.model.UserData
 import dagger.hilt.android.lifecycle.HiltViewModel

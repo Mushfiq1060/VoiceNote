@@ -1,9 +1,9 @@
-package com.openai.voicenote.core.data
+package com.openai.voicenote.core.data.local
 
-import com.openai.voicenote.core.data.repository.NoteRepository
-import com.openai.voicenote.core.database.model.NoteResourceEntity
-import com.openai.voicenote.core.database.model.mapToNoteResource
-import com.openai.voicenote.core.database.model.mapToNoteResourceEntity
+import com.openai.voicenote.core.data.local.NoteDataSource
+import com.openai.voicenote.core.data.local.repository.NoteRepository
+import com.openai.voicenote.core.database.entities.mapToNoteResource
+import com.openai.voicenote.core.database.entities.mapToNoteResourceEntity
 import com.openai.voicenote.core.model.NoteResource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map

@@ -1,4 +1,4 @@
-package com.openai.voicenote.core.database.model
+package com.openai.voicenote.core.database.entities
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

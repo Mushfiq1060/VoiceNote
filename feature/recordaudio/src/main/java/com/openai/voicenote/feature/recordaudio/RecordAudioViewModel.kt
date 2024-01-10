@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.openai.voicenote.core.common.utils.player.AudioPlayerImpl
 import com.openai.voicenote.core.common.utils.recorder.AudioRecorderImpl
 import com.openai.voicenote.core.data.remote.RemoteDataSource
-import com.openai.voicenote.core.data.repository.FileRepository
+import com.openai.voicenote.core.data.local.repository.FileRepository
 import com.openai.voicenote.core.designsystem.icon.VnColor
 import com.openai.voicenote.core.designsystem.icon.VnImage
 import com.openai.voicenote.core.model.ApiResponse

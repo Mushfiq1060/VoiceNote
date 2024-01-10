@@ -61,7 +61,6 @@ enum class NotesAppBarItem {
 
 @Composable
 fun NotesRoute(
-    modifier: Modifier = Modifier,
     goToNoteEditScreen: (note: String) -> Unit,
     goToVoiceNoteScreen: () -> Unit,
     onDrawerOpen: () -> Unit,

@@ -37,7 +37,6 @@ import com.openai.voicenote.core.ui.component.SimpleTopAppBar
 
 @Composable
 fun LabelEditRoute(
-    modifier: Modifier = Modifier,
     onBackClick: () -> Unit,
     viewModel: LabelEditViewModel = hiltViewModel()
 ) {

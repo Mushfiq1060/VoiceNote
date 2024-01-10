@@ -3,8 +3,8 @@ package com.openai.voicenote.feature.label
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.openai.voicenote.core.data.LabelDataSource
-import com.openai.voicenote.core.data.repository.UserDataRepository
+import com.openai.voicenote.core.data.local.LabelDataSource
+import com.openai.voicenote.core.data.local.repository.UserDataRepository
 import com.openai.voicenote.core.model.LabelResource
 import com.openai.voicenote.core.model.NoteView
 import com.openai.voicenote.feature.label.navigation.LABEL_ID

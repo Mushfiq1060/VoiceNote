@@ -1,8 +1,9 @@
-package com.openai.voicenote.core.data
+package com.openai.voicenote.core.data.local
 
-import com.openai.voicenote.core.data.repository.LabelRepository
-import com.openai.voicenote.core.database.model.mapToLabelResource
-import com.openai.voicenote.core.database.model.mapToLabelResourceEntity
+import com.openai.voicenote.core.data.local.LabelDataSource
+import com.openai.voicenote.core.data.local.repository.LabelRepository
+import com.openai.voicenote.core.database.entities.mapToLabelResource
+import com.openai.voicenote.core.database.entities.mapToLabelResourceEntity
 import com.openai.voicenote.core.model.LabelResource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map

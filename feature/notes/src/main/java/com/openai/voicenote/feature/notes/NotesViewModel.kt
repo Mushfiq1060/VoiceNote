@@ -2,8 +2,8 @@ package com.openai.voicenote.feature.notes
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.openai.voicenote.core.data.NoteDataSource
-import com.openai.voicenote.core.data.repository.UserDataRepository
+import com.openai.voicenote.core.data.local.NoteDataSource
+import com.openai.voicenote.core.data.local.repository.UserDataRepository
 import com.openai.voicenote.core.designsystem.icon.VnColor
 import com.openai.voicenote.core.designsystem.icon.VnImage
 import com.openai.voicenote.core.model.NoteResource

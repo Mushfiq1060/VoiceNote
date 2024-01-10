@@ -44,7 +44,6 @@ import com.openai.voicenote.core.ui.component.SimpleTopAppBar
 
 @Composable
 fun RecordAudioRoute(
-    modifier: Modifier = Modifier,
     onBackClick: () -> Unit,
     goToNoteEditScreen: (noteDescription: String) -> Unit,
     viewModel: RecordAudioViewModel = hiltViewModel()

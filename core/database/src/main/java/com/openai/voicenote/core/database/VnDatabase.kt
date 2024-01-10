@@ -4,8 +4,8 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.openai.voicenote.core.database.dao.LabelResourceDao
 import com.openai.voicenote.core.database.dao.NoteResourceDao
-import com.openai.voicenote.core.database.model.LabelResourceEntity
-import com.openai.voicenote.core.database.model.NoteResourceEntity
+import com.openai.voicenote.core.database.entities.LabelResourceEntity
+import com.openai.voicenote.core.database.entities.NoteResourceEntity
 
 @Database(
     entities = [NoteResourceEntity::class, LabelResourceEntity::class],

@@ -1,4 +1,4 @@
-package com.openai.voicenote.core.data.repository
+package com.openai.voicenote.core.data.local.repository
 
 import android.content.Context
 import dagger.hilt.android.qualifiers.ApplicationContext
