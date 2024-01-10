@@ -63,7 +63,7 @@ enum class NotesAppBarItem {
 fun NotesRoute(
     goToNoteEditScreen: (note: String) -> Unit,
     goToVoiceNoteScreen: () -> Unit,
-    goToNoteLabelScreen: () -> Unit,
+    goToNoteLabelScreen: (List<Long>) -> Unit,
     onDrawerOpen: () -> Unit,
     viewModel: NotesViewModel = hiltViewModel()
 ) {
@@ -87,10 +87,12 @@ fun NotesRoute(
             }
         },
         onSelectedTopAppBarClick = {
-            if (it == SelectedTopAppBarItem.LABEL) {
-                goToNoteLabelScreen()
+            viewModel.onSelectedTopAppBarClick(it) { list ->
+                /** This lambda triggers while click on label icon */
+                if (list.isNotEmpty()) {
+                    goToNoteLabelScreen(list)
+                }
             }
-            viewModel.onSelectedTopAppBarClick(it)
         },
         onNoteClick = { noteResource, noteId ->
             if (isAnyNoteSelected) {

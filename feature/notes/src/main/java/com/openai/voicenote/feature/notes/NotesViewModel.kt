@@ -78,14 +78,17 @@ class NotesViewModel @Inject constructor(
         )
     }
 
-    fun onSelectedTopAppBarClick(item: SelectedTopAppBarItem) {
+    fun onSelectedTopAppBarClick(item: SelectedTopAppBarItem, callback: (List<Long>) -> Unit) {
         when (item) {
             SelectedTopAppBarItem.CANCEL -> { removeAllSelectedNotes() }
             SelectedTopAppBarItem.TOGGLE_PIN -> { updateNotesPin() }
             SelectedTopAppBarItem.DRAW -> {
 
             }
-            SelectedTopAppBarItem.LABEL -> { removeAllSelectedNotes() }
+            SelectedTopAppBarItem.LABEL -> {
+                callback(getSelectedIdList())
+                removeAllSelectedNotes()
+            }
             SelectedTopAppBarItem.CONTEXT_MENU_OPEN -> { contextMenuState.update { true } }
             SelectedTopAppBarItem.CONTEXT_MENU_CLOSE -> { removeAllSelectedNotes() }
             SelectedTopAppBarItem.TOGGLE_ARCHIVE -> { updateNotesArchive() }

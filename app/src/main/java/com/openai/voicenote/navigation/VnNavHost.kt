@@ -29,7 +29,9 @@ fun VnNavHost(
                 appState.navigateToNoteEdit(0, it)
             },
             goToVoiceNoteScreen = { navController.navigate(RECORD_AUDIO_ROUTE) },
-            goToNoteLabelScreen = { navController.navigate(NOTE_LABEL_ROUTE) },
+            goToNoteLabelScreen = {
+                appState.navigateToNoteLabel(it)
+            },
             onDrawerOpen = { appState.openDrawer() }
         )
         noteEditScreen(

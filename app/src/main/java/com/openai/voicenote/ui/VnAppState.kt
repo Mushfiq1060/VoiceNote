@@ -13,6 +13,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
+import com.opanai.voicenote.feature.notelabel.navigation.navigateToNoteLabel
+import com.openai.voicenote.core.common.utils.Utils.toJson
 import com.openai.voicenote.feature.label.navigation.LABEL_ID
 import com.openai.voicenote.feature.label.navigation.LABEL_ROUTE
 import com.openai.voicenote.feature.label.navigation.navigateToLabel
@@ -140,6 +142,10 @@ class VnAppState(
                 noteString = noteString
             )
         }
+    }
+
+    fun navigateToNoteLabel(noteIdList: List<Long>) {
+        navController.navigateToNoteLabel(navOptions{  }, noteIdList.toJson())
     }
 
     fun openDrawer() {
