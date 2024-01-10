@@ -19,7 +19,11 @@ interface NoteDataSource {
 
     fun observeAllPinNotes(): Flow<List<NoteResource>>
 
+    fun observeAllPinNotesWithLabels(): Flow<List<NoteResource>>
+
     fun observeAllOtherNotes(): Flow<List<NoteResource>>
+
+    fun observeAllOtherNotesWithLabels(): Flow<List<NoteResource>>
 
     suspend fun getNoteById(noteId: Long): NoteResource
 

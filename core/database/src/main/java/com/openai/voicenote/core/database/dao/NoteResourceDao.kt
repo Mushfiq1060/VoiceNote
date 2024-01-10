@@ -33,8 +33,16 @@ interface NoteResourceDao {
     @Query("SELECT * FROM note_table WHERE pin = :pin")
     fun observeAllPinNotes(pin: Boolean = true): Flow<List<NoteResourceEntity>>
 
+    @Transaction
+    @Query("SELECT * FROM note_table WHERE pin = :pin")
+    fun observeAllPinNotesWithLabels(pin: Boolean = true): Flow<List<NoteWithLabels>>
+
     @Query("SELECT * FROM note_table WHERE pin = :pin")
     fun observeAllOtherNotes(pin: Boolean = false): Flow<List<NoteResourceEntity>>
+
+    @Transaction
+    @Query("SELECT * FROM note_table WHERE pin = :pin")
+    fun observeAllOtherNotesWithLabels(pin: Boolean = false): Flow<List<NoteWithLabels>>
 
     @Query("SELECT * FROM note_table WHERE noteId = :noteId")
     suspend fun getNoteById(noteId: Long): NoteResourceEntity

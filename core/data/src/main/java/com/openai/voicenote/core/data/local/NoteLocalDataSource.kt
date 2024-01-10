@@ -49,8 +49,20 @@ class NoteLocalDataSource @Inject constructor(
         }
     }
 
+    override fun observeAllPinNotesWithLabels(): Flow<List<NoteResource>> {
+        return noteRepository.observeAllPinNotesWithLabels().map {
+            it.mapToNoteResource()
+        }
+    }
+
     override fun observeAllOtherNotes(): Flow<List<NoteResource>> {
         return noteRepository.observeAllOtherNotes().map {
+            it.mapToNoteResource()
+        }
+    }
+
+    override fun observeAllOtherNotesWithLabels(): Flow<List<NoteResource>> {
+        return noteRepository.observeAllOtherNotesWithLabels().map {
             it.mapToNoteResource()
         }
     }

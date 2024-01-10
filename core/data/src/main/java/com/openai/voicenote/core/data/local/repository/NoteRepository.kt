@@ -26,7 +26,11 @@ class NoteRepository @Inject constructor(
 
     fun observeAllPinNotes() = noteResourceDao.observeAllPinNotes()
 
+    fun observeAllPinNotesWithLabels() = noteResourceDao.observeAllPinNotesWithLabels()
+
     fun observeAllOtherNotes() = noteResourceDao.observeAllOtherNotes()
+
+    fun observeAllOtherNotesWithLabels() = noteResourceDao.observeAllOtherNotesWithLabels()
 
     suspend fun getNoteById(noteId: Long) = noteResourceDao.getNoteById(noteId)
 
