@@ -38,6 +38,7 @@
             <option value="$PROJECT_DIR$/feature/label" />
             <option value="$PROJECT_DIR$/feature/labeledit" />
             <option value="$PROJECT_DIR$/feature/noteedit" />
+            <option value="$PROJECT_DIR$/feature/notelabel" />
             <option value="$PROJECT_DIR$/feature/notes" />
             <option value="$PROJECT_DIR$/feature/recordaudio" />
           </set>
