@@ -13,6 +13,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TriStateCheckbox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -20,6 +21,7 @@ import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.openai.voicenote.core.designsystem.icon.VnIcons
 import com.openai.voicenote.core.designsystem.theme.VnTheme
 import com.openai.voicenote.core.model.LabelResource
@@ -30,16 +32,22 @@ fun NoteLabelRoute(
     onBackClick: () -> Unit,
     viewModel: NoteLabelViewModel = hiltViewModel()
 ) {
+    val labelUiState by viewModel.labelUiState.collectAsStateWithLifecycle()
+
     NoteLabelScreen(
         onBackClick = { onBackClick() },
-        labelList = listOf()
+        labelUiState = labelUiState,
+        onCheckClick = { labelId, check ->
+            viewModel.onCheckCLick(labelId, check)
+        }
     )
 }
 
 @Composable
 fun NoteLabelScreen(
     onBackClick: () -> Unit,
-    labelList: List<LabelResource>,
+    labelUiState: NoteLabelUiState,
+    onCheckClick: (labelId: Long, check: Boolean) -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -50,15 +58,24 @@ fun NoteLabelScreen(
             )
         }
     ) { paddingValues ->
-        LazyColumn(
-            modifier = Modifier.padding(paddingValues)
-        ) {
-            items(labelList) { label ->
-                LabelCheckRow(
-                    labelName = label.labelName,
-                    checkBoxStatus = ToggleableState.On,
-                    onCheckClick = {}
-                )
+        when (labelUiState) {
+            is NoteLabelUiState.Loading -> {
+                // show loader while loading
+            }
+            is NoteLabelUiState.Success -> {
+                LazyColumn(
+                    modifier = Modifier.padding(paddingValues)
+                ) {
+                    items(labelUiState.list) { uiState ->
+                        LabelCheckRow(
+                            label = uiState.label,
+                            checkBoxStatus = uiState.checkStatus,
+                            onCheckClick = { labelId, check ->
+                                onCheckClick(labelId, check)
+                            }
+                        )
+                    }
+                }
             }
         }
     }
@@ -66,12 +83,14 @@ fun NoteLabelScreen(
 
 @Composable
 fun LabelCheckRow(
-    labelName: String,
+    label: LabelResource,
     checkBoxStatus: ToggleableState,
-    onCheckClick: (status: ToggleableState) -> Unit
+    onCheckClick: (labelId: Long, check: Boolean) -> Unit
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
@@ -83,7 +102,7 @@ fun LabelCheckRow(
                 .weight(0.15f)
         )
         Text(
-            text = labelName,
+            text = label.labelName,
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.weight(0.70f)
         )
@@ -91,9 +110,9 @@ fun LabelCheckRow(
             state = checkBoxStatus,
             onClick = {
                 if (checkBoxStatus == ToggleableState.On) {
-                    onCheckClick(ToggleableState.Off)
+                    onCheckClick(label.labelId!!,false)
                 } else {
-                    onCheckClick(ToggleableState.On)
+                    onCheckClick(label.labelId!!, true)
                 }
             },
             modifier = Modifier.weight(0.15f)
@@ -107,9 +126,9 @@ fun LazyCheckRowPreview() {
     VnTheme {
         Surface {
             LabelCheckRow(
-                labelName = "One",
+                label = LabelResource(null, "One"),
                 checkBoxStatus = ToggleableState.Indeterminate,
-                onCheckClick = {}
+                onCheckClick = { _, _ -> }
             )
         }
     }
@@ -122,36 +141,36 @@ fun NoteLabelScreenPreview() {
         Surface {
             NoteLabelScreen(
                 onBackClick = {},
-                labelList = previewLabelList
+                labelUiState = previewList,
+                onCheckClick = { _, _ -> }
             )
         }
     }
 }
 
-val previewLabelList = listOf<LabelResource>(
-    LabelResource(
-        labelId = 1,
-        labelName = "One"
-    ),
-    LabelResource(
-        labelId = 2,
-        labelName = "Two"
-    ),
-    LabelResource(
-        labelId = 3,
-        labelName = "Three"
-    ),
-    LabelResource(
-        labelId = 4,
-        labelName = "Four"
-    ),
-    LabelResource(
-        labelId = 5,
-        labelName = "Five"
-    ),
-    LabelResource(
-        labelId = 6,
-        labelName = "Six"
-    ),
+val previewList = NoteLabelUiState.Success(
+    list = listOf(
+        UiState(
+            label = LabelResource(
+                labelId = 1,
+                labelName = "One"
+            ),
+            checkStatus = ToggleableState.Off
+        ),
+        UiState(
+            label = LabelResource(
+                labelId = 2,
+                labelName = "Two"
+            ),
+            checkStatus = ToggleableState.Indeterminate
+        ),
+        UiState(
+            label = LabelResource(
+                labelId = 3,
+                labelName = "Three"
+            ),
+            checkStatus = ToggleableState.On
+        ),
+    )
 )
 

@@ -9,7 +9,7 @@ import com.openai.voicenote.core.database.entities.mapToNoteResource
 import com.openai.voicenote.core.model.LabelResource
 
 data class LabelWithNotes(
-    @Embedded val labels: LabelResourceEntity,
+    @Embedded val label: LabelResourceEntity,
     @Relation(
         parentColumn = "labelId",
         entityColumn = "noteId",
@@ -21,8 +21,8 @@ data class LabelWithNotes(
 fun List<LabelWithNotes>.mapToLabelResource(): List<LabelResource> =
     map {
         LabelResource(
-            labelId = it.labels.labelId,
-            labelName = it.labels.labelName,
+            labelId = it.label.labelId,
+            labelName = it.label.labelName,
             noteList = it.notes.mapToNoteResource()
         )
     }

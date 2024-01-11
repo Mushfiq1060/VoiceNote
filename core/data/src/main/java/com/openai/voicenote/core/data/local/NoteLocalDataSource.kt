@@ -1,5 +1,6 @@
 package com.openai.voicenote.core.data.local
 
+import android.util.Log
 import com.openai.voicenote.core.data.local.repository.NoteRepository
 import com.openai.voicenote.core.database.entities.mapToNoteResource
 import com.openai.voicenote.core.database.entities.mapToNoteResourceEntity
@@ -27,8 +28,8 @@ class NoteLocalDataSource @Inject constructor(
         noteRepository.insertNoteLabelCrossRef(crossRef)
     }
 
-    override suspend fun deleteCrossRefWithNotesId(notesId: List<Long>) {
-        noteRepository.deleteCrossRefWithNotesId(notesId)
+    override suspend fun deleteCrossRefWithNotesId(notesId: List<Long>, labelId: Long) {
+        noteRepository.deleteCrossRefWithNotesId(notesId, labelId)
     }
 
     override fun observeAllNotes(): Flow<List<NoteResource>> {
@@ -92,5 +93,9 @@ class NoteLocalDataSource @Inject constructor(
         note.noteId = null
         note.editTime = System.currentTimeMillis()
         insertNote(listOf(note))
+    }
+
+    override suspend fun getNotesIdByLabelId(labelId: Long): List<Long> {
+        return  noteRepository.getNotesIdByLabelId(labelId)
     }
 }

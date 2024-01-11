@@ -17,12 +17,6 @@ interface NoteResourceDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertNote(notes: List<NoteResourceEntity>): List<Long>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertNoteLabelCrossRef(crossRefs: List<NoteLabelCrossRef>)
-
-    @Query("DELETE FROM note_label_cross_ref WHERE noteId IN (:notesId)")
-    suspend fun deleteCrossRefWithNotesId(notesId: List<Long>)
-
     @Query("SELECT * FROM note_table")
     fun observeAllNotes(): Flow<List<NoteResourceEntity>>
 

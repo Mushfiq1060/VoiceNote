@@ -44,4 +44,8 @@ class LabelLocalDataSource @Inject constructor(
     override fun getLabelNameById(labelId: Long): Flow<String> {
         return labelRepository.getLabelNameById(labelId)
     }
+
+    override suspend fun getLabelsIdByNoteId(noteId: Long): List<Long> {
+        return labelRepository.getLabelsIdByNoteId(noteId)
+    }
 }

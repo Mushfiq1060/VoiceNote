@@ -11,7 +11,7 @@ interface NoteDataSource {
 
     suspend fun insertNoteLabelCrossRef(notesId: List<Long>, labelId: Long)
 
-    suspend fun deleteCrossRefWithNotesId(notesId: List<Long>)
+    suspend fun deleteCrossRefWithNotesId(notesId: List<Long>, labelId: Long)
 
     fun observeAllNotes(): Flow<List<NoteResource>>
 
@@ -36,5 +36,7 @@ interface NoteDataSource {
     suspend fun deleteNotes(notesId: List<Long>)
 
     suspend fun makeCopyOfNote(noteId: Long)
+
+    suspend fun getNotesIdByLabelId(labelId: Long): List<Long>
 
 }

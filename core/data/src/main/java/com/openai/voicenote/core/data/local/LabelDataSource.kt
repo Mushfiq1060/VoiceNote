@@ -19,4 +19,6 @@ interface LabelDataSource {
 
     fun getLabelNameById(labelId: Long): Flow<String>
 
+    suspend fun getLabelsIdByNoteId(noteId: Long): List<Long>
+
 }

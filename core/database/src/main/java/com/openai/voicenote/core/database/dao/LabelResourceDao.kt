@@ -15,9 +15,6 @@ interface LabelResourceDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertLabel(labels: List<LabelResourceEntity>)
 
-    @Query("DELETE FROM note_label_cross_ref WHERE labelId in (:labelsId)")
-    suspend fun deleteCrossRefWithLabelsId(labelsId: List<Long>)
-
     @Query("SELECT * FROM label_table")
     fun observeAllLabels(): Flow<List<LabelResourceEntity>>
 
