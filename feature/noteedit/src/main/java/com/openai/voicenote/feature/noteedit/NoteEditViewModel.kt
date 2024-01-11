@@ -11,6 +11,7 @@ import com.openai.voicenote.core.common.utils.Utils.fromJson
 import com.openai.voicenote.core.data.local.NoteDataSource
 import com.openai.voicenote.core.designsystem.icon.VnColor
 import com.openai.voicenote.core.designsystem.icon.VnImage
+import com.openai.voicenote.core.model.LabelResource
 import com.openai.voicenote.core.model.NoteResource
 import com.openai.voicenote.feature.noteedit.navigation.NOTE_TO_STRING
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -32,7 +33,8 @@ data class NoteEditUiState(
     val editTime: String = Utils.getFormattedTime(System.currentTimeMillis()),
     val isNoteEditStarted: Boolean = false,
     val isUndoPossible: Boolean = false,
-    val isRedoPossible: Boolean = false
+    val isRedoPossible: Boolean = false,
+    val labelList: List<LabelResource> = listOf()
 )
 
 enum class BottomSheetType {
@@ -91,7 +93,8 @@ class NoteEditViewModel @Inject constructor(
                         noteArchiveStatus = argNote.archive,
                         editTime = Utils.getFormattedTime(argNote.editTime),
                         backgroundColor = argNote.backgroundColor,
-                        backgroundImageId = argNote.backgroundImage
+                        backgroundImageId = argNote.backgroundImage,
+                        labelList = argNote.labelList
                     )
                 }
             }

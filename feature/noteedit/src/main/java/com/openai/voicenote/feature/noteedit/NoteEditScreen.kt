@@ -1,10 +1,12 @@
 package com.openai.voicenote.feature.noteedit
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -29,6 +31,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
@@ -41,6 +44,7 @@ import com.openai.voicenote.core.designsystem.icon.VnColor
 import com.openai.voicenote.core.designsystem.icon.VnIcons
 import com.openai.voicenote.core.designsystem.icon.VnImage
 import com.openai.voicenote.core.designsystem.theme.VnTheme
+import com.openai.voicenote.core.model.LabelResource
 import com.openai.voicenote.core.ui.component.BackgroundPickerBottomSheet
 import com.openai.voicenote.core.ui.component.CustomTextField
 
@@ -144,7 +148,8 @@ internal fun NoteEditScreen(
                 modifier = Modifier.padding(paddingValues),
                 onTextChange = { type, text -> onTextChange(type, text) },
                 titleText = noteEditUiState.titleText,
-                noteText = noteEditUiState.noteText
+                noteText = noteEditUiState.noteText,
+                labelList = noteEditUiState.labelList
             )
         }
     }
@@ -155,7 +160,8 @@ fun NoteContent(
     modifier: Modifier = Modifier,
     onTextChange: (type: InputType, text: String) -> Unit,
     titleText: String,
-    noteText: String
+    noteText: String,
+    labelList: List<LabelResource>
 ) {
     LazyColumn(
         modifier = modifier
@@ -188,6 +194,27 @@ fun NoteContent(
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.outline
                 )
+            }
+        }
+        if (labelList.isNotEmpty()) {
+            item {
+                Row(
+                    modifier = Modifier
+                        .padding(start = 16.dp, end = 16.dp)
+                ) {
+                    labelList.forEach {
+                        Text(
+                            modifier = Modifier
+                                .clip(shape = MaterialTheme.shapes.medium)
+                                .background(MaterialTheme.colorScheme.outlineVariant)
+                                .padding(vertical = 4.dp, horizontal = 8.dp),
+                            text = it.labelName,
+                            style = MaterialTheme.typography.bodySmall,
+                            maxLines = 1
+                        )
+                        Spacer(modifier = Modifier.size(8.dp))
+                    }
+                }
             }
         }
     }
