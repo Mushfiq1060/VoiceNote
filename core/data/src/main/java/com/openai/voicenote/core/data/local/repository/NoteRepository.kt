@@ -1,30 +1,24 @@
 package com.openai.voicenote.core.data.local.repository
 
-import android.util.Log
-import com.openai.voicenote.core.database.dao.NoteLabelCrossRefDao
 import com.openai.voicenote.core.database.dao.NoteResourceDao
 import com.openai.voicenote.core.database.entities.NoteResourceEntity
 import com.openai.voicenote.core.database.entities.relations.NoteLabelCrossRef
-import com.openai.voicenote.core.database.entities.relations.NoteWithLabels
-import com.openai.voicenote.core.model.NoteResource
-import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class NoteRepository @Inject constructor(
     private val noteResourceDao: NoteResourceDao,
-    private val noteLabelCrossRefDao: NoteLabelCrossRefDao
 ) {
 
     suspend fun insertNote(notes: List<NoteResourceEntity>) =
         noteResourceDao.insertNote(notes)
 
     suspend fun insertNoteLabelCrossRef(crossRefs: List<NoteLabelCrossRef>) =
-        noteLabelCrossRefDao.insertNoteLabelCrossRef(crossRefs)
+        noteResourceDao.insertNoteLabelCrossRef(crossRefs)
 
     suspend fun deleteCrossRefWithNotesId(notesId: List<Long>, labelId: Long) =
-        noteLabelCrossRefDao.deleteCrossRefWithNotesId(notesId, labelId)
+        noteResourceDao.deleteCrossRefWithNotesId(notesId, labelId)
 
     fun observeAllNotes() = noteResourceDao.observeAllNotes()
 
@@ -51,6 +45,6 @@ class NoteRepository @Inject constructor(
     suspend fun deleteNotes(notesId: List<Long>) = noteResourceDao.deleteNotes(notesId)
 
     suspend fun getNotesIdByLabelId(labelId: Long): List<Long> =
-        noteLabelCrossRefDao.getNotesByLabelId(labelId)
+        noteResourceDao.getNotesByLabelId(labelId)
 
 }

@@ -22,6 +22,10 @@ interface LabelResourceDao {
     @Query("SELECT * FROM label_table")
     fun observeAllLabelsWithNote(): Flow<List<LabelResourceEntity>>
 
+    @Transaction
+    @Query("DELETE FROM note_label_cross_ref WHERE labelId in (:labelsId)")
+    suspend fun deleteCrossRefWithLabelsId(labelsId: List<Long>)
+
     @Update
     suspend fun updateLabel(label: LabelResourceEntity)
 
@@ -30,5 +34,9 @@ interface LabelResourceDao {
 
     @Query("SELECT LabelName FROM label_table WHERE labelId = :labelId")
     fun getLabelNameById(labelId: Long): Flow<String>
+
+    @Transaction
+    @Query("SELECT labelId FROM note_label_cross_ref WHERE noteId = :noteId")
+    suspend fun getLabelsIdByNoteId(noteId: Long): List<Long>
 
 }

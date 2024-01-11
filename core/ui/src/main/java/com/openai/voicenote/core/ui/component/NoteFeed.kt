@@ -60,7 +60,7 @@ fun LazyStaggeredGridScope.noteFeed(
         items = noteItems,
         key = { _, item -> item.noteId!! },
         contentType = { _, _ -> "note item" }
-    ) { index, note ->
+    ) { _, note ->
         NoteCard(
             note = note,
             isSelected = (selectedList.contains(note.noteId)),

@@ -9,10 +9,12 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -20,7 +22,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -31,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import com.openai.voicenote.core.designsystem.icon.VnColor
 import com.openai.voicenote.core.designsystem.icon.VnImage
 import com.openai.voicenote.core.designsystem.theme.VnTheme
+import com.openai.voicenote.core.model.LabelResource
 import com.openai.voicenote.core.model.NoteResource
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -88,6 +90,26 @@ fun NoteCard(
                 maxLines = 5,
                 overflow = TextOverflow.Ellipsis
             )
+            if (note.labelList.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(
+                    modifier = Modifier
+                        .padding(start = 16.dp, end = 16.dp)
+                ) {
+                    note.labelList.forEach {
+                        Text(
+                            modifier = Modifier
+                                .clip(shape = MaterialTheme.shapes.medium)
+                                .background(MaterialTheme.colorScheme.outlineVariant)
+                                .padding(vertical = 4.dp, horizontal = 8.dp),
+                            text = it.labelName,
+                            style = MaterialTheme.typography.bodySmall,
+                            maxLines = 1
+                        )
+                        Spacer(modifier = Modifier.size(8.dp))
+                    }
+                }
+            }
             Spacer(modifier = Modifier.height(16.dp))
         }
     }
@@ -131,5 +153,11 @@ val previewNote = NoteResource(
     pin = true,
     archive = false,
     backgroundColor = 0,
-    backgroundImage = 2
+    backgroundImage = 2,
+    labelList = listOf(
+        LabelResource(labelId = 1, labelName = "One"),
+        LabelResource(labelId = 2, labelName = "Two"),
+        LabelResource(labelId = 3, labelName = "Three"),
+        LabelResource(labelId = 4, labelName = "Four")
+    )
 )
