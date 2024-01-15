@@ -37,6 +37,8 @@ import com.openai.voicenote.core.designsystem.theme.VnTheme
 import com.openai.voicenote.core.model.NoteView
 import com.openai.voicenote.core.ui.component.ConfirmationDialog
 import com.openai.voicenote.core.ui.component.EmptyNoteList
+import com.openai.voicenote.core.ui.component.NoteFeedUiState
+import com.openai.voicenote.core.ui.component.NoteList
 
 enum class LabelAppBarItem {
     DRAWER,
@@ -50,6 +52,7 @@ fun LabelRoute(
     onDrawerOpen: () -> Unit,
     viewModel: LabelViewModel = hiltViewModel()
 ) {
+    val feedState by viewModel.feedState.collectAsStateWithLifecycle()
     val labelName by viewModel.labelName.collectAsStateWithLifecycle("")
     val noteViewState by viewModel.noteViewState.collectAsStateWithLifecycle()
     val contextMenuState by viewModel.contextMenuState.collectAsStateWithLifecycle()
@@ -58,6 +61,7 @@ fun LabelRoute(
     val renameLabelText by viewModel.renameLabelText.collectAsStateWithLifecycle()
 
     LabelScreen(
+        feedState = feedState,
         labelName = labelName,
         noteViewState = noteViewState,
         contextMenuState = contextMenuState,
@@ -99,6 +103,7 @@ fun LabelRoute(
 
 @Composable
 fun LabelScreen(
+    feedState: NoteFeedUiState,
     labelName: String,
     noteViewState: NoteView,
     contextMenuState: Boolean,
@@ -145,13 +150,35 @@ fun LabelScreen(
                 onDismissClick = { onRenameDialogCancelClick() }
             )
         }
-        EmptyNoteList(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
-            text = "No notes with this label yet",
-            icon = VnIcons.label
-        )
+        when (feedState) {
+            is NoteFeedUiState.Loading -> {
+                // show loader
+            }
+            is NoteFeedUiState.Success -> {
+                if (feedState.pinnedNoteList.isEmpty() &&
+                    feedState.otherNoteList.isEmpty()) {
+                    EmptyNoteList(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(paddingValues),
+                        text = "No notes with this label yet",
+                        icon = VnIcons.label
+                    )
+                }
+                else {
+                    NoteList(
+                        modifier = Modifier.padding(paddingValues),
+                        pinnedList = feedState.pinnedNoteList,
+                        otherList = feedState.otherNoteList,
+                        selectedPinnedList = mutableSetOf(),
+                        selectedOthersList = mutableSetOf(),
+                        noteViewState = noteViewState,
+                        onClick = { _, _ -> },
+                        onLongClick = { _, _ -> }
+                    )
+                }
+            }
+        }
     }
 }
 
@@ -326,6 +353,37 @@ fun LabelScreenTopAppBarPreview() {
                 onClick = {},
                 onClickRenameLabel = {},
                 onClickDeleteLabel = {}
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun LabelScreenPreview() {
+    VnTheme {
+        Surface {
+            LabelScreen(
+                feedState = NoteFeedUiState.Success(
+                    selectedPinNotes = mutableSetOf(),
+                    selectedOtherNotes = mutableSetOf(),
+                    pinnedNoteList = listOf(),
+                    otherNoteList = listOf()
+                ),
+                labelName = "Who cares!!",
+                noteViewState = NoteView.LIST,
+                contextMenuState = false,
+                shouldShowDeleteDialog = false,
+                shouldShowRenameDialog = false,
+                renameLabelText = "",
+                onRenameLabelTextChange = {},
+                onClickRenameLabel = {},
+                onClickDeleteLabel = {},
+                onClickLabelAppBarItem = {},
+                onDeleteDialogConfirmClick = {},
+                onDeleteDialogCancelClick = {},
+                onRenameDialogConfirmClick = {},
+                onRenameDialogCancelClick = {}
             )
         }
     }
