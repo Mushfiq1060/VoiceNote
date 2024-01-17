@@ -48,8 +48,8 @@ class NotesViewModel @Inject constructor(
         )
 
     val feedState: StateFlow<NoteFeedUiState> = combine(
-        noteDataSource.observeAllPinNotesWithLabels(),
-        noteDataSource.observeAllOtherNotesWithLabels(),
+        noteDataSource.observeAllPinNotes(),
+        noteDataSource.observeAllOtherNotes(),
         selectedPinNotes.asStateFlow(),
         selectedOtherNotes.asStateFlow()
     ) { pinNotes, otherNotes, sPinNotes, sOtherNotes ->

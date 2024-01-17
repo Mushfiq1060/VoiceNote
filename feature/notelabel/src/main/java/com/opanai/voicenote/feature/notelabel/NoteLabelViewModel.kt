@@ -6,11 +6,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.opanai.voicenote.feature.notelabel.navigation.NOTES_ID_LIST
 import com.openai.voicenote.core.common.utils.Utils.fromJson
-import com.openai.voicenote.core.data.local.LabelLocalDataSource
-import com.openai.voicenote.core.data.local.NoteLocalDataSource
+import com.openai.voicenote.core.data.local.LabelDataSource
+import com.openai.voicenote.core.data.local.NoteLabelDataSource
 import com.openai.voicenote.core.model.LabelResource
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -38,8 +37,8 @@ sealed interface NoteLabelUiState {
 @HiltViewModel
 class NoteLabelViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val labelLocalDataSource: LabelLocalDataSource,
-    private val noteLocalDataSource: NoteLocalDataSource
+    private val labelDataSource: LabelDataSource,
+    private val noteLabelDataSource: NoteLabelDataSource
 ) : ViewModel() {
 
     private var noteIdList = mutableListOf<Long>()
@@ -61,7 +60,7 @@ class NoteLabelViewModel @Inject constructor(
 
     val labelUiState: StateFlow<NoteLabelUiState> = combine(
         labelFlow,
-        labelLocalDataSource.observeAllLabels()
+        labelDataSource.observeAllLabels()
     ) { _, labels ->
         val list = getUiStateList(labels)
         NoteLabelUiState.Success(list)
@@ -91,7 +90,7 @@ class NoteLabelViewModel @Inject constructor(
     private fun getLabelsIdByNoteId() {
         viewModelScope.launch {
             noteIdList.forEach {
-                labelPerNoteId.add(labelLocalDataSource.getLabelsIdByNoteId(it))
+                labelPerNoteId.add(noteLabelDataSource.getAllLabelIdByNoteId(it))
             }
             intersectingLabelId = getIntersectingLabelId()
             nonIntersectingLabelId = getNonIntersectingLabelId()
@@ -129,7 +128,7 @@ class NoteLabelViewModel @Inject constructor(
 
     private fun addLabelIdToNote(labelId: Long) {
         viewModelScope.launch {
-            noteLocalDataSource.insertNoteLabelCrossRef(noteIdList, labelId)
+            noteLabelDataSource.insertNoteLabel(noteIdList, labelId)
             nonIntersectingLabelId.remove(labelId)
             intersectingLabelId.add(labelId)
             labelFlow.update { !it }
@@ -138,7 +137,7 @@ class NoteLabelViewModel @Inject constructor(
 
     private fun removeLabelIdFromNote(labelId: Long) {
         viewModelScope.launch {
-            noteLocalDataSource.deleteCrossRefWithNotesId(noteIdList, labelId)
+            noteLabelDataSource.removeNoteLabelRow(noteIdList, listOf(labelId))
             nonIntersectingLabelId.remove(labelId)
             intersectingLabelId.remove(labelId)
             labelFlow.update { !it }

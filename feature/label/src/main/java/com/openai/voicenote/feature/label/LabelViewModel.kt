@@ -1,14 +1,13 @@
 package com.openai.voicenote.feature.label
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.openai.voicenote.core.data.local.LabelDataSource
 import com.openai.voicenote.core.data.local.NoteDataSource
+import com.openai.voicenote.core.data.local.NoteLabelDataSource
 import com.openai.voicenote.core.data.local.repository.UserDataRepository
 import com.openai.voicenote.core.model.LabelResource
-import com.openai.voicenote.core.model.NoteResource
 import com.openai.voicenote.core.model.NoteView
 import com.openai.voicenote.core.ui.component.NoteFeedUiState
 import com.openai.voicenote.feature.label.navigation.LABEL_ID
@@ -17,8 +16,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -30,6 +27,7 @@ import kotlin.properties.Delegates
 class LabelViewModel @Inject constructor(
     private val labelDataSource: LabelDataSource,
     private val noteDataSource: NoteDataSource,
+    private val noteLabelDataSource: NoteLabelDataSource,
     private val userDataRepository: UserDataRepository,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
@@ -52,23 +50,14 @@ class LabelViewModel @Inject constructor(
     val shouldShowRenameDialog = MutableStateFlow(false)
 
     val feedState: StateFlow<NoteFeedUiState> = combine(
-        noteDataSource.observeAllPinNotesWithLabels(),
-        noteDataSource.observeAllOtherNotesWithLabels(),
-        renameLabelText
-    ) { pNotes, oNotes, _ ->
+        labelDataSource.observeAllPinNotesWithLabel(argLabelId),
+        labelDataSource.observeAllOtherNotesWithLabel(argLabelId)
+    ) { pNotes, oNotes ->
         NoteFeedUiState.Success(
             selectedOtherNotes = mutableSetOf(),
             selectedPinNotes = mutableSetOf(),
-            pinnedNoteList = pNotes.filter { noteResource ->
-                noteResource.labelList.any { labelResource ->
-                    labelResource.labelId == argLabelId
-                }
-            },
-            otherNoteList = oNotes.filter { noteResource ->
-                noteResource.labelList.any { labelResource ->
-                    labelResource.labelId == argLabelId
-                }
-            }
+            pinnedNoteList = pNotes,
+            otherNoteList = oNotes
         )
     }
         .stateIn(
