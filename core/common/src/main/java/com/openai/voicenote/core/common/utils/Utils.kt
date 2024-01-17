@@ -1,5 +1,6 @@
 package com.openai.voicenote.core.common.utils
 
+import android.net.Uri
 import com.google.gson.Gson
 import java.util.Calendar
 import java.util.Date
@@ -47,7 +48,8 @@ object Utils {
     }
 
     fun <T> T.toJson(): String {
-        return Gson().toJson(this)
+        val gson = Gson()
+        return Uri.encode(gson.toJson(this))
     }
 
     fun <T> String.fromJson(type: Class<T>): T {

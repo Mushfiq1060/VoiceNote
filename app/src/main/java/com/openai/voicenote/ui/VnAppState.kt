@@ -1,6 +1,5 @@
 package com.openai.voicenote.ui
 
-import android.util.Log
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.rememberDrawerState
@@ -18,10 +17,7 @@ import com.openai.voicenote.core.common.utils.Utils.toJson
 import com.openai.voicenote.feature.label.navigation.LABEL_ID
 import com.openai.voicenote.feature.label.navigation.LABEL_ROUTE
 import com.openai.voicenote.feature.label.navigation.navigateToLabel
-import com.openai.voicenote.feature.labeledit.navigation.LABEL_EDIT_ROUTE
 import com.openai.voicenote.feature.labeledit.navigation.navigateToLabelEdit
-import com.openai.voicenote.feature.noteedit.navigation.NOTE_EDIT_ROUTE
-import com.openai.voicenote.feature.noteedit.navigation.NOTE_TO_STRING
 import com.openai.voicenote.feature.noteedit.navigation.navigateToNoteEdit
 import com.openai.voicenote.feature.notes.navigation.NOTES_ROUTE
 import com.openai.voicenote.feature.notes.navigation.navigateToNotes
