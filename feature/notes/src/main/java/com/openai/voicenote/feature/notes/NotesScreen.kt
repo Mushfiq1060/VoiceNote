@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -43,6 +44,7 @@ import com.openai.voicenote.core.designsystem.icon.VnIcons
 import com.openai.voicenote.core.designsystem.theme.VnTheme
 import com.openai.voicenote.core.model.NoteResource
 import com.openai.voicenote.core.model.NoteView
+import com.openai.voicenote.core.ui.component.CircularLoader
 import com.openai.voicenote.core.ui.component.EmptyNoteList
 import com.openai.voicenote.core.ui.component.FABState
 import com.openai.voicenote.core.ui.component.FloatingButton
@@ -174,7 +176,16 @@ internal fun NotesScreen(
     ) { paddingValues ->
         when (feedState) {
             is NoteFeedUiState.Loading -> {
-                // show loader in here
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    CircularLoader(
+                        color = MaterialTheme.colorScheme.tertiary,
+                        strokeWidth = 5.dp
+                    )
+                }
             }
 
             is NoteFeedUiState.Success -> {

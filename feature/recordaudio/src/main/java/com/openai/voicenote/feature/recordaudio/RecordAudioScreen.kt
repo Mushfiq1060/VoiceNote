@@ -40,6 +40,7 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.openai.voicenote.core.common.utils.Utils.toJson
 import com.openai.voicenote.core.designsystem.icon.VnIcons
 import com.openai.voicenote.core.designsystem.theme.VnTheme
+import com.openai.voicenote.core.ui.component.CircularLoader
 import com.openai.voicenote.core.ui.component.SimpleTopAppBar
 
 @Composable
@@ -210,32 +211,16 @@ fun AudioButtonSection(
                         )
                 )
             } else {
-                LoaderAnimation()
+                CircularLoader(
+                    color = MaterialTheme.colorScheme.onBackground,
+                    strokeWidth = 5.dp
+                )
             }
         } else {
             Spacer(modifier = Modifier.size(48.dp))
         }
     }
 }
-
-@Composable
-fun LoaderAnimation() {
-    val strokeWidth = 5.dp
-    val color = MaterialTheme.colorScheme.onBackground
-
-    CircularProgressIndicator(
-        modifier = Modifier.drawBehind {
-            drawCircle(
-                Color.Transparent,
-                radius = size.width / 2 - strokeWidth.toPx() / 2,
-                style = Stroke(strokeWidth.toPx())
-            )
-        },
-        color = color,
-        strokeWidth = strokeWidth
-    )
-}
-
 
 fun checkRecordStatus(recordStarted: Boolean, recordStopped: Boolean): Int {
     if (!recordStarted || recordStopped) {
@@ -249,16 +234,6 @@ fun checkPlayStatus(playPaused: Boolean): Int {
         return VnIcons.play
     }
     return VnIcons.pause
-}
-
-@Preview(showBackground = true)
-@Composable
-fun LoaderAnimationPreview() {
-    VnTheme {
-        Surface {
-            LoaderAnimation()
-        }
-    }
 }
 
 @Preview(showBackground = true)

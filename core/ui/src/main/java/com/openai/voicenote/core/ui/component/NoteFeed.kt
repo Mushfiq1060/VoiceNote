@@ -58,7 +58,9 @@ fun LazyStaggeredGridScope.noteFeed(
 ) {
     itemsIndexed(
         items = noteItems,
-        key = { _, item -> item.noteId!! },
+        key = { _, item ->
+            "${item.noteId!!} + ${if (item.pin) "Pin" else "Others"}"
+        },
         contentType = { _, _ -> "note item" }
     ) { _, note ->
         NoteCard(

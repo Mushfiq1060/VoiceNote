@@ -14,6 +14,7 @@ import com.openai.voicenote.core.ui.component.NoteFeedUiState
 import com.openai.voicenote.core.ui.component.NoteType
 import com.openai.voicenote.core.ui.component.SelectedTopAppBarItem
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -34,6 +35,7 @@ class NotesViewModel @Inject constructor(
 
     private val selectedPinNotes = MutableStateFlow(mutableSetOf<Long>())
     private val selectedOtherNotes = MutableStateFlow(mutableSetOf<Long>())
+    private val databaseCallInProgress = MutableStateFlow(false)
 
     val isAnyNoteSelected = MutableStateFlow(false)
     val contextMenuState = MutableStateFlow(false)
@@ -51,15 +53,20 @@ class NotesViewModel @Inject constructor(
         noteDataSource.observeAllPinNotes(),
         noteDataSource.observeAllOtherNotes(),
         selectedPinNotes.asStateFlow(),
-        selectedOtherNotes.asStateFlow()
-    ) { pinNotes, otherNotes, sPinNotes, sOtherNotes ->
+        selectedOtherNotes.asStateFlow(),
+        databaseCallInProgress.asStateFlow()
+    ) { pinNotes, otherNotes, sPinNotes, sOtherNotes, dbCallInProgress ->
         isAnyNoteSelected.update {
             (sOtherNotes.isNotEmpty() || sPinNotes.isNotEmpty())
         }
         contextMenuState.update {
             !(sOtherNotes.isNotEmpty() || sPinNotes.isNotEmpty())
         }
-        NoteFeedUiState.Success(sPinNotes, sOtherNotes, pinNotes, otherNotes)
+        if (dbCallInProgress) {
+            NoteFeedUiState.Loading
+        } else {
+            NoteFeedUiState.Success(sPinNotes, sOtherNotes, pinNotes, otherNotes)
+        }
     }
         .stateIn(
             scope = viewModelScope,
@@ -186,30 +193,42 @@ class NotesViewModel @Inject constructor(
 
     private fun updateNotesArchive() {
         viewModelScope.launch {
-            noteDataSource.toggleArchiveStatus(getSelectedIdList(), true)
+            val selectedIdList = getSelectedIdList()
             removeAllSelectedNotes()
+            databaseCallInProgress.update { true }
+            noteDataSource.toggleArchiveStatus(selectedIdList, true)
+            databaseCallInProgress.update { false }
         }
     }
 
     private fun updateNotesPin() {
         viewModelScope.launch {
             val pin: Boolean = selectedOtherNotes.value.isNotEmpty()
-            noteDataSource.togglePinStatus(getSelectedIdList(), pin)
+            val selectedIdList = getSelectedIdList()
             removeAllSelectedNotes()
+            databaseCallInProgress.update { true }
+            noteDataSource.togglePinStatus(selectedIdList, pin)
+            databaseCallInProgress.update { false }
         }
     }
 
     private fun deleteNotes() {
         viewModelScope.launch {
-            noteDataSource.deleteNotes(getSelectedIdList())
+            val selectedIdList = getSelectedIdList()
             removeAllSelectedNotes()
+            databaseCallInProgress.update { true }
+            noteDataSource.deleteNotes(selectedIdList)
+            databaseCallInProgress.update { false }
         }
     }
 
     private fun makeCopyOfNote() {
         viewModelScope.launch {
-            noteDataSource.makeCopyOfNote(getSelectedNotesIdForCopy())
+            val selectedId = getSelectedNotesIdForCopy()
             removeAllSelectedNotes()
+            databaseCallInProgress.update { true }
+            noteDataSource.makeCopyOfNote(selectedId)
+            databaseCallInProgress.update { false }
         }
     }
 
