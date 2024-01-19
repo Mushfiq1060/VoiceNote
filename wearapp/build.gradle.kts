@@ -50,6 +50,7 @@ android {
 }
 
 dependencies {
+    implementation(project(":core:designsystem"))
 
     implementation(libs.play.services.wearable)
     implementation(platform(libs.androidx.compose.bom))
@@ -79,7 +80,7 @@ dependencies {
     kapt(libs.hilt.compiler)
 
     // navigation
-    implementation(libs.androidx.navigation.compose)
+    implementation(libs.wear.compose.navigation)
     implementation(libs.androidx.hilt.navigation.compose)
 
     // kotlin coroutines

@@ -31,6 +31,7 @@ compose-compiler = "1.5.8"
 androidx-datastore = "1.0.0"
 protobuf-plugin = "0.9.4"
 protobuf = "3.24.4"
+wear-compose-version = "1.2.1"
 play-services-wearable = "18.1.0"
 compose-material = "1.2.1"
 compose-foundation = "1.2.1"
@@ -78,6 +79,7 @@ compose-material3 = { module = "androidx.compose.material3:material3" }
 compose-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4" }
 compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest" }
+wear-compose-navigation = { group = "androidx.wear.compose", name = "compose-navigation", version.ref = "wear-compose-version" }
 play-services-wearable = { group = "com.google.android.gms", name = "play-services-wearable", version.ref = "play-services-wearable" }
 compose-material = { group = "androidx.wear.compose", name = "compose-material", version.ref = "compose-material" }
 compose-foundation = { group = "androidx.wear.compose", name = "compose-foundation", version.ref = "compose-foundation" }
