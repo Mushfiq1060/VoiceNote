@@ -10,9 +10,11 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import com.openai.voicenote.presentation.navigation.VnWearNavHost
 import com.openai.voicenote.presentation.theme.VnWearTheme
-import com.openai.voicenote.presentation.ui.screens.home.HomeRoute
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
@@ -23,7 +25,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             VnWearTheme {
-                HomeRoute()
+                VnWearNavHost()
             }
         }
     }

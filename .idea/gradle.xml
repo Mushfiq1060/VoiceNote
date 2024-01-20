@@ -41,6 +41,7 @@
             <option value="$PROJECT_DIR$/feature/notelabel" />
             <option value="$PROJECT_DIR$/feature/notes" />
             <option value="$PROJECT_DIR$/feature/recordaudio" />
+            <option value="$PROJECT_DIR$/wearapp" />
           </set>
         </option>
         <option name="resolveExternalAnnotations" value="false" />

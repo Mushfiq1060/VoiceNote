@@ -55,6 +55,7 @@ val typography = Typography(
     ),
     display3 = TextStyle(
         fontWeight = FontWeight.Normal,
-        fontSize = 12.sp
+        fontSize = 14.sp,
+        fontFamily = EczarFontFamily,
     ),
 )

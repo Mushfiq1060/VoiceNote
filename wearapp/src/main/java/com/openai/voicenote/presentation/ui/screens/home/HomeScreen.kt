@@ -20,7 +20,7 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
-import androidx.wear.compose.foundation.lazy.items
+import androidx.wear.compose.foundation.lazy.itemsIndexed
 import androidx.wear.compose.material.Button
 import androidx.wear.compose.material.Icon
 import androidx.wear.compose.material.MaterialTheme
@@ -32,45 +32,63 @@ import com.openai.voicenote.presentation.theme.VnWearTheme
 
 data class HomeContent(
     val contentName: String,
-    @DrawableRes val contentIcon: Int
+    @DrawableRes val contentIcon: Int,
+    val type: String
+)
+
+val contentList = listOf(
+    HomeContent(
+        contentName = "Add Note",
+        contentIcon = VnIcons.add,
+        type = "ADD_NOTE"
+    ),
+    HomeContent(
+        contentName = "Pinned Notes",
+        contentIcon = VnIcons.filledPin,
+        type = "PIN_NOTES"
+    ),
+    HomeContent(
+        contentName = "Other Notes",
+        contentIcon = VnIcons.pin,
+        type = "OTHER_NOTES"
+    ),
+    HomeContent(
+        contentName = "Archive Notes",
+        contentIcon = VnIcons.archive,
+        type = "ARCHIVE_NOTES"
+    ),
+    HomeContent(
+        contentName = "Trash",
+        contentIcon = VnIcons.delete,
+        type = "TRASH_NOTES"
+    ),
+    HomeContent(
+        contentName = "Help & feedback",
+        contentIcon = VnIcons.help,
+        type = "HELP"
+    )
 )
 
 @Composable
-fun HomeRoute() {
-    val contentList = listOf<HomeContent>(
-        HomeContent(
-            contentName = "Add Note",
-            contentIcon = VnIcons.add
-        ),
-        HomeContent(
-            contentName = "Pinned Notes",
-            contentIcon = VnIcons.filledPin
-        ),
-        HomeContent(
-            contentName = "Other Notes",
-            contentIcon = VnIcons.pin
-        ),
-        HomeContent(
-            contentName = "Archive Notes",
-            contentIcon = VnIcons.archive
-        ),
-        HomeContent(
-            contentName = "Trash",
-            contentIcon = VnIcons.delete
-        ),
-        HomeContent(
-            contentName = "Help & feedback",
-            contentIcon = VnIcons.help
-        )
-    )
+fun HomeRoute(
+    onNavigateToAddNote: () -> Unit,
+    onNavigateToViewNote: (String) -> Unit,
+    onNavigateToHelp: () -> Unit
+) {
     HomeScreen(
-        contentList = contentList
+        contentList = contentList,
+        onNavigateToAddNote = onNavigateToAddNote,
+        onNavigateToViewNote = onNavigateToViewNote,
+        onNavigateToHelp = onNavigateToHelp
     )
 }
 
 @Composable
-fun HomeScreen(
-    contentList: List<HomeContent>
+internal fun HomeScreen(
+    contentList: List<HomeContent>,
+    onNavigateToAddNote: () -> Unit,
+    onNavigateToViewNote: (String) -> Unit,
+    onNavigateToHelp: () -> Unit
 ) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -87,21 +105,27 @@ fun HomeScreen(
                 ) {
                     Text(
                         text = "Note App",
-                        style = MaterialTheme.typography.display1
+                        style = MaterialTheme.typography.display2
                     )
                 }
             }
-            items(contentList) { content ->
+            itemsIndexed(contentList) { index, content ->
                 Button(
                     modifier = Modifier
                         .fillMaxSize(),
-                    onClick = { /*TODO*/ }
+                    onClick = {
+                        when (index) {
+                            0 -> { onNavigateToAddNote() }
+                            5 -> { onNavigateToHelp() }
+                            else -> { onNavigateToViewNote(content.type) }
+                        }
+                    }
                 ) {
                     Row(
                         modifier = Modifier.fillMaxSize(),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Spacer(modifier = Modifier.width(8.dp))
+                        Spacer(modifier = Modifier.width(16.dp))
                         Box(
                             modifier = Modifier
                                 .background(
@@ -121,7 +145,7 @@ fun HomeScreen(
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
                             text = content.contentName,
-                            style = MaterialTheme.typography.display1,
+                            style = MaterialTheme.typography.display2,
                             color = MaterialTheme.colors.onBackground
                         )
                     }
@@ -136,20 +160,10 @@ fun HomeScreen(
 fun HomeScreenPreview() {
     VnWearTheme {
         HomeScreen(
-            contentList = listOf<HomeContent>(
-                HomeContent(
-                    contentName = "Add Note",
-                    contentIcon = VnIcons.add
-                ),
-                HomeContent(
-                    contentName = "Pinned Notes",
-                    contentIcon = VnIcons.filledPin
-                ),
-                HomeContent(
-                    contentName = "Other Notes",
-                    contentIcon = VnIcons.pin
-                )
-            )
+            contentList = contentList,
+            onNavigateToAddNote = {},
+            onNavigateToViewNote = {},
+            onNavigateToHelp = {}
         )
     }
 }
