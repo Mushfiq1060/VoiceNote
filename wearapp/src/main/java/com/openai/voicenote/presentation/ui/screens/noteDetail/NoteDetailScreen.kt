@@ -18,16 +18,21 @@ import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.Scaffold
 import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.TimeText
+import com.openai.voicenote.presentation.model.NoteResource
 
 @Composable
 fun NoteDetailRoute(
     viewModel: NoteDetailViewModel = hiltViewModel()
 ) {
-    NoteDetailScreen()
+    NoteDetailScreen(
+        note = viewModel.note
+    )
 }
 
 @Composable
-fun NoteDetailScreen() {
+internal fun NoteDetailScreen(
+    note: NoteResource
+) {
     val scrollState = rememberScalingLazyListState()
 
     LaunchedEffect(Unit) {
@@ -50,16 +55,13 @@ fun NoteDetailScreen() {
                 ) {
                     Spacer(modifier = Modifier.size(32.dp))
                     Text(
-                        text = "Cenotaph nowhere",
+                        text = note.title,
                         style = MaterialTheme.typography.display3,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
                     Text(
-                        text = "I silently laugh at my own cenotaph, " +
-                                "and out of the caverns of rain, like a " +
-                                "child from the womb, like a ghost from " +
-                                "the tomb, I arise and unbuild it again...",
+                        text = note.description,
                         style = MaterialTheme.typography.display2
                     )
                     Spacer(modifier = Modifier.size(32.dp))

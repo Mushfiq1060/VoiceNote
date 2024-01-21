@@ -1,9 +1,10 @@
 package com.openai.voicenote.presentation.ui.screens.noteDetail
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import com.openai.voicenote.presentation.ui.screens.noteDetail.navigation.NOTE_FETCH_TYPE
+import com.openai.voicenote.presentation.model.NoteResource
+import com.openai.voicenote.presentation.ui.screens.noteDetail.navigation.NOTE_STRING
+import com.openai.voicenote.presentation.utils.Utils.fromJson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -12,10 +13,12 @@ class NoteDetailViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
+    lateinit var note: NoteResource
+
     init {
-        val noteFetchType = savedStateHandle.get<String>(NOTE_FETCH_TYPE)
-        if (noteFetchType != null) {
-            Log.i("TAGG", noteFetchType)
+        val noteString = savedStateHandle.get<String>(NOTE_STRING)
+        if (noteString != null) {
+            note = noteString.fromJson(NoteResource::class.java)
         }
     }
 

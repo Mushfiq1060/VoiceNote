@@ -10,6 +10,8 @@ import com.openai.voicenote.presentation.ui.screens.home.navigation.HOME_ROUTE
 import com.openai.voicenote.presentation.ui.screens.home.navigation.homeScreen
 import com.openai.voicenote.presentation.ui.screens.noteDetail.navigation.navigateToNoteDetail
 import com.openai.voicenote.presentation.ui.screens.noteDetail.navigation.noteDetailScreen
+import com.openai.voicenote.presentation.ui.screens.notes.navigation.navigateToNotes
+import com.openai.voicenote.presentation.ui.screens.notes.navigation.notesScreen
 
 @Composable
 fun VnWearNavHost(
@@ -22,10 +24,13 @@ fun VnWearNavHost(
     ) {
         homeScreen(
             onNavigateToAddNote = { navController.navigateToAddNote() },
-            onNavigateToViewNote = { navController.navigateToNoteDetail(it) },
+            onNavigateToViewNote = { navController.navigateToNotes(it) },
             onNavigateToHelp = {}
         )
         addNoteScreen()
         noteDetailScreen()
+        notesScreen(
+            onNavigateToNoteDetail = { navController.navigateToNoteDetail(it) }
+        )
     }
 }

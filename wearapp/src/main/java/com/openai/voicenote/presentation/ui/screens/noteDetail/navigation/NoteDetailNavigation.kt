@@ -7,7 +7,7 @@ import androidx.navigation.navArgument
 import androidx.wear.compose.navigation.composable
 import com.openai.voicenote.presentation.ui.screens.noteDetail.NoteDetailRoute
 
-const val NOTE_FETCH_TYPE = "note_fetch_type"
+const val NOTE_STRING = "note_string"
 const val NOTE_DETAIL_ROUTE = "note_detail_route"
 
 fun NavController.navigateToNoteDetail(noteFetchType: String) =
@@ -15,9 +15,9 @@ fun NavController.navigateToNoteDetail(noteFetchType: String) =
 
 fun NavGraphBuilder.noteDetailScreen() {
     composable(
-        route = "${NOTE_DETAIL_ROUTE}/{$NOTE_FETCH_TYPE}",
+        route = "${NOTE_DETAIL_ROUTE}/{$NOTE_STRING}",
         arguments = listOf(
-            navArgument(NOTE_FETCH_TYPE) { type = NavType.StringType }
+            navArgument(NOTE_STRING) { type = NavType.StringType }
         )
     ) {
         NoteDetailRoute()

@@ -89,4 +89,7 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.coroutines.play.services)
 
+    // gson
+    implementation(libs.converter.gson)
+
 }
