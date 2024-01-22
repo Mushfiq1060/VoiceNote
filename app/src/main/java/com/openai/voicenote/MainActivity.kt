@@ -60,4 +60,14 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.addDataLayerListener()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        viewModel.removeDataLayerListener()
+    }
 }

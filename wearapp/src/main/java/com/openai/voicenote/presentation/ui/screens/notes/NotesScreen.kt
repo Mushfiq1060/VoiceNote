@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
@@ -19,11 +20,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
 import androidx.wear.compose.foundation.lazy.items
 import androidx.wear.compose.material.CircularProgressIndicator
+import androidx.wear.compose.material.Icon
 import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.Scaffold
 import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.TimeText
 import androidx.wear.compose.material.TitleCard
+import com.openai.voicenote.core.designsystem.icon.VnIcons
 import com.openai.voicenote.presentation.model.NoteResource
 import com.openai.voicenote.presentation.utils.Utils.toJson
 
@@ -63,39 +66,54 @@ internal fun NotesScreen(
                 }
             }
             is NotesUiState.Success -> {
-                ScalingLazyColumn {
-                    item {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(48.dp),
-                            horizontalArrangement = Arrangement.Center,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = uiState.notesType,
-                                style = MaterialTheme.typography.display2
-                            )
-                        }
+                if (uiState.noteList.isEmpty()) {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Icon(painter = painterResource(id = VnIcons.note), contentDescription = "")
+                        Text(
+                            text = "No notes",
+                            style = MaterialTheme.typography.display2
+                        )
                     }
-                    items(uiState.noteList) { noteResource ->
-                        TitleCard(
-                            onClick = { onNavigateToNoteDetail(noteResource.toJson()) },
-                            title = {
+                }
+                else {
+                    ScalingLazyColumn {
+                        item {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(48.dp),
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
                                 Text(
-                                    text = noteResource.title,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                    style = MaterialTheme.typography.display3
+                                    text = uiState.notesType,
+                                    style = MaterialTheme.typography.display2
                                 )
                             }
-                        ) {
-                            Text(
-                                text = noteResource.description,
-                                maxLines = 2,
-                                overflow = TextOverflow.Ellipsis,
-                                style = MaterialTheme.typography.display2
-                            )
+                        }
+                        items(uiState.noteList) { noteResource ->
+                            TitleCard(
+                                onClick = { onNavigateToNoteDetail(noteResource.toJson()) },
+                                title = {
+                                    Text(
+                                        text = noteResource.title,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
+                                        style = MaterialTheme.typography.display3
+                                    )
+                                }
+                            ) {
+                                Text(
+                                    text = noteResource.description,
+                                    maxLines = 2,
+                                    overflow = TextOverflow.Ellipsis,
+                                    style = MaterialTheme.typography.display2
+                                )
+                            }
                         }
                     }
                 }

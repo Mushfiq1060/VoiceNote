@@ -9,6 +9,7 @@ package com.openai.voicenote.presentation
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.openai.voicenote.presentation.navigation.VnWearNavHost
 import com.openai.voicenote.presentation.theme.VnWearTheme
@@ -16,6 +17,9 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    val viewModel: MainActivityViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
 
@@ -28,5 +32,15 @@ class MainActivity : ComponentActivity() {
                 VnWearNavHost()
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.addDataLayerListener()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        viewModel.removeDataLayerListener()
     }
 }

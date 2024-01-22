@@ -43,18 +43,33 @@ class NotesViewModel @Inject constructor(
         val noteFetchType = savedStateHandle.get<String>(NOTE_FETCH_TYPE)
         if (noteFetchType != null) {
             notesType.update { noteFetchType }
+            viewModelScope.launch {
+                dataLayer.sendMessageToHandHeldDevice(noteFetchType)
+            }
         }
     }
 
     val uiState: StateFlow<NotesUiState> = combine(
         notesType.asStateFlow(),
-        dataLayer.getNotes()
-    ) { type, list ->
-        delay(3000L)
-        NotesUiState.Success(
-            notesType = type,
-            noteList = list
-        )
+        dataLayer.getNotes(),
+        dataLayer.getLoadingStatus()
+    ) { type, list, loading ->
+        val notesType = when (type) {
+            "PIN_NOTES" -> "Pinned Notes"
+            "OTHER_NOTES" -> "Other Notes"
+            "ARCHIVE_NOTES" -> "Archive Notes"
+            "TRASH_NOTES" -> "Trash Notes"
+            else -> ""
+        }
+        if (loading) {
+            NotesUiState.Loading
+        }
+        else {
+            NotesUiState.Success(
+                notesType = notesType,
+                noteList = list
+            )
+        }
     }
         .stateIn(
             scope = viewModelScope,
