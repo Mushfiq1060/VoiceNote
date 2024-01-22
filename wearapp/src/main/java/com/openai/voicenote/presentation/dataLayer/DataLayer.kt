@@ -9,15 +9,18 @@ import com.google.android.gms.wearable.DataClient.OnDataChangedListener
 import com.google.android.gms.wearable.DataEvent
 import com.google.android.gms.wearable.DataMapItem
 import com.google.android.gms.wearable.MessageClient.OnMessageReceivedListener
+import com.google.android.gms.wearable.PutDataMapRequest
 import com.google.android.gms.wearable.Wearable
 import com.openai.voicenote.presentation.model.NoteResource
 import com.openai.voicenote.presentation.utils.Utils.fromJson
+import com.openai.voicenote.presentation.utils.Utils.toJson
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.net.URLDecoder
@@ -36,10 +39,12 @@ class DataLayer @Inject constructor(
     private val dataClient by lazy { Wearable.getDataClient(context) }
     private val messageClient by lazy { Wearable.getMessageClient(context) }
 
-    private val capabilityClientListener = OnCapabilityChangedListener {}
+    private val capabilityClientListener = OnCapabilityChangedListener {
+        Log.i(TAG, "Capability client -> $it")
+    }
 
     private val dataClientListener = OnDataChangedListener { dataEvents ->
-        dataEvents.map {  dataEvent ->
+        dataEvents.map { dataEvent ->
             when (dataEvent.type) {
                 DataEvent.TYPE_CHANGED -> {
                     when (dataEvent.dataItem.uri.path) {
@@ -114,7 +119,7 @@ class DataLayer @Inject constructor(
                 "OTHER_NOTES" -> OTHER_NOTES_PATH
                 "ARCHIVE_NOTES" -> ARCHIVE_NOTES_PATH
                 "TRASH_NOTES" -> TRASH_NOTES_PATH
-                else -> PIN_NOTES_PATH
+                else -> ""
             }
             val nodes = capabilityClient.getCapability(WEAR_CAPABILITY, CapabilityClient.FILTER_REACHABLE)
                 .await().nodes
@@ -128,6 +133,21 @@ class DataLayer @Inject constructor(
         }
     }
 
+    suspend fun sendNoteToHandHeldDevice(note: NoteResource) {
+        try {
+            val request = PutDataMapRequest.create(NOTE_PATH).apply {
+                dataMap.putString(NOTE, note.toJson())
+            }
+                .asPutDataRequest()
+                .setUrgent()
+            dataClient.putDataItem(request).await()
+        } catch (cancellationException: CancellationException) {
+            throw cancellationException
+        } catch (exception: Exception) {
+            Log.e("TAGG", "Send text failed: $exception")
+        }
+    }
+
     companion object {
         private const val TAG = "WEAR APP DATA LAYER"
         private const val TEXT_CAPABILITY = "text"
@@ -138,7 +158,9 @@ class DataLayer @Inject constructor(
         private const val NOTES_PATH = "/notes"
         private const val NOTES = "notes"
         private const val WEAR_CAPABILITY = "wear"
-
+        private const val NOTE_PATH = "/note-path"
+        private const val NOTE = "/note"
+        private const val TIME = "time"
     }
 
 }

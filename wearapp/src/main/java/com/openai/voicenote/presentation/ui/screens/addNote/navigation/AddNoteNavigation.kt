@@ -9,10 +9,14 @@ const val ADD_NOTE_ROUTE = "add_note_route"
 
 fun NavController.navigateToAddNote() = navigate(ADD_NOTE_ROUTE)
 
-fun NavGraphBuilder.addNoteScreen() {
+fun NavGraphBuilder.addNoteScreen(
+    onPopBack: () -> Unit
+) {
     composable(
         route = ADD_NOTE_ROUTE
     ) {
-        AddNoteRoute()
+        AddNoteRoute(
+            onPopBack = onPopBack
+        )
     }
 }

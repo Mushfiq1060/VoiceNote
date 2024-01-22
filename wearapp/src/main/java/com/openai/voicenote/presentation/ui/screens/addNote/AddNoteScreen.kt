@@ -43,12 +43,17 @@ import com.openai.voicenote.core.designsystem.icon.VnIcons
 
 @Composable
 fun AddNoteRoute(
+    onPopBack: () -> Unit,
     viewModel: AddNoteViewModel = hiltViewModel()
 ) {
     val noteText by viewModel.noteText.collectAsStateWithLifecycle()
 
     AddNoteScreen(
         onNoteTextChange = viewModel::onNoteTextChange,
+        onNoteSave = {
+            viewModel.saveNoteToHandHeldDevice()
+            onPopBack()
+        },
         noteText = noteText
     )
 }
@@ -56,6 +61,7 @@ fun AddNoteRoute(
 @Composable
 internal fun AddNoteScreen(
     onNoteTextChange: (String) -> Unit,
+    onNoteSave: () -> Unit,
     noteText: String
 ) {
     val scrollState = rememberScalingLazyListState()
@@ -73,7 +79,8 @@ internal fun AddNoteScreen(
         ) {
             Spacer(modifier = Modifier.height(24.dp))
             InputScreen(
-                onNoteTextChange = onNoteTextChange
+                onNoteTextChange = onNoteTextChange,
+                onNoteSave = onNoteSave
             )
             ScalingLazyColumn(
                 modifier = Modifier
@@ -99,7 +106,8 @@ internal fun AddNoteScreen(
 
 @Composable
 internal fun InputScreen(
-    onNoteTextChange: (String) -> Unit
+    onNoteTextChange: (String) -> Unit,
+    onNoteSave: () -> Unit
 ) {
     var userInput by remember { mutableStateOf("") }
     val inputTextKey = "input_text"
@@ -143,7 +151,7 @@ internal fun InputScreen(
         Spacer(modifier = Modifier.width(8.dp))
         Button(
             modifier = Modifier.size(36.dp),
-            onClick = { /*TODO*/ },
+            onClick = onNoteSave,
             enabled = userInput.isNotEmpty()
         ) {
             Icon(

@@ -27,7 +27,9 @@ fun VnWearNavHost(
             onNavigateToViewNote = { navController.navigateToNotes(it) },
             onNavigateToHelp = {}
         )
-        addNoteScreen()
+        addNoteScreen(
+            onPopBack = { navController.popBackStack() }
+        )
         noteDetailScreen()
         notesScreen(
             onNavigateToNoteDetail = { navController.navigateToNoteDetail(it) }

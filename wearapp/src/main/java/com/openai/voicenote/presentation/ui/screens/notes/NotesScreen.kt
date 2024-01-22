@@ -99,12 +99,14 @@ internal fun NotesScreen(
                             TitleCard(
                                 onClick = { onNavigateToNoteDetail(noteResource.toJson()) },
                                 title = {
-                                    Text(
-                                        text = noteResource.title,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis,
-                                        style = MaterialTheme.typography.display3
-                                    )
+                                    if (noteResource.title.isNotEmpty()) {
+                                        Text(
+                                            text = noteResource.title,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                            style = MaterialTheme.typography.display3
+                                        )
+                                    }
                                 }
                             ) {
                                 Text(
