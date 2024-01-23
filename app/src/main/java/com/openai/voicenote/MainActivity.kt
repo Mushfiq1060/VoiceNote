@@ -1,6 +1,7 @@
 package com.openai.voicenote
 
 import android.Manifest
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -13,6 +14,7 @@ import androidx.core.view.WindowCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.openai.voicenote.core.data.wearDataLayer.DataLayerService
 import com.openai.voicenote.core.designsystem.theme.VnTheme
 import com.openai.voicenote.core.model.LabelResource
 import com.openai.voicenote.ui.VnApp
@@ -29,6 +31,9 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
+
+        val serviceIntent = Intent(this, DataLayerService::class.java)
+        startService(serviceIntent)
 
         ActivityCompat.requestPermissions(
             this,
@@ -59,15 +64,5 @@ class MainActivity : ComponentActivity() {
                 )
             }
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        viewModel.addDataLayerListener()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        viewModel.removeDataLayerListener()
     }
 }

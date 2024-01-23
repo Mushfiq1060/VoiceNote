@@ -1,20 +1,25 @@
 package com.openai.voicenote.core.data.wearDataLayer
 
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.util.Log
 import com.google.android.gms.wearable.CapabilityClient
 import com.google.android.gms.wearable.DataClient
 import com.google.android.gms.wearable.DataEvent
+import com.google.android.gms.wearable.DataEventBuffer
 import com.google.android.gms.wearable.DataMapItem
 import com.google.android.gms.wearable.MessageClient
+import com.google.android.gms.wearable.MessageEvent
 import com.google.android.gms.wearable.PutDataMapRequest
 import com.google.android.gms.wearable.Wearable
+import com.google.android.gms.wearable.WearableListenerService
 import com.openai.voicenote.core.common.di.ApplicationScope
 import com.openai.voicenote.core.common.utils.Utils.fromJson
 import com.openai.voicenote.core.common.utils.Utils.toJson
 import com.openai.voicenote.core.data.local.NoteDataSource
 import com.openai.voicenote.core.model.NoteResource
+import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.NonCancellable
@@ -27,22 +32,18 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.coroutines.cancellation.CancellationException
 
-@Singleton
-class DataLayer @Inject constructor(
-    @ApplicationContext context: Context,
-    private val noteDataSource: NoteDataSource,
-    @ApplicationScope private val scope: CoroutineScope,
-) {
+@AndroidEntryPoint
+class DataLayerService : WearableListenerService() {
 
-    private val capabilityClient by lazy { Wearable.getCapabilityClient(context) }
+    @Inject lateinit var noteDataSource: NoteDataSource
+    @Inject @ApplicationContext lateinit var context: Context
+    @Inject @ApplicationScope lateinit var scope: CoroutineScope
+
     private val dataClient by lazy { Wearable.getDataClient(context) }
     private val messageClient by lazy { Wearable.getMessageClient(context) }
 
-    private val capabilityClientListener = CapabilityClient.OnCapabilityChangedListener {
-        Log.i(TAG, "Capability client -> $it")
-    }
-
-    private val dataClientListener = DataClient.OnDataChangedListener { dataEvents ->
+    override fun onDataChanged(dataEvents: DataEventBuffer) {
+        super.onDataChanged(dataEvents)
         dataEvents.map { dataEvent ->
             when (dataEvent.type) {
                 DataEvent.TYPE_CHANGED -> {
@@ -64,7 +65,8 @@ class DataLayer @Inject constructor(
         }
     }
 
-    private val messageClientListener = MessageClient.OnMessageReceivedListener { messageEvent ->
+    override fun onMessageReceived(messageEvent: MessageEvent) {
+        super.onMessageReceived(messageEvent)
         scope.launch {
             val noteList: List<NoteResource> = when (messageEvent.path) {
                 PIN_NOTES_PATH -> {
@@ -85,38 +87,6 @@ class DataLayer @Inject constructor(
                 .asPutDataRequest()
                 .setUrgent()
             dataClient.putDataItem(request).await()
-        }
-    }
-
-    suspend fun addListener() {
-        capabilityClient.addListener(
-            capabilityClientListener,
-            Uri.parse("wear://"),
-            CapabilityClient.FILTER_REACHABLE
-        )
-        try {
-            capabilityClient.addLocalCapability(TEXT_CAPABILITY).await()
-            Log.i(TAG, "Add capability successfully")
-        } catch (cancellationException: CancellationException) {
-            throw cancellationException
-        } catch (exception: Exception) {
-            Log.e(TAG, "Could not add capability $exception")
-        }
-        dataClient.addListener(dataClientListener)
-        messageClient.addListener(messageClientListener)
-    }
-
-    suspend fun removeListener() {
-        capabilityClient.removeListener(capabilityClientListener)
-        dataClient.removeListener(dataClientListener)
-        messageClient.removeListener(messageClientListener)
-        withContext(NonCancellable) {
-            try {
-                capabilityClient.removeLocalCapability(TEXT_CAPABILITY).await()
-                Log.i(TAG, "Remove capability successfully")
-            } catch (exception: Exception) {
-                Log.e(TAG, "Could not remove capability $exception")
-            }
         }
     }
 
