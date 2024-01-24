@@ -7,7 +7,7 @@ import java.util.Date
 
 object Utils {
 
-    private val monthList = listOf<String>(
+    private val monthList = listOf(
         "Jan",
         "Feb",
         "Mar",
@@ -34,13 +34,13 @@ object Utils {
         val date = calendar.get(Calendar.DATE)
         val currentDate = currentCalendar.get(Calendar.DATE)
         val hour = calendar.get(Calendar.HOUR)
-        val am_pm = if (calendar.get(Calendar.AM_PM) == 0) "AM" else "PM"
+        val amPm = if (calendar.get(Calendar.AM_PM) == 0) "AM" else "PM"
         val minute = calendar.get(Calendar.MINUTE)
         if (year == currentYear) {
             if (month == currentMonth && date == currentDate) {
                 val hourFormat = if (hour < 10) "0$hour" else "$hour"
                 val minuteFormat = if (minute < 10) "0$minute" else "$minute"
-                return "$hourFormat:$minuteFormat $am_pm"
+                return "$hourFormat:$minuteFormat $amPm"
             }
             return "${monthList[month]} $date"
         }
