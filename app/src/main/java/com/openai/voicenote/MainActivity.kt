@@ -54,7 +54,6 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-
             VnTheme {
                 VnApp(
                     labelItems = when (uiState) {

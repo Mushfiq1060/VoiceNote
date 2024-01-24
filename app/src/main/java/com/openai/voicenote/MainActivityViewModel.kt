@@ -15,8 +15,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(
-    private val labelDataSource: LabelDataSource,
-    private val userDataRepository: UserDataRepository,
+    labelDataSource: LabelDataSource,
+    userDataRepository: UserDataRepository,
 ) : ViewModel() {
 
     val uiState: StateFlow<MainActivityUiState> = combine(

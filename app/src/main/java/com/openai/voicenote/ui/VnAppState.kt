@@ -22,6 +22,7 @@ import com.openai.voicenote.feature.noteedit.navigation.navigateToNoteEdit
 import com.openai.voicenote.feature.notes.navigation.NOTES_ROUTE
 import com.openai.voicenote.feature.notes.navigation.navigateToNotes
 import com.openai.voicenote.feature.recordaudio.navigation.RECORD_AUDIO_ROUTE
+import com.openai.voicenote.feature.recordaudio.navigation.navigateToRecordAudio
 import com.openai.voicenote.navigation.DrawerDestination
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -60,6 +61,11 @@ class VnAppState(
         @Composable get() = navController
             .currentBackStackEntryAsState().value?.destination
 
+    /**
+     * add all drawer destination inside when condition
+     *
+     * in else branch return start destination
+     */
     val currentDrawerDestination: DrawerDestination
         @Composable get() = when (currentDestination?.route) {
             NOTES_ROUTE -> {
@@ -68,11 +74,7 @@ class VnAppState(
             "$LABEL_ROUTE/{$LABEL_ID}" -> {
                 DrawerDestination.CREATE_NEW_LABEL
             }
-            else -> {
-                // add all drawer destination in when condition
-                // return start destination
-                DrawerDestination.NOTES
-            }
+            else -> { DrawerDestination.NOTES }
         }
 
     val drawerDestination: List<DrawerDestination> = DrawerDestination.entries
@@ -127,7 +129,10 @@ class VnAppState(
      */
     fun navigateToNoteEdit(fromWhichScreen: Int = 0, noteString: String) {
         if (fromWhichScreen == 0) {
-            navController.navigateToNoteEdit(navOptions {  }, noteString = noteString)
+            navController.navigateToNoteEdit(
+                navOptions {  },
+                noteString = noteString
+            )
         } else if (fromWhichScreen == 1) {
             navController.navigateToNoteEdit(
                 navOptions {
@@ -140,9 +145,16 @@ class VnAppState(
         }
     }
 
-    fun navigateToNoteLabel(noteIdList: List<Long>) {
+    /**
+     * [noteIdList] is selected note id
+     */
+    fun navigateToNoteLabel(noteIdList: List<Long>) =
         navController.navigateToNoteLabel(navOptions{  }, noteIdList.toJson())
-    }
+
+    fun navigateToRecordAudio() =
+        navController.navigateToRecordAudio(navOptions {  })
+
+    fun popBackStack() = navController.popBackStack()
 
     fun openDrawer() {
         coroutineScope.launch {

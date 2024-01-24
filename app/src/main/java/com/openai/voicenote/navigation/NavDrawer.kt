@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -27,10 +28,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.openai.voicenote.R
 import com.openai.voicenote.core.designsystem.icon.VnIcons
 import com.openai.voicenote.core.designsystem.theme.VnTheme
 import com.openai.voicenote.core.model.LabelResource
@@ -49,15 +52,16 @@ fun NavDrawer(
 ) {
     ModalDrawerSheet(
         modifier = Modifier
+            .width(300.dp)
             .clip(shape = RoundedCornerShape(topEnd = 48.dp, bottomEnd = 48.dp))
     ) {
-        LazyColumn() {
+        LazyColumn {
             item {
                 Spacer(modifier = Modifier.height(16.dp))
             }
             item {
                 Text(
-                    text = "Note App",
+                    text = stringResource(id = R.string.note_app),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     letterSpacing = 2.sp,
@@ -65,36 +69,36 @@ fun NavDrawer(
                 )
             }
             items(destinations) { items ->
-                if (items.text == "Create new label" && labelItems.isNotEmpty()) {
+                if (items.textId == R.string.create_new_label && labelItems.isNotEmpty()) {
                     DividerWithSpacer()
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
-                            text = "Labels",
+                            text = stringResource(id = R.string.labels),
                             style = MaterialTheme.typography.titleSmall,
                             modifier = Modifier.padding(start = 32.dp)
                         )
                         Text(
-                            text = "Edit",
+                            text = stringResource(id = R.string.edit),
                             style = MaterialTheme.typography.titleSmall,
                             modifier = Modifier.padding(end = 32.dp)
                         )
                     }
                     Spacer(modifier = Modifier.size(16.dp))
-                    labelItems.forEachIndexed { index, labelResource ->
+                    labelItems.forEachIndexed { _, labelResource ->
                         DrawerItem(
                             title = labelResource.labelName,
                             drawableId = VnIcons.label,
                             active = selectedLabelId == labelResource.labelId
                         ) {
-                            onNavigateToDrawerDestination(items, labelResource.labelId) // must be passed level info
+                            onNavigateToDrawerDestination(items, labelResource.labelId) /** must be passed level info **/
                             coroutineScope.launch { drawerState.close() }
                         }
                     }
                     DrawerItem(
-                        title = items.text,
+                        title = stringResource(id = items.textId),
                         drawableId = items.icon,
                         active = false
                     ) {
@@ -105,7 +109,7 @@ fun NavDrawer(
                 }
                 else {
                     DrawerItem(
-                        title = items.text,
+                        title = stringResource(id = items.textId),
                         drawableId = items.icon,
                         active = items == currentDrawerDestination
                     ) {

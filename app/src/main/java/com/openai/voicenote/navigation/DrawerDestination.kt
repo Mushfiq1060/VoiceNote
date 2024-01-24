@@ -1,34 +1,38 @@
 package com.openai.voicenote.navigation
 
 import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
+import com.openai.voicenote.R
 import com.openai.voicenote.core.designsystem.icon.VnIcons
 
 enum class DrawerDestination(
     @DrawableRes val icon: Int,
-    val text: String
+    @StringRes val textId: Int
 ) {
     NOTES(
         icon = VnIcons.note,
-        text = "Notes"
+        textId = R.string.notes
     ),
     CREATE_NEW_LABEL(
         icon = VnIcons.add,
-        text = "Create new label"
+        textId = R.string.create_new_label
     ),
     ARCHIVE(
         icon = VnIcons.archive,
-        text = "Archive"
+        textId = R.string.archive
     ),
     TRASH(
         icon = VnIcons.delete,
-        text = "Trash"
+        textId = R.string.trash
     ),
     SETTINGS(
         icon = VnIcons.settings,
-        text = "Settings"
+        textId = R.string.settings
     ),
     HELP_AND_FEEDBACK(
         icon = VnIcons.help,
-        text = "Help & feedback"
+        textId = R.string.help_and_feedback
     )
 }
