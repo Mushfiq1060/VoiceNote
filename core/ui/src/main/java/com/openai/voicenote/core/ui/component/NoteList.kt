@@ -10,10 +10,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.openai.voicenote.core.model.NoteResource
 import com.openai.voicenote.core.model.NoteView
+import com.openai.voicenote.core.ui.R
 
 @Composable
 fun NoteList(
@@ -38,7 +40,7 @@ fun NoteList(
     ) {
         header {
             Text(
-                text = "Pinned",
+                text = stringResource(id = R.string.core_ui_pinned),
                 style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier
                     .paddingFromBaseline(bottom = 8.dp)
@@ -54,7 +56,7 @@ fun NoteList(
         )
         header {
             Text(
-                text = "Others",
+                text = stringResource(id = R.string.core_ui_others),
                 style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier
                     .paddingFromBaseline(bottom = 8.dp)

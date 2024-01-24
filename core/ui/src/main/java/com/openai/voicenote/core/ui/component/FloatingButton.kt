@@ -1,6 +1,7 @@
 package com.openai.voicenote.core.ui.component
 
 import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.compose.animation.core.Transition
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
@@ -33,11 +34,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.openai.voicenote.core.designsystem.icon.VnIcons
 import com.openai.voicenote.core.designsystem.theme.VnTheme
+import com.openai.voicenote.core.ui.R
 
 enum class FABState {
     EXPANDED,
@@ -51,19 +54,19 @@ enum class SubFabType {
 
 data class FabItem(
     @DrawableRes val icon: Int,
-    val label: String,
+    @StringRes val labelId: Int,
     val type: SubFabType
 )
 
 val subFABList = listOf(
     FabItem(
         icon = VnIcons.editNote,
-        label = "Add Text Note",
+        labelId = R.string.core_ui_add_text_note,
         type = SubFabType.TEXT
     ),
     FabItem(
         icon = VnIcons.mic,
-        label = "Add Voice Note",
+        labelId = R.string.core_ui_add_voice_note,
         type = SubFabType.VOICE
     )
 )
@@ -145,7 +148,7 @@ fun SmallFloatingActionButtonRow(
             .scale(animateFloatAsState(targetValue = scale, label = "").value)
     ) {
         Text(
-            text = item.label,
+            text = stringResource(id = item.labelId),
             style = MaterialTheme.typography.bodySmall,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onBackground,
@@ -167,7 +170,7 @@ fun SmallFloatingActionButtonRow(
         ) {
             Icon(
                 painter = painterResource(id = item.icon),
-                contentDescription = item.label,
+                contentDescription = stringResource(id = item.labelId),
                 tint = MaterialTheme.colorScheme.onBackground
             )
         }

@@ -37,9 +37,7 @@ fun ViewTogglePreview() {
         Surface {
             ViewToggle(
                 gridEnable = false,
-                onClick = {
-
-                }
+                onClick = {}
             )
         }
     }

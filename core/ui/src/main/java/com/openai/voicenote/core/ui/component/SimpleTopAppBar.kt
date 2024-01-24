@@ -53,7 +53,7 @@ fun SimpleTopAppBarPreview() {
             SimpleTopAppBar(
                 navigationIcon = VnIcons.arrowBack,
                 title = "Edit Labels",
-                onClickNavigationIcon = {  }
+                onClickNavigationIcon = {}
             )
         }
     }

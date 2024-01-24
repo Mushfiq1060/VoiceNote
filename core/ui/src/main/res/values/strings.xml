@@ -1,0 +1,12 @@
+<resources>
+    <string name="core_ui_color">Color</string>
+    <string name="core_ui_background">Background</string>
+    <string name="core_ui_add_text_note">Add Text Note</string>
+    <string name="core_ui_add_voice_note">Add Voice Note</string>
+    <string name="core_ui_pinned">Pinned</string>
+    <string name="core_ui_others">Others</string>
+    <string name="core_ui_unarchive">Unarchive</string>
+    <string name="core_ui_archive">Archive</string>
+    <string name="core_ui_delete">Delete</string>
+    <string name="core_ui_make_a_copy">Make a copy</string>
+</resources>

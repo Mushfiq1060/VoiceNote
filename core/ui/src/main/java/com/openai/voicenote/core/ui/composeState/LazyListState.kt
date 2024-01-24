@@ -1,6 +1,5 @@
 package com.openai.voicenote.core.ui.composeState
 
-import android.util.Log
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
