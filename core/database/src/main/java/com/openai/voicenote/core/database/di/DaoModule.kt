@@ -27,5 +27,4 @@ object DaoModule {
         return vnDatabase.noteLabelDao()
     }
 
-
 }

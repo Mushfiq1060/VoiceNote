@@ -13,23 +13,3 @@ data class NoteLabelCrossRef(
     @ColumnInfo(index = true)
     val labelId: Long
 )
-
-//@Entity(
-//    tableName = "note_label_cross_ref",
-//    foreignKeys = [
-//        ForeignKey(
-//            entity = NoteResourceEntity::class,
-//            parentColumns = ["noteId"],
-//            childColumns = ["noteId"]
-//        ),
-//        ForeignKey(
-//            entity = LabelResourceEntity::class,
-//            parentColumns = ["labelId"],
-//            childColumns = ["labelId"]
-//        )
-//    ],
-//    indices = [
-//        Index(value = ["noteId"]),
-//        Index(value = ["labelId"])
-//    ]
-//)

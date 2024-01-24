@@ -12,7 +12,6 @@ import dagger.hilt.components.SingletonComponent
 @InstallIn(SingletonComponent::class)
 @Module
 object DatabaseModule {
-
     @Provides
     fun provideVnDatabase(@ApplicationContext context: Context): VnDatabase {
         return Room.databaseBuilder(
