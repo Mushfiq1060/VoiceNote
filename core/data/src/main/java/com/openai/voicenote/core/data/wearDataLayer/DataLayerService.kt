@@ -1,15 +1,9 @@
 package com.openai.voicenote.core.data.wearDataLayer
 
 import android.content.Context
-import android.content.Intent
-import android.net.Uri
-import android.util.Log
-import com.google.android.gms.wearable.CapabilityClient
-import com.google.android.gms.wearable.DataClient
 import com.google.android.gms.wearable.DataEvent
 import com.google.android.gms.wearable.DataEventBuffer
 import com.google.android.gms.wearable.DataMapItem
-import com.google.android.gms.wearable.MessageClient
 import com.google.android.gms.wearable.MessageEvent
 import com.google.android.gms.wearable.PutDataMapRequest
 import com.google.android.gms.wearable.Wearable
@@ -22,15 +16,11 @@ import com.openai.voicenote.core.model.NoteResource
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.withContext
 import java.net.URLDecoder
 import javax.inject.Inject
-import javax.inject.Singleton
-import kotlin.coroutines.cancellation.CancellationException
 
 @AndroidEntryPoint
 class DataLayerService : WearableListenerService() {
@@ -40,7 +30,6 @@ class DataLayerService : WearableListenerService() {
     @Inject @ApplicationScope lateinit var scope: CoroutineScope
 
     private val dataClient by lazy { Wearable.getDataClient(context) }
-    private val messageClient by lazy { Wearable.getMessageClient(context) }
 
     override fun onDataChanged(dataEvents: DataEventBuffer) {
         super.onDataChanged(dataEvents)
@@ -91,8 +80,6 @@ class DataLayerService : WearableListenerService() {
     }
 
     companion object {
-        const val TAG = "DATA LAYER MOBILE"
-        const val TEXT_CAPABILITY = "text"
         const val PIN_NOTES_PATH = "/pinned-notes-path"
         const val OTHER_NOTES_PATH = "/other-notes-path"
         const val ARCHIVE_NOTES_PATH = "/archive-notes-path"

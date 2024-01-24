@@ -1,7 +1,5 @@
 package com.openai.voicenote.core.data.local
 
-import com.openai.voicenote.core.database.entities.relations.NoteLabelCrossRef
-
 interface NoteLabelDataSource {
     suspend fun insertNoteLabel(notesId: List<Long>, labelId: Long)
 
