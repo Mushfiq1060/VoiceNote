@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="feature_label_delete_label_dialog">Delete Label?</string>
+    <string name="feature_label_delete_warning">We\'ll delete this label and remove it from all of your notes. Your notes won\'t be deleted.</string>
+    <string name="feature_label_delete">Delete</string>
+    <string name="feature_label_cancel">Cancel</string>
+    <string name="feature_label_no_notes_with_label">No notes with this label yet</string>
+    <string name="feature_label_rename_label">Rename Label</string>
+    <string name="feature_label_delete_label">Delete Label</string>
+    <string name="feature_label_rename">Rename</string>
+</resources>

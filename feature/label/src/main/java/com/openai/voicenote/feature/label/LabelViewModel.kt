@@ -4,8 +4,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.openai.voicenote.core.data.local.LabelDataSource
-import com.openai.voicenote.core.data.local.NoteDataSource
-import com.openai.voicenote.core.data.local.NoteLabelDataSource
 import com.openai.voicenote.core.data.local.repository.UserDataRepository
 import com.openai.voicenote.core.model.LabelResource
 import com.openai.voicenote.core.model.NoteView
@@ -26,10 +24,8 @@ import kotlin.properties.Delegates
 @HiltViewModel
 class LabelViewModel @Inject constructor(
     private val labelDataSource: LabelDataSource,
-    private val noteDataSource: NoteDataSource,
-    private val noteLabelDataSource: NoteLabelDataSource,
     private val userDataRepository: UserDataRepository,
-    private val savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private var argLabelId by Delegates.notNull<Long>()
@@ -65,7 +61,6 @@ class LabelViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(100L),
             initialValue = NoteFeedUiState.Loading
         )
-
 
     fun updateRenameLabelText(text: String) {
         renameLabelText.update { text }

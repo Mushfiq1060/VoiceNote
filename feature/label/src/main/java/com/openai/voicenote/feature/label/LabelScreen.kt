@@ -28,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -35,6 +36,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.openai.voicenote.core.designsystem.icon.VnIcons
 import com.openai.voicenote.core.designsystem.theme.VnTheme
 import com.openai.voicenote.core.model.NoteView
+import com.openai.voicenote.core.ui.component.CircularLoader
 import com.openai.voicenote.core.ui.component.ConfirmationDialog
 import com.openai.voicenote.core.ui.component.EmptyNoteList
 import com.openai.voicenote.core.ui.component.NoteFeedUiState
@@ -68,7 +70,7 @@ fun LabelRoute(
         shouldShowDeleteDialog = shouldShowDeleteDialog,
         shouldShowRenameDialog = shouldShowRenameDialog,
         renameLabelText = renameLabelText,
-        onRenameLabelTextChange = { viewModel.updateRenameLabelText(it) },
+        onRenameLabelTextChange =  viewModel::updateRenameLabelText,
         onClickRenameLabel = {
             viewModel.toggleContextMenuState()
             viewModel.toggleRenameDialogState(labelName)
@@ -95,14 +97,14 @@ fun LabelRoute(
             viewModel.deleteLabel()
             onBackClick()
         },
-        onDeleteDialogCancelClick = { viewModel.toggleDeleteDialogState() },
-        onRenameDialogConfirmClick = { viewModel.updateLabel() },
+        onDeleteDialogCancelClick = viewModel::toggleDeleteDialogState,
+        onRenameDialogConfirmClick = viewModel::updateLabel,
         onRenameDialogCancelClick = { viewModel.toggleRenameDialogState(labelName) }
     )
 }
 
 @Composable
-fun LabelScreen(
+internal fun LabelScreen(
     feedState: NoteFeedUiState,
     labelName: String,
     noteViewState: NoteView,
@@ -110,10 +112,10 @@ fun LabelScreen(
     shouldShowDeleteDialog: Boolean,
     shouldShowRenameDialog: Boolean,
     renameLabelText: String,
-    onRenameLabelTextChange: (text: String) -> Unit,
+    onRenameLabelTextChange: (String) -> Unit,
     onClickRenameLabel: () -> Unit,
     onClickDeleteLabel: () -> Unit,
-    onClickLabelAppBarItem: (item: LabelAppBarItem) -> Unit,
+    onClickLabelAppBarItem: (LabelAppBarItem) -> Unit,
     onDeleteDialogConfirmClick: () -> Unit,
     onDeleteDialogCancelClick: () -> Unit,
     onRenameDialogConfirmClick: () -> Unit,
@@ -126,33 +128,36 @@ fun LabelScreen(
                 labelName = labelName,
                 isContextMenuOpen = contextMenuState,
                 noteViewState = noteViewState,
-                onClick = { onClickLabelAppBarItem(it) },
-                onClickRenameLabel = { onClickRenameLabel() },
-                onClickDeleteLabel = { onClickDeleteLabel() }
+                onClick = onClickLabelAppBarItem,
+                onClickRenameLabel = onClickRenameLabel,
+                onClickDeleteLabel = onClickDeleteLabel
             )
         }
     ) { paddingValues ->
         if (shouldShowDeleteDialog) {
             ConfirmationDialog(
-                heading = "Delete label?",
-                description = "We'll delete this label and remove it from all of your keep notes. Your notes won't be deleted.",
-                confirmButtonText = "Delete",
-                dismissButtonText = "Cancel",
-                onConfirmClick = { onDeleteDialogConfirmClick() },
-                onDismissClick = { onDeleteDialogCancelClick() }
+                heading = stringResource(id = R.string.feature_label_delete_label_dialog),
+                description = stringResource(id = R.string.feature_label_delete_warning),
+                confirmButtonText = stringResource(id = R.string.feature_label_delete),
+                dismissButtonText = stringResource(id = R.string.feature_label_cancel),
+                onConfirmClick = onDeleteDialogConfirmClick,
+                onDismissClick = onDeleteDialogCancelClick
             )
         }
         if (shouldShowRenameDialog) {
             RenameLabelDialog(
                 renameLabelText = renameLabelText,
-                onTextChange = { onRenameLabelTextChange(it) },
-                onConfirmClick = { onRenameDialogConfirmClick() },
-                onDismissClick = { onRenameDialogCancelClick() }
+                onTextChange = onRenameLabelTextChange,
+                onConfirmClick = onRenameDialogConfirmClick,
+                onDismissClick = onRenameDialogCancelClick
             )
         }
         when (feedState) {
             is NoteFeedUiState.Loading -> {
-                // show loader
+                CircularLoader(
+                    color = MaterialTheme.colorScheme.tertiary,
+                    strokeWidth = 5.dp
+                )
             }
             is NoteFeedUiState.Success -> {
                 if (feedState.pinnedNoteList.isEmpty() &&
@@ -161,7 +166,7 @@ fun LabelScreen(
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(paddingValues),
-                        text = "No notes with this label yet",
+                        text = stringResource(id = R.string.feature_label_no_notes_with_label),
                         icon = VnIcons.label
                     )
                 }
@@ -173,8 +178,8 @@ fun LabelScreen(
                         selectedPinnedList = mutableSetOf(),
                         selectedOthersList = mutableSetOf(),
                         noteViewState = noteViewState,
-                        onClick = { _, _ -> },
-                        onLongClick = { _, _ -> }
+                        onClick = { _, _ -> /** Implement in future **/ },
+                        onLongClick = { _, _ -> /** Implement in future **/ }
                     )
                 }
             }
@@ -184,11 +189,11 @@ fun LabelScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LabelScreenTopAppBar(
+internal fun LabelScreenTopAppBar(
     labelName: String,
     isContextMenuOpen: Boolean,
     noteViewState: NoteView,
-    onClick: (item: LabelAppBarItem) -> Unit,
+    onClick: (LabelAppBarItem) -> Unit,
     onClickRenameLabel: () -> Unit,
     onClickDeleteLabel: () -> Unit
 ) {
@@ -249,20 +254,20 @@ fun LabelScreenTopAppBar(
                     DropdownMenuItem(
                         text = {
                             Text(
-                                text = "Rename Label",
+                                text = stringResource(id = R.string.feature_label_rename_label),
                                 style = MaterialTheme.typography.bodyMedium
                             )
                         },
-                        onClick = { onClickRenameLabel() }
+                        onClick = onClickRenameLabel
                     )
                     DropdownMenuItem(
                         text = {
                             Text(
-                                text = "Delete Label",
+                                text = stringResource(id = R.string.feature_label_delete_label),
                                 style = MaterialTheme.typography.bodyMedium
                             )
                         },
-                        onClick = { onClickDeleteLabel() }
+                        onClick = onClickDeleteLabel
                     )
                 }
             }
@@ -271,32 +276,32 @@ fun LabelScreenTopAppBar(
 }
 
 @Composable
-fun RenameLabelDialog(
+internal fun RenameLabelDialog(
     renameLabelText: String,
-    onTextChange: (text: String) -> Unit,
+    onTextChange: (String) -> Unit,
     onConfirmClick: () -> Unit,
     onDismissClick: () -> Unit
 ) {
     AlertDialog(
-        onDismissRequest = { onDismissClick() },
+        onDismissRequest = onDismissClick,
         confirmButton = {
             Button(
-                onClick = { onConfirmClick() },
+                onClick = onConfirmClick,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary
                 )
             ) {
                 Text(
-                    text = "Rename",
+                    text = stringResource(id = R.string.feature_label_rename),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onPrimary
                 )
             }
         },
         dismissButton = {
-            TextButton(onClick = { onDismissClick() }) {
+            TextButton(onClick = onDismissClick) {
                 Text(
-                    text = "Cancel",
+                    text = stringResource(id = R.string.feature_label_cancel),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.primary
                 )
@@ -304,7 +309,7 @@ fun RenameLabelDialog(
         },
         title = {
             Text(
-                text = "Rename Label",
+                text = stringResource(id = R.string.feature_label_rename_label),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onBackground
             )
@@ -312,7 +317,7 @@ fun RenameLabelDialog(
         text = {
             OutlinedTextField(
                 value = renameLabelText,
-                onValueChange = { onTextChange(it) },
+                onValueChange = onTextChange,
                 textStyle = MaterialTheme.typography.bodyMedium,
                 singleLine = true,
                 colors = TextFieldDefaults.colors(
@@ -328,7 +333,7 @@ fun RenameLabelDialog(
 
 @Preview(showBackground = true)
 @Composable
-fun RenameLabelDialogPreview() {
+internal fun RenameLabelDialogPreview() {
     VnTheme {
         Surface {
             RenameLabelDialog(
@@ -343,7 +348,7 @@ fun RenameLabelDialogPreview() {
 
 @Preview(showBackground = true)
 @Composable
-fun LabelScreenTopAppBarPreview() {
+internal fun LabelScreenTopAppBarPreview() {
     VnTheme {
         Surface {
             LabelScreenTopAppBar(
@@ -360,7 +365,7 @@ fun LabelScreenTopAppBarPreview() {
 
 @Preview(showBackground = true)
 @Composable
-fun LabelScreenPreview() {
+internal fun LabelScreenPreview() {
     VnTheme {
         Surface {
             LabelScreen(
