@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -45,33 +46,33 @@ fun LabelEditRoute(
 
     LabelEditScreen(
         labelEditUiState = labelEditUiState,
-        onBackClick = { onBackClick() },
-        toggleEnableEditing = { viewModel.toggleEnableEditing() },
-        onAddLabel = { viewModel.addLabel() },
-        onUpdateLabel = { viewModel.updateLabel(it) },
-        onChangeTextInCreateLabel = { viewModel.onChangeTextInCreateLabel(it) },
-        onChangeUpdateLabelText = { viewModel.onChangeUpdateLabelText(it) },
-        onClickLabel = { viewModel.onChangeUpdateLabelIndex(it) },
+        onBackClick = onBackClick,
+        toggleEnableEditing = viewModel::toggleEnableEditing,
+        onAddLabel = viewModel::addLabel,
+        onUpdateLabel = viewModel::updateLabel,
+        onChangeTextInCreateLabel = viewModel::onChangeTextInCreateLabel,
+        onChangeUpdateLabelText = viewModel::onChangeUpdateLabelText,
+        onClickLabel = viewModel::onChangeUpdateLabelIndex,
         shouldShowDeleteDialog = shouldShowDeleteDialog,
-        onOpenDeleteDialog = { viewModel.toggleDeleteDialog() },
-        onDialogConfirmClick = { viewModel.deleteLabel() },
-        onDialogCancelClick = { viewModel.toggleDeleteDialog() }
+        onOpenDeleteDialog = viewModel::toggleDeleteDialog,
+        onDialogConfirmClick = viewModel::deleteLabel,
+        onDialogCancelClick = viewModel::toggleDeleteDialog
     )
 
 }
 
 @Composable
-fun LabelEditScreen(
+internal fun LabelEditScreen(
     labelEditUiState: LabelEditUiState,
     onBackClick: () -> Unit,
     toggleEnableEditing: () -> Unit,
     onAddLabel: () -> Unit,
-    onUpdateLabel: (index: Int) -> Unit,
-    onChangeTextInCreateLabel: (text: String) -> Unit,
-    onChangeUpdateLabelText: (text: String) -> Unit,
-    onClickLabel: (index: Int) -> Unit,
+    onUpdateLabel: (Int) -> Unit,
+    onChangeTextInCreateLabel: (String) -> Unit,
+    onChangeUpdateLabelText: (String) -> Unit,
+    onClickLabel: (Int) -> Unit,
     shouldShowDeleteDialog: Boolean,
-    onOpenDeleteDialog: (index: Int) -> Unit,
+    onOpenDeleteDialog: () -> Unit,
     onDialogConfirmClick: () -> Unit,
     onDialogCancelClick: () -> Unit
 ) {
@@ -80,19 +81,19 @@ fun LabelEditScreen(
         topBar = {
             SimpleTopAppBar(
                 navigationIcon = VnIcons.arrowBack,
-                title = "Edit Labels",
-                onClickNavigationIcon = { onBackClick() }
+                title = stringResource(id = R.string.feature_labeledit_edit_labels),
+                onClickNavigationIcon = onBackClick
             )
         }
     ) { paddingValues ->
         if (shouldShowDeleteDialog) {
             ConfirmationDialog(
-                heading = "Delete label?",
-                description = "We'll delete this label and remove it from all of your keep notes. Your notes won't be deleted.",
-                confirmButtonText = "Delete",
-                dismissButtonText = "Cancel",
-                onConfirmClick = { onDialogConfirmClick() },
-                onDismissClick = { onDialogCancelClick() }
+                heading = stringResource(id = R.string.feature_labeledit_delete_label),
+                description = stringResource(id = R.string.feature_labeledit_warning),
+                confirmButtonText = stringResource(id = R.string.feature_labeledit_delete),
+                dismissButtonText = stringResource(id = R.string.feature_labeledit_cancel),
+                onConfirmClick = onDialogConfirmClick,
+                onDismissClick = onDialogCancelClick
             )
         }
         Column(
@@ -102,16 +103,16 @@ fun LabelEditScreen(
             LabelTextField(
                 value = labelEditUiState.createLabelText,
                 enableEditing = labelEditUiState.enableEditing,
-                onTextChange = { onChangeTextInCreateLabel(it) },
+                onTextChange = onChangeTextInCreateLabel,
                 prefixIcon = if (labelEditUiState.enableEditing) VnIcons.close else VnIcons.add,
                 suffixIcon = VnIcons.check,
-                placeholderText = "Create a label",
+                placeholderText = stringResource(id = R.string.feature_labeledit_create_a_label),
                 isSuffixIconVisible = labelEditUiState.enableEditing,
-                onPrefixIconClick = { toggleEnableEditing() },
-                onSuffixIconClick = { onAddLabel() }
+                onPrefixIconClick = toggleEnableEditing,
+                onSuffixIconClick = onAddLabel
             )
             Spacer(modifier = Modifier.height(2.dp))
-            LazyColumn() {
+            LazyColumn {
                 itemsIndexed(
                     labelEditUiState.labelList,
                     key = { _, label -> label.labelId!! },
@@ -120,13 +121,13 @@ fun LabelEditScreen(
                     LabelTextField(
                         value = if (labelEditUiState.updateLabelIndex == index) labelEditUiState.updateLabelText else label.labelName,
                         enableEditing = labelEditUiState.updateLabelIndex == index,
-                        onTextChange = { onChangeUpdateLabelText(it) },
+                        onTextChange = onChangeUpdateLabelText,
                         prefixIcon = if (labelEditUiState.updateLabelIndex == index) VnIcons.delete else VnIcons.label,
                         suffixIcon = if (labelEditUiState.updateLabelIndex == index) VnIcons.check else VnIcons.edit,
                         placeholderText = "",
                         prefixIconEnable = labelEditUiState.updateLabelIndex == index,
                         isSuffixIconVisible = true,
-                        onPrefixIconClick = { onOpenDeleteDialog(index) },
+                        onPrefixIconClick = onOpenDeleteDialog,
                         onSuffixIconClick = {
                             if (labelEditUiState.updateLabelIndex == index) {
                                 onUpdateLabel(index)
@@ -142,10 +143,10 @@ fun LabelEditScreen(
 }
 
 @Composable
-fun LabelTextField(
+internal fun LabelTextField(
     value: String,
     enableEditing: Boolean,
-    onTextChange: (text: String) -> Unit,
+    onTextChange: (String) -> Unit,
     @DrawableRes prefixIcon: Int,
     @DrawableRes suffixIcon: Int,
     placeholderText: String,
@@ -157,7 +158,7 @@ fun LabelTextField(
     val borderColor = MaterialTheme.colorScheme.outline
     BasicTextField(
         value = value,
-        onValueChange = { onTextChange(it) },
+        onValueChange = onTextChange,
         textStyle = MaterialTheme.typography.bodyMedium,
         enabled = enableEditing,
         singleLine = true,
@@ -169,18 +170,18 @@ fun LabelTextField(
                             val strokeWidth = 2f
                             val x = size.width - strokeWidth
                             val y = size.height - strokeWidth
-                            //top line
+                            /** top line **/
                             drawLine(
                                 color = borderColor,
-                                start = Offset(0f, 0f), //(0,0) at top-left point of the box
-                                end = Offset(x, 0f), //top-right point of the box
+                                start = Offset(0f, 0f), /** (0,0) at top-left point of the box **/
+                                end = Offset(x, 0f), /** top-right point of the box **/
                                 strokeWidth = strokeWidth
                             )
-                            //bottom line
+                            /** bottom line **/
                             drawLine(
                                 color = borderColor,
-                                start = Offset(0f, y),// bottom-left point of the box
-                                end = Offset(x, y),// bottom-right point of the box
+                                start = Offset(0f, y), /** bottom-left point of the box **/
+                                end = Offset(x, y), /** bottom-right point of the box **/
                                 strokeWidth = strokeWidth
                             )
                         }
@@ -189,7 +190,7 @@ fun LabelTextField(
             ) {
                 IconButton(
                     modifier = Modifier.weight(0.1f),
-                    onClick = { onPrefixIconClick() },
+                    onClick = onPrefixIconClick,
                     enabled = prefixIconEnable
                 ) {
                     Icon(
@@ -213,7 +214,7 @@ fun LabelTextField(
                 if (isSuffixIconVisible) {
                     IconButton(
                         modifier = Modifier.weight(0.1f),
-                        onClick = { onSuffixIconClick() }
+                        onClick = onSuffixIconClick
                     ) {
                         Icon(
                             painter = painterResource(id = suffixIcon),
@@ -230,7 +231,7 @@ fun LabelTextField(
 }
 
 @Composable
-fun Placeholder(text: String) {
+internal fun Placeholder(text: String) {
     Text(
         text = text,
         style = MaterialTheme.typography.bodyMedium,
@@ -240,7 +241,7 @@ fun Placeholder(text: String) {
 
 @Preview(showBackground = true)
 @Composable
-fun LabelTextFieldPreview() {
+internal fun LabelTextFieldPreview() {
     VnTheme {
         Surface(
             modifier = Modifier.padding(16.dp)
@@ -262,7 +263,7 @@ fun LabelTextFieldPreview() {
 
 @Preview(showBackground = true)
 @Composable
-fun LabelEditScreenPreview() {
+internal fun LabelEditScreenPreview() {
     VnTheme {
         Surface {
             LabelEditScreen(

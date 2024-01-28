@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="feature_labeledit_edit_labels">Edit Labels</string>
+    <string name="feature_labeledit_delete_label">Delete Label?</string>
+    <string name="feature_labeledit_warning">We\'ll delete this label and remove it from all of your notes. Your notes won\'t be deleted.</string>
+    <string name="feature_labeledit_delete">Delete</string>
+    <string name="feature_labeledit_cancel">Cancel</string>
+    <string name="feature_labeledit_create_a_label">Create a label</string>
+</resources>
