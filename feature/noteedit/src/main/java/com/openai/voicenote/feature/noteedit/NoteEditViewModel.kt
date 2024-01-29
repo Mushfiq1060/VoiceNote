@@ -60,7 +60,7 @@ enum class InputType {
 @HiltViewModel
 class NoteEditViewModel @Inject constructor(
     private val noteDataSource: NoteDataSource,
-    private val savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val mUiState = MutableStateFlow(NoteEditUiState())
@@ -73,7 +73,7 @@ class NoteEditViewModel @Inject constructor(
     private var noteAutoSaveOrUpdateHandler: QueryDeBouncer<NoteResource>
 
     init {
-        noteAutoSaveOrUpdateHandler = QueryDeBouncer<NoteResource>(
+        noteAutoSaveOrUpdateHandler = QueryDeBouncer(
             durationInMilliseconds = 300,
             onValue = {
                 noteAutoSaveOrUpdate(it)
@@ -244,7 +244,7 @@ class NoteEditViewModel @Inject constructor(
         }
     }
 
-    fun dismissBottomSheet() {
+    fun onDismissBottomSheet() {
         mUiState.update {
             it.copy(
                 bottomSheetType = BottomSheetType.NONE
@@ -262,17 +262,13 @@ class NoteEditViewModel @Inject constructor(
 
     fun onClickBottomAppBarItem(item: BottomAppBarItem) {
         when (item) {
-            BottomAppBarItem.ADD_BOX -> {
-
-            }
+            BottomAppBarItem.ADD_BOX -> { /** handle add_box icon click **/ }
             BottomAppBarItem.COLOR_PALETTE -> {
                 openBackgroundPickerBottomSheet()
             }
             BottomAppBarItem.UNDO -> { undoHistory() }
             BottomAppBarItem.REDO -> { redoHistory() }
-            BottomAppBarItem.MORE_VERT -> {
-
-            }
+            BottomAppBarItem.MORE_VERT -> { /** handle more icon click **/ }
         }
     }
 

@@ -1,6 +1,5 @@
 package com.openai.voicenote.feature.noteedit
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -36,6 +35,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -57,14 +57,14 @@ fun NoteEditRoute(
 
     NoteEditScreen(
         noteEditUiState = noteEditUiState,
-        onBackClick = { onBackClick() },
-        onClickPinIcon = { viewModel.togglePinOfNote() },
-        onClickArchiveIcon = { viewModel.toggleArchiveOfNote() },
-        onTextChange = { type, text -> viewModel.onTextChange(type, text) },
-        onClickBottomAppBarItem = { viewModel.onClickBottomAppBarItem(it) },
-        dismissBottomSheet = { viewModel.dismissBottomSheet() },
-        onBackgroundColorChange = { viewModel.onBackgroundColorChange(it) },
-        onBackgroundImageChange = { viewModel.onBackgroundImageChange(it) }
+        onBackClick = onBackClick,
+        onClickPinIcon = viewModel::togglePinOfNote,
+        onClickArchiveIcon = viewModel::toggleArchiveOfNote,
+        onTextChange = viewModel::onTextChange,
+        onClickBottomAppBarItem = viewModel::onClickBottomAppBarItem,
+        onDismissBottomSheet = viewModel::onDismissBottomSheet,
+        onBackgroundColorChange = viewModel::onBackgroundColorChange,
+        onBackgroundImageChange = viewModel::onBackgroundImageChange
     )
 
 }
@@ -77,9 +77,9 @@ internal fun NoteEditScreen(
     onBackClick: () -> Unit,
     onClickPinIcon: () -> Unit,
     onClickArchiveIcon: () -> Unit,
-    onTextChange: (type: InputType, text: String) -> Unit,
-    onClickBottomAppBarItem: (item: BottomAppBarItem) -> Unit,
-    dismissBottomSheet: () -> Unit,
+    onTextChange: (InputType, String) -> Unit,
+    onClickBottomAppBarItem: (BottomAppBarItem) -> Unit,
+    onDismissBottomSheet: () -> Unit,
     onBackgroundColorChange: (Int) -> Unit,
     onBackgroundImageChange: (Int) -> Unit
 ) {
@@ -111,9 +111,9 @@ internal fun NoteEditScreen(
                     scrollBehavior = scrollBehavior,
                     notePinStatus = noteEditUiState.notePinStatus,
                     noteArchiveStatus = noteEditUiState.noteArchiveStatus,
-                    onClickBackIcon = { onBackClick() },
-                    onClickPinIcon = { onClickPinIcon() },
-                    onClickArchiveIcon = { onClickArchiveIcon() }
+                    onClickBackIcon = onBackClick,
+                    onClickPinIcon = onClickPinIcon,
+                    onClickArchiveIcon = onClickArchiveIcon
                 )
             },
             bottomBar = {
@@ -122,31 +122,31 @@ internal fun NoteEditScreen(
                     editTime = noteEditUiState.editTime,
                     isUndoPossible = noteEditUiState.isUndoPossible,
                     isRedoPossible = noteEditUiState.isRedoPossible,
-                    onClickBottomAppBarItem = { onClickBottomAppBarItem(it) }
+                    onClickBottomAppBarItem = onClickBottomAppBarItem
                 )
             }
         ) { paddingValues ->
             when (noteEditUiState.bottomSheetType) {
                 BottomSheetType.BACKGROUND_PICKER_OPTION -> {
                     BackgroundPickerBottomSheet(
-                        onBottomSheetDismiss = { dismissBottomSheet() },
-                        onBackgroundColorChange = { onBackgroundColorChange(it) },
-                        onBackgroundImageChange = { onBackgroundImageChange(it) },
+                        onBottomSheetDismiss = onDismissBottomSheet,
+                        onBackgroundColorChange = onBackgroundColorChange,
+                        onBackgroundImageChange = onBackgroundImageChange,
                         selectedBackgroundColor = noteEditUiState.backgroundColor,
                         selectedBackgroundImage = noteEditUiState.backgroundImageId
                     )
                 }
                 BottomSheetType.MORE_VERT_OPTION -> {
-                    // open bottom sheet while click on more icon
+                    /** open bottom sheet while click on more icon **/
                 }
                 BottomSheetType.ADD_BOX_OPTION -> {
-                    // open bottom sheet while click on add box icon
+                    /** open bottom sheet while click on add box icon **/
                 }
-                BottomSheetType.NONE -> { /* do nothing */ }
+                BottomSheetType.NONE -> { /** do nothing **/ }
             }
             NoteContent(
                 modifier = Modifier.padding(paddingValues),
-                onTextChange = { type, text -> onTextChange(type, text) },
+                onTextChange = onTextChange,
                 titleText = noteEditUiState.titleText,
                 noteText = noteEditUiState.noteText,
                 labelList = noteEditUiState.labelList
@@ -156,9 +156,9 @@ internal fun NoteEditScreen(
 }
 
 @Composable
-fun NoteContent(
+internal fun NoteContent(
     modifier: Modifier = Modifier,
-    onTextChange: (type: InputType, text: String) -> Unit,
+    onTextChange: (InputType, String) -> Unit,
     titleText: String,
     noteText: String,
     labelList: List<LabelResource>
@@ -175,7 +175,7 @@ fun NoteContent(
                 maxLines = 1
             ) {
                 Text(
-                    text = "Title",
+                    text = stringResource(id = R.string.feature_noteedit_title),
                     style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.outline
                 )
@@ -190,7 +190,7 @@ fun NoteContent(
                 maxLines = Int.MAX_VALUE
             ) {
                 Text(
-                    text = "Note",
+                    text = stringResource(id = R.string.feature_noteedit_note),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.outline
                 )
@@ -222,7 +222,7 @@ fun NoteContent(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NoteEditTopAppBar(
+internal fun NoteEditTopAppBar(
     scrollBehavior: TopAppBarScrollBehavior,
     notePinStatus: Boolean,
     noteArchiveStatus: Boolean,
@@ -237,7 +237,7 @@ fun NoteEditTopAppBar(
         title = {  },
         scrollBehavior = scrollBehavior,
         navigationIcon = {
-            IconButton(onClick = { onClickBackIcon() }) {
+            IconButton(onClick = onClickBackIcon) {
                 Icon(
                     painter = painterResource(id = VnIcons.arrowBack),
                     contentDescription = "back button",
@@ -247,7 +247,7 @@ fun NoteEditTopAppBar(
             }
         },
         actions = {
-            IconButton(onClick = { onClickPinIcon() }) {
+            IconButton(onClick = onClickPinIcon) {
                 Icon(
                     painter = painterResource(
                         id = if (notePinStatus) VnIcons.filledPin else VnIcons.pin
@@ -257,7 +257,7 @@ fun NoteEditTopAppBar(
                     tint = MaterialTheme.colorScheme.onBackground
                 )
             }
-            IconButton(onClick = { onClickArchiveIcon() }) {
+            IconButton(onClick = onClickArchiveIcon) {
                 Icon(
                     painter = painterResource(
                         id = if (noteArchiveStatus) VnIcons.unarchive else VnIcons.archive
@@ -272,12 +272,12 @@ fun NoteEditTopAppBar(
 }
 
 @Composable
-fun NoteEditBottomAppBar(
+internal fun NoteEditBottomAppBar(
     isNoteEditStarted: Boolean,
     editTime: String,
     isUndoPossible: Boolean,
     isRedoPossible: Boolean,
-    onClickBottomAppBarItem: (item: BottomAppBarItem) -> Unit
+    onClickBottomAppBarItem: (BottomAppBarItem) -> Unit
 ) {
     BottomAppBar(
         modifier = Modifier
@@ -325,7 +325,7 @@ fun NoteEditBottomAppBar(
                     isNoteEditStarted = isNoteEditStarted,
                     isUndoPossible = isUndoPossible,
                     isRedoPossible = isRedoPossible,
-                    onClickBottomAppBarItem = { onClickBottomAppBarItem(it) }
+                    onClickBottomAppBarItem = onClickBottomAppBarItem
                 )
                 Row(
                     modifier = Modifier.weight(0.33f),
@@ -350,13 +350,13 @@ fun NoteEditBottomAppBar(
 }
 
 @Composable
-fun UndoRedoSection(
+internal fun UndoRedoSection(
     modifier: Modifier = Modifier,
     editTime: String,
     isNoteEditStarted: Boolean,
     isUndoPossible: Boolean,
     isRedoPossible: Boolean,
-    onClickBottomAppBarItem: (item: BottomAppBarItem) -> Unit
+    onClickBottomAppBarItem: (BottomAppBarItem) -> Unit
 ) {
     Row(
         modifier = modifier,
@@ -365,7 +365,7 @@ fun UndoRedoSection(
     ) {
         if (!isNoteEditStarted) {
             Text(
-                text = "Edited $editTime",
+                text = stringResource(id = R.string.feature_noteedit_edit_time, editTime),
                 style = MaterialTheme.typography.bodySmall,
             )
         } else {
@@ -406,7 +406,7 @@ fun UndoRedoSection(
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
 @Composable
-fun NoteEditTopAppBarPreview() {
+internal fun NoteEditTopAppBarPreview() {
     VnTheme {
         Surface {
             NoteEditTopAppBar(
@@ -423,7 +423,7 @@ fun NoteEditTopAppBarPreview() {
 
 @Preview(showBackground = true)
 @Composable
-fun NoteEditBottomAppBarPreview() {
+internal fun NoteEditBottomAppBarPreview() {
     VnTheme {
         Surface {
             NoteEditBottomAppBar(
@@ -439,7 +439,7 @@ fun NoteEditBottomAppBarPreview() {
 
 @Preview(showBackground = true)
 @Composable
-fun NoteEditScreenPreview() {
+internal fun NoteEditScreenPreview() {
     VnTheme {
         Surface {
             NoteEditScreen(
@@ -449,7 +449,7 @@ fun NoteEditScreenPreview() {
                 onClickArchiveIcon = {},
                 onTextChange = { _, _ -> },
                 onClickBottomAppBarItem = {},
-                dismissBottomSheet = {},
+                onDismissBottomSheet = {},
                 onBackgroundColorChange = {},
                 onBackgroundImageChange = {}
             )

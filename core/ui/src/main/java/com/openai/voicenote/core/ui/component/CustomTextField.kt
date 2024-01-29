@@ -19,7 +19,7 @@ import com.openai.voicenote.core.designsystem.theme.VnTheme
 @Composable
 fun CustomTextField(
     value: String,
-    onTextChange: (text: String) -> Unit,
+    onTextChange: (String) -> Unit,
     textStyle: TextStyle,
     singleLine: Boolean,
     maxLines: Int,
