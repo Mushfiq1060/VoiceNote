@@ -1,7 +1,6 @@
 package com.openai.voicenote.feature.notes
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,11 +9,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.paddingFromBaseline
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
-import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -33,7 +29,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -54,8 +50,6 @@ import com.openai.voicenote.core.ui.component.NoteType
 import com.openai.voicenote.core.ui.component.SelectedTopAppBar
 import com.openai.voicenote.core.ui.component.SelectedTopAppBarItem
 import com.openai.voicenote.core.ui.component.SubFabType
-import com.openai.voicenote.core.ui.component.header
-import com.openai.voicenote.core.ui.component.noteFeed
 
 enum class NotesAppBarItem {
     DRAWER,
@@ -64,7 +58,7 @@ enum class NotesAppBarItem {
 
 @Composable
 fun NotesRoute(
-    goToNoteEditScreen: (note: String) -> Unit,
+    goToNoteEditScreen: (String) -> Unit,
     goToVoiceNoteScreen: () -> Unit,
     goToNoteLabelScreen: (List<Long>) -> Unit,
     onDrawerOpen: () -> Unit,
@@ -108,9 +102,7 @@ fun NotesRoute(
                 goToNoteEditScreen(noteResource.toJson())
             }
         },
-        onNoteLongClick = { noteType, noteId ->
-            viewModel.checkSelectedNote(noteType, noteId)
-        },
+        onNoteLongClick = viewModel::checkSelectedNote,
         onSubFabClick = {
             viewModel.toggleFABState(FABState.COLLAPSED)
             if (it == SubFabType.VOICE) {
@@ -138,19 +130,22 @@ internal fun NotesScreen(
     noteViewState: NoteView,
     isAnyNoteSelected: Boolean,
     isContextMenuOpen: Boolean,
-    onNotesAppBarClick: (homeAppBarItem: NotesAppBarItem) -> Unit,
-    onSelectedTopAppBarClick: (item: SelectedTopAppBarItem) -> Unit,
-    onNoteClick: (note: NoteResource, noteId: Long) -> Unit,
-    onNoteLongClick: (noteType: NoteType, noteId: Long) -> Unit,
-    onSubFabClick: (type: SubFabType) -> Unit,
-    onFabStateChanged: (fabState: FABState) -> Unit,
+    onNotesAppBarClick: (NotesAppBarItem) -> Unit,
+    onSelectedTopAppBarClick: (SelectedTopAppBarItem) -> Unit,
+    onNoteClick: (NoteResource, Long) -> Unit,
+    onNoteLongClick: (NoteType, Long) -> Unit,
+    onSubFabClick: (SubFabType) -> Unit,
+    onFabStateChanged: (FABState) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
             if (!isAnyNoteSelected) {
-                NotesTopAppBar(noteViewState = noteViewState, onClick = { onNotesAppBarClick(it) })
+                NotesTopAppBar(
+                    noteViewState = noteViewState,
+                    onClick = onNotesAppBarClick
+                )
             } else {
                 when (feedState) {
                     is NoteFeedUiState.Success -> {
@@ -158,8 +153,8 @@ internal fun NotesScreen(
                             selectedCount = feedState.selectedOtherNotes.size + feedState.selectedPinNotes.size,
                             isSelectedOtherNote = feedState.selectedOtherNotes.isNotEmpty(),
                             isContextMenuOpen = isContextMenuOpen,
-                            archiveStatus = false, // future work
-                            onClick = { onSelectedTopAppBarClick(it) }
+                            archiveStatus = false,
+                            onClick = onSelectedTopAppBarClick,
                         )
                     }
                     else -> {}
@@ -169,8 +164,8 @@ internal fun NotesScreen(
         floatingActionButton = {
             FloatingButton(
                 currentState = fabState,
-                onFabClicked = { onFabStateChanged(it) },
-                onSubFabClicked = { onSubFabClick(it) }
+                onFabClicked = onFabStateChanged,
+                onSubFabClicked = onSubFabClick
             )
         }
     ) { paddingValues ->
@@ -194,7 +189,7 @@ internal fun NotesScreen(
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(paddingValues),
-                        text = "Notes you add appear here",
+                        text = stringResource(id = R.string.feature_notes_empty_note),
                         icon = VnIcons.note
                     )
                 } else {
@@ -205,8 +200,8 @@ internal fun NotesScreen(
                         selectedPinnedList = feedState.selectedPinNotes,
                         selectedOthersList = feedState.selectedOtherNotes,
                         noteViewState = noteViewState,
-                        onClick = { note, index -> onNoteClick(note, index) },
-                        onLongClick = { noteType, index -> onNoteLongClick(noteType, index) }
+                        onClick = onNoteClick,
+                        onLongClick = onNoteLongClick
                     )
                 }
             }
@@ -216,9 +211,9 @@ internal fun NotesScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NotesTopAppBar(
+internal fun NotesTopAppBar(
     noteViewState: NoteView,
-    onClick: (homeAppBarItem: NotesAppBarItem) -> Unit
+    onClick: (NotesAppBarItem) -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -242,7 +237,7 @@ fun NotesTopAppBar(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "Search Your Notes",
+                        text = stringResource(id = R.string.feature_notes_search),
                         color = MaterialTheme.colorScheme.onBackground,
                         style = MaterialTheme.typography.bodyMedium
                     )
@@ -280,7 +275,7 @@ fun NotesTopAppBar(
 
 @Preview(showBackground = true)
 @Composable
-fun NotesScreenPreview() {
+internal fun NotesScreenPreview() {
     VnTheme {
         Surface {
             NotesScreen(
@@ -305,7 +300,7 @@ fun NotesScreenPreview() {
     }
 }
 
-val pinnedNotePreviewList = listOf<NoteResource>(
+val pinnedNotePreviewList = listOf(
     NoteResource(
         noteId = 1,
         title = "One",
@@ -328,7 +323,7 @@ val pinnedNotePreviewList = listOf<NoteResource>(
     ),
 )
 
-val otherNotePreviewList = listOf<NoteResource>(
+val otherNotePreviewList = listOf(
     NoteResource(
         noteId = 3,
         title = "One",

@@ -1,6 +1,9 @@
 package com.opanai.voicenote.feature.notelabel
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -60,10 +63,16 @@ internal fun NoteLabelScreen(
     ) { paddingValues ->
         when (labelUiState) {
             is NoteLabelUiState.Loading -> {
-                CircularLoader(
-                    color = MaterialTheme.colorScheme.tertiary,
-                    strokeWidth = 5.dp
-                )
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    CircularLoader(
+                        color = MaterialTheme.colorScheme.tertiary,
+                        strokeWidth = 5.dp
+                    )
+                }
             }
             is NoteLabelUiState.Success -> {
                 LazyColumn(

@@ -91,9 +91,7 @@ class NotesViewModel @Inject constructor(
         when (item) {
             SelectedTopAppBarItem.CANCEL -> { removeAllSelectedNotes() }
             SelectedTopAppBarItem.TOGGLE_PIN -> { updateNotesPin() }
-            SelectedTopAppBarItem.DRAW -> {
-
-            }
+            SelectedTopAppBarItem.DRAW -> {}
             SelectedTopAppBarItem.LABEL -> {
                 callback(getSelectedIdList())
                 removeAllSelectedNotes()
