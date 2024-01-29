@@ -17,6 +17,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -25,6 +26,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.openai.voicenote.core.designsystem.icon.VnIcons
 import com.openai.voicenote.core.designsystem.theme.VnTheme
 import com.openai.voicenote.core.model.LabelResource
+import com.openai.voicenote.core.ui.component.CircularLoader
 import com.openai.voicenote.core.ui.component.SimpleTopAppBar
 
 @Composable
@@ -35,32 +37,33 @@ fun NoteLabelRoute(
     val labelUiState by viewModel.labelUiState.collectAsStateWithLifecycle()
 
     NoteLabelScreen(
-        onBackClick = { onBackClick() },
+        onBackClick = onBackClick,
         labelUiState = labelUiState,
-        onCheckClick = { labelId, check ->
-            viewModel.onCheckCLick(labelId, check)
-        }
+        onCheckClick = viewModel::onCheckCLick
     )
 }
 
 @Composable
-fun NoteLabelScreen(
+internal fun NoteLabelScreen(
     onBackClick: () -> Unit,
     labelUiState: NoteLabelUiState,
-    onCheckClick: (labelId: Long, check: Boolean) -> Unit
+    onCheckClick: (Long, Boolean) -> Unit
 ) {
     Scaffold(
         topBar = {
             SimpleTopAppBar(
                 navigationIcon = VnIcons.arrowBack,
-                title = "Add label",
-                onClickNavigationIcon = { onBackClick() }
+                title = stringResource(id = R.string.feature_notelabel_add_label),
+                onClickNavigationIcon = onBackClick
             )
         }
     ) { paddingValues ->
         when (labelUiState) {
             is NoteLabelUiState.Loading -> {
-                // show loader while loading
+                CircularLoader(
+                    color = MaterialTheme.colorScheme.tertiary,
+                    strokeWidth = 5.dp
+                )
             }
             is NoteLabelUiState.Success -> {
                 LazyColumn(
@@ -70,9 +73,7 @@ fun NoteLabelScreen(
                         LabelCheckRow(
                             label = uiState.label,
                             checkBoxStatus = uiState.checkStatus,
-                            onCheckClick = { labelId, check ->
-                                onCheckClick(labelId, check)
-                            }
+                            onCheckClick = onCheckClick
                         )
                     }
                 }
@@ -82,10 +83,10 @@ fun NoteLabelScreen(
 }
 
 @Composable
-fun LabelCheckRow(
+internal fun LabelCheckRow(
     label: LabelResource,
     checkBoxStatus: ToggleableState,
-    onCheckClick: (labelId: Long, check: Boolean) -> Unit
+    onCheckClick: (Long, Boolean) -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -122,7 +123,7 @@ fun LabelCheckRow(
 
 @Preview(showBackground = true)
 @Composable
-fun LazyCheckRowPreview() {
+internal fun LazyCheckRowPreview() {
     VnTheme {
         Surface {
             LabelCheckRow(
@@ -136,7 +137,7 @@ fun LazyCheckRowPreview() {
 
 @Preview(showBackground = true)
 @Composable
-fun NoteLabelScreenPreview() {
+internal fun NoteLabelScreenPreview() {
     VnTheme {
         Surface {
             NoteLabelScreen(

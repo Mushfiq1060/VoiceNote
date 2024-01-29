@@ -36,8 +36,8 @@ sealed interface NoteLabelUiState {
 
 @HiltViewModel
 class NoteLabelViewModel @Inject constructor(
-    private val savedStateHandle: SavedStateHandle,
-    private val labelDataSource: LabelDataSource,
+    savedStateHandle: SavedStateHandle,
+    labelDataSource: LabelDataSource,
     private val noteLabelDataSource: NoteLabelDataSource
 ) : ViewModel() {
 
