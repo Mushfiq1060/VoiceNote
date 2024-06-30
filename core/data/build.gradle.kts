@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.voicenote.android.library)
     alias(libs.plugins.voicenote.android.hilt)
@@ -6,6 +8,17 @@ plugins {
 
 android {
     namespace = "com.openai.voicenote.core.data"
+
+    defaultConfig {
+        val localProperties = project.rootProject.file("local.properties")
+        val properties = Properties()
+        properties.load(localProperties.inputStream())
+        buildConfigField("String", "OPEN_AI_API_KEY", properties.getProperty("OPEN_AI_API_KEY") ?: "")
+    }
+
+    buildFeatures {
+        buildConfig = true
+    }
 }
 
 dependencies {

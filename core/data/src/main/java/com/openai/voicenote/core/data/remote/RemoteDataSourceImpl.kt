@@ -1,6 +1,9 @@
 package com.openai.voicenote.core.data.remote
 
+import android.util.Log
+import com.openai.voicenote.core.data.BuildConfig
 import com.openai.voicenote.core.data.remote.api.ApiEndPoint
+import com.openai.voicenote.core.data.remote.api.ApiRepository
 import com.openai.voicenote.core.model.ApiResponse
 import okhttp3.MediaType
 import okhttp3.MultipartBody
@@ -11,7 +14,7 @@ import javax.inject.Singleton
 
 @Singleton
 class RemoteDataSourceImpl @Inject constructor(
-    private val api: ApiEndPoint
+    private val apiRepository: ApiRepository,
 ) : RemoteDataSource {
 
     override suspend fun transcribeAudio(file: File): ApiResponse {
@@ -19,8 +22,8 @@ class RemoteDataSourceImpl @Inject constructor(
         val fileReqBody = MultipartBody.Part.createFormData("file", file.name, requestedFile)
         val modelReqBody =
             RequestBody.create(MediaType.parse("multipart/form-data"), "whisper-1")
-        val header = "Bearer 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"
-        val response = api.getTextFromAudio(fileReqBody, modelReqBody, header)
+        val header = "Bearer ${BuildConfig.OPEN_AI_API_KEY}"
+        val response = apiRepository.transcribeAudio(fileReqBody, modelReqBody, header)
         if (response.isSuccessful) {
             val text = response.body()?.text
             return if (text != null) {

@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.voicenote.android.application)
     alias(libs.plugins.voicenote.android.application.compose)
@@ -16,6 +18,10 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 
     buildTypes {
